@@ -1,18 +1,24 @@
 /**
  @author Thomas Much
- @version 1999-06-19
+ @version 1999-07-18
 */
 
 
 
+
 public final class Aktienname {
+
+private static final int MAXLENGTH = 30;
+
 
 
 
 private Aktienname() {}
 
 
+
 public static String getKurzName(String langname) {
+
 	String n = langname.trim();
 	
 	String s = n.toUpperCase() + " ";
@@ -89,6 +95,9 @@ public static String getKurzName(String langname) {
 	i = s.indexOf(" AGINHABER");
 	if (i > 0) return getKurzName(n.substring(0,i));
 
+	i = s.indexOf(" AGNAM");
+	if (i > 0) return getKurzName(n.substring(0,i));
+
 	i = s.indexOf(" AGAKTIEN");
 	if (i > 0) return getKurzName(n.substring(0,i));
 
@@ -130,6 +139,14 @@ public static String getKurzName(String langname) {
 
 	i = s.indexOf(" PART.Z.");
 	if (i > 0) return getKurzName(n.substring(0,i));
+
+	i = s.indexOf(" NMI-");
+	if (i > 0) return getKurzName(n.substring(0,i));
+	
+	if (n.length() > MAXLENGTH)
+	{
+		return n.substring(0,MAXLENGTH);
+	}
 	
 	return n;
 }

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-19
+ @version 1999-07-06
 */
 
 import java.awt.*;
@@ -95,7 +95,7 @@ private void startThreads() {
 	AktienMan.checkURLs();
 	
 	new AktienlistenLeser("DAX",URLs.URL_DAX30,"DAX",this,INDEX_DAX).start();
-	new AktienlistenLeser("Neuer Markt",URLs.URL_NMARKT,"NEUER MARKT",this,INDEX_NMARKT).start();
+	new AktienlistenLeser("Neuer Markt",URLs.URL_NMARKT,"NEMAX",this,INDEX_NMARKT).start();
 	new AktienlistenLeser("EuroSTOXX50",URLs.URL_EURO50,"STOXX",this,INDEX_EUROSTOXX).start();
 	new AktienlistenLeser("Ausland",URLs.URL_AUSLAND,"",this,INDEX_AUSLAND).start();
 }

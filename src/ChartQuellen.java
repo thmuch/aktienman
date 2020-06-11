@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-14
+ @version 1999-07-06
 */
 
 import java.util.*;
@@ -15,7 +15,7 @@ public static final int CHARTQUELLE_NONE      = -1;
 public static final int CHARTQUELLE_COMDIRECT =  0;
 public static final int CHARTQUELLE_DEUBA     =  1;
 
-private static final int STANDARDQUELLE = CHARTQUELLE_DEUBA;
+private static final int STANDARDQUELLE = CHARTQUELLE_COMDIRECT;
 
 private static ChartQuellen quellen = new ChartQuellen();
 

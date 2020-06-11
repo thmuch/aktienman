@@ -1,11 +1,12 @@
 /**
  @author Thomas Much
- @version 1999-06-18
+ @version 1999-07-13
 */
 
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+
 
 
 
@@ -22,6 +23,7 @@ private boolean watchonly = false;
 
 
 
+
 public NeueAktie() {
 	super(AktienMan.AMFENSTERTITEL+"Aktie kaufen");
 	aktienWKN.requestFocus();
@@ -35,6 +37,7 @@ public NeueAktie() {
 		new Warnalert(this,"Bitte gehen Sie online und rufen dann den Men\u00fcpunkt|\"Aktienmen\u00fcs aktualisieren\" im Men\u00fc \""+Lang.EDITMENUTITLE+"\" auf,|damit Sie Aktien per Name (und nicht nur per WKN)|ausw\u00e4hlen k\u00f6nnen.");
 	}
 }
+
 
 
 public void setupElements() {
@@ -118,6 +121,11 @@ public void setupElements() {
 	
 	plaetze = AktienMan.boersenliste.getChoice(true);
 	plaetze.select(AktienMan.boersenliste.getStandardBoerse());
+	plaetze.addItemListener(new ItemListener() {
+		public void itemStateChanged(ItemEvent e) {
+			checkNurDiese();
+		}
+	});
 	constrain(panelAktie,new Label("B\u00f6rsenplatz:"),0,7,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,5,0,0,0);
 	constrain(panelAktie,plaetze,1,7,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,5,0,0,0);
 
@@ -247,7 +255,24 @@ public void setupElements() {
 	{
 		aktienGruppe.setSelectedCheckbox(wknCheckbox);
 	}
+	
+	checkNurDiese();
 }
+
+
+
+public void checkNurDiese() {
+
+	if (AktienMan.boersenliste.getAt(plaetze.getSelectedIndex()).isFondsOnly())
+	{
+		boerseNurDiese.setEnabled(false);
+	}
+	else
+	{
+		boerseNurDiese.setEnabled(true);
+	}
+}
+
 
 
 public synchronized void executeOK() {
@@ -369,6 +394,7 @@ public synchronized void executeOK() {
 
 	AktienMan.hauptdialog.listeNeueAktie(ba);
 }
+
 
 
 public synchronized boolean canOK() {
@@ -569,6 +595,7 @@ public synchronized boolean canOK() {
 
 	return true;
 }
+
 
 
 public void closed() {

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-30
+ @version 1999-07-18
 */
 
 
@@ -11,52 +11,30 @@ public class NewURLs extends URLs {
 
 
 
-/*public String checkWKN(String wkn) {
+public String getString(int strNr) {
 
-	if (wkn.equals("710000"))
+	if (strNr == STR_DEUBA_CHARTSRC)
 	{
-		return "DCX";
-	}
-	else if (wkn.equals("750000"))
-	{
-		return "TKA";
-	}
-	else if (wkn.equals("519000"))
-	{
-		return "BMW";
-	}
-	else if (wkn.equals("695200"))
-	{
-		return "PRS";
-	}
-	else if (wkn.equals("850000"))
-	{
-		return "GMC";
-	}
-	else if (wkn.equals("920578"))
-	{
-		return "LYLX";
-	}
-	else if (wkn.equals("920566"))
-	{
-		return "LYLK";
+		return " src=\'";
 	}
 
-	return super.checkWKN(wkn);
+	return super.getString(strNr);
 }
 
 
 
-public String getComdirectKursURL(String wkn, String boerse) {
+public String checkWKN(String wkn) {
 
-	String wkneu = checkWKN(wkn);
-	
-	if (!wkneu.equals(wkn))
+	if (wkn.equals("519003"))
 	{
-		wkneu += "." + boerse;
+		return "BMW3";
+	}
+	else if (wkn.equals("703703"))
+	{
+		return "RWE3";
 	}
 
-	return get(URL_KURSECOMDIRECT) + wkneu + "&searchButton=Exakt&XsearchWPArt=UKN&XsearchBoersen=" + boerse;
-} */
+	return super.checkWKN(wkn);
+}
 
 }

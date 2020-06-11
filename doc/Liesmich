@@ -1,16 +1,15 @@
-AktienMan 1.41-beta (1999-06-30)
+AktienMan 1.50-beta (1999-07-19)
 Copyright (c)1998,99 by Thomas Much (thomas@aktienman.de)
 
 
 History
 -------
 allg. Bugs
-//
+// Absturz, wenn Maxkursdialog vor Ende geschlossen wird ...
 Mac-Bugs
-//
+// "Aktie kaufen": Choices alle auf die gleiche breite bringen
 Win-Bugs
 // RM-Popups: Bei Klick+Loslassen erscheint Popup 2x
-// Chartfenster werden minimal zu klein geöffnet
 // unter Win98 fehlt der erste Redraw, wenn .lst nicht vorhanden ist (?)
 Linux-Bugs
 // 
@@ -49,7 +48,6 @@ todo
 // bei jedem Aktualisieren Thread starten, der aktuelle Umtauschkurse ermittelt
 // nach HTML-Export Browser (derzeit nur Netscape) nachstarten (nur Mac, ab MRJ 2.1)
 // Aktien sofort nach Kauf bei Kaufwert-Summe berücksichtigen
-// Popuplisten: Choice mit fester Pixelrückgabe überschreiben
 // Yahoo-Kursleser
 // beim Kaufen optional Gebühren errechnen
 // auch Maximalskurs per Timer anzeigen
@@ -57,26 +55,49 @@ todo
 // DAX-Kamera optional im Hauptfenster darstellen
 // Aktien verwalten, die keine WKN haben, d.h. deren Kurs manuell eingetragen werden muß
 // Backupfunktion für Listen
-// neue Comdirect-Kurse
 // Kurse+Charts auch von bbbank.de, http://www.consors.de, http://www.fimatex.de
 // Kurs- und Chartklassen bei Bedarf von aktienman.de laden
-Version 1.42 (.07.99)
+Version 1.51 (.07.99)
 // RELEASE erhöhen, DEBUG entfernen
 // Aktienlisten etc. in XML speichern (Strings als UTF8)
 // Kopieren+Verschieben zwischen Portfolios
-// "Aktie kaufen": Choices alle auf die gleiche breite bringen
 // Prozentualer Anteil der einzelnen Aktien am Gesamtportfolio
-// Deuba-Charts (3, intra) direkt aufrufbar
 // Charts optional (?) preloaden und auf Platte speichern
 // wenn ein Chart nicht geladen werden konnte, auf letzten verfügbaren (intern merken!) umschalten
 // Splashscreen für alle Systeme
-// SMAX von yahoo.de (evtl. auch andere Listen)
-// Kurse auch von ZDFMSNBC holen
-// Absturz, wenn Maxkursdialog vor Ende geschlossen wird ...
 // WKN-Listen bei der Comdirect erkennen und Wert mit der passenden WKN auswählen (Achtung, wenn WKN fehlt)
-// akt. Kurs eingebbar
-// Indizes speichern, Werte beim Start anzeigen
+// SMAX-Liste einlesen (http://charts.smax.de/smax/kurseumsaetze_d.htm)
+// Win98 + neuerster IE5: nach Registrierung klappt Kaufen, Pofo-Wechsel + Neustart nicht mehr ...
+// bei einem Fehler liefert der Comdirect-Leser nur noch "n/a" ...
+// Chartfenstergrößen für Win noch etwas optimieren (ebenso Karteireiter)
 //
+Version 1.50 (19.07.99)
+- wenn ein Aktienname nicht sinnvoll gekürzt werden kann, wird der Name nach 30 Zeichen abgeschnitten
+- Korrektur für die Deuba-Charts
+- "Aktiennamen aus Onlinedaten übernehmen" ist nun standardmäßig aktiviert
+- Namenskürzung wieder verbessert
+- als Währung steht nun auch öS (ATS) zur Verfügung
+- Workaround für WKN 519003 (BMW Vz) und 703703 (RWE Vz) eingebaut
+- bei Neuinstallationen werden die Indizes standardmäßig nicht mehr automatisch aktualisiert
+- im "Aktie Info"-Dialog wird zwischen aktuellem und Vortageskurs die Differenz (absolut und
+  prozentual) ausgegeben
+- nach dem aktuellen Kurs werden in der Liste nun Pfeile für die Differenz zum Vortag angezeigt;
+  auf-/absteigende Pfeile gibt es ab +/- 0,1% Differenz zum Vortag, Pfeile nach oben/unten ab +/- 1,0%
+- Fonds können nicht mehr an anderen Börsenplätzen als DFK aktualisiert werden; DFK-Werte werden
+  also automatisch wie "nur an dieser Börse" behandelt; bei Auswahl von DFK wird bei "Aktie kaufen"
+  und "Aktie ändern" entsprechend die "nur an dieser Börse"-Checkbox disabled
+- beim HTML-Export wird der Dateiname nun mit dem Portfolionamen vorbelegt
+- der HTML-Export speichert nun einen HTML4-strict-DOCTYPE und den Portfolio-Titel
+- in der Liste wird die Differenz zum Kaufwert nun auch aufgesplittet (steuerfrei/zu versteuern)
+  ausgegeben; der HTML-Export wurde daran angepaßt
+- wenn im "Aktie ändern"-Dialog das Feld "nicht aktualisieren" aktiviert ist, kann der aktuelle
+  Kurs dort nun manuell eingegeben werden; das Datumsfeld ist dabei eine beliebige Zeichenkette
+- bei einer Neuinstallation ist die Standardkursquelle nun Deuba, die Standardchartquelle nun
+  Comdirect (also genau umgekehrt wie bisher)
+- die Aktienliste "Neuer Markt" ignoriert nun die NEMAX-Indizes
+- "NMI-" im Aktiennamen wird nun gekürzt
+- die Indizes werde auch beim Aufruf der DAX-Kamera aktualisiert
+- die Index-Pfeile werden transparent gezeichnet
 Version 1.41 (30.06.99)
 - wenn "Konfiguration - Indizes regelmäßig aktualisieren" eingeschaltet ist, werden die Indizes ab dem
   ersten Aktualisieren alle 55s automatisch neu geladen

@@ -1,4 +1,4 @@
-AktienMan 1.40
+AktienMan 1.41
 Copyright ©1998,99 Thomas Much
 Ein Programm von AktienMan&Friends (http://www.aktienman.de).
 
@@ -29,6 +29,12 @@ AktienMan kennt nun drei unabhängige Währungen, die bei Bedarf automatisch inein
 - die Listenwährung bestimmt, in welcher Währung die Aktien in der Liste des Hauptdialogs angezeigt werden; unten links im Hauptdialog kann man die Listenwährung umschalten.
 
 Versionsübersicht
+1.41 (1999-06-30)
+- Unterhalb der Aktualisieren-Buttons werden nun drei Indizes angezeigt (DAX, Neuer Markt, Dow Industrials). Auf- und absteigende Pfeile erscheinen ab +/- 0,1% Differenz zum Vortag, Pfeile nach oben und unten ab +/- 1,0% Differenz. Ab +/- 2,0% werden die Differenzwerte zusätzlich grün bzw. rot dargestellt.
+- Die Indizes werden beim Aktualisieren der Liste mit aktualisiert. Wenn "Konfiguration - Indizes regelmäßig aktualisieren" eingeschaltet ist, werden die Indizes ab dem ersten Aktualisieren einmal pro Minute automatisch neu geladen.
+- Die Buttons "Aktualisieren FSE" und "Aktualisieren ETR" wurden durch ein Popup-Menü ersetzt, mit dem alle Aktien an allen deutschen Börsen aktualisiert werden können.
+- Workaround für die WKNs 710000 (DCX), 750000 (TKA), 519000 (BMW), 695200 (PRS), 850000 (GMC), 920566 (LYLK), 920578 (LYLX) und 849084 (Eurovesta) eingebaut.
+- Die Kurse und Charts der Deutschen Bank werden wieder geladen.
 1.40 (1999-06-22)
 - Unten links im Hauptfenster wird bei jedem Aktualisieren ein Fortschrittsbalken eingeblendet.
 - Neben den Comdirect-Charts können auch die Charts der Deutschen Bank geladen werden. Die Auswahl der Chartquelle geschieht im Konfigurationsdialog.
@@ -43,9 +49,6 @@ Versionsübersicht
 1.31 (1999-05-24)
 - Für Comdirect-Kurse und -Charts wurde eine erneute Anpassung erforderlich.
 - Damit eine geänderte URL die Kursaktualisierung nicht mehr so schnell verhindert, fragt AktienMan die aktuellen URLs nun online im Netz ab.
-1.30 (1999-05-07)
-- Charts, Aktienlisten und Comdirect-Kursdaten können wieder aktualisiert werden.
-- weitere interne Optimierungen
 
 Kontakt
 Bestellungen richten Sie bitte an bestellung@aktienman.de, am besten wickeln Sie Ihre Bestellung aber über die AktienMan-Homepage http://www.aktienman.de ab. Supportanfragen beantwortet support@aktienman.de.

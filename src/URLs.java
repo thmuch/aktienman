@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-30
+ @version 1999-07-18
 */
 
 
@@ -173,7 +173,7 @@ public String getString(int strNr) {
 		return " usemap=\'";
 
 	case STR_DEUBA_CHARTSRC:
-		return "<img src=\'";
+		return " src=\'";
 	
 	case STR_BBB_INDEXTITLE:
 		return "\"KA_Charts.htm?";
@@ -284,6 +284,14 @@ public String checkWKN(String wkn) {
 	else if (wkn.equals("519000"))
 	{
 		return "BMW";
+	}
+	else if (wkn.equals("519003"))
+	{
+		return "BMW3";
+	}
+	else if (wkn.equals("703703"))
+	{
+		return "RWE3";
 	}
 	else if (wkn.equals("695200"))
 	{

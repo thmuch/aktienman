@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-29
+ @version 1999-07-13
 */
 
 import java.awt.*;
@@ -38,7 +38,7 @@ private Menu menuAktAlle;
 private ChartMenu menuChart,popChart;
 private Choice chErloes,buttonChart,lwaehrung,aktChoice;
 private int popX,popY;
-private BALabel popParent;
+private Component popParent;
 private ProgressCanvas progressCanvas;
 
 
@@ -947,6 +947,8 @@ public synchronized void callKamera() {
 
 	if (AktienMan.daxKamera == null) AktienMan.daxKamera = new DAXKamera();
 	if (AktienMan.daxKamera != null) AktienMan.daxKamera.showKamera();
+
+	IndexQuelle.call();
 }
 
 
@@ -1211,8 +1213,9 @@ public synchronized void listeNeueAktie(BenutzerAktie ba) {
 }
 
 
-public synchronized void listeSelect(BALabel bal, int row, int mX, int mY,
-												int clicks, boolean ispop) {
+
+public synchronized void listeSelect(Component bal, int row, int mX, int mY,
+												 int clicks, boolean ispop) {
 	if (row >= 0)
 	{
 		if (isLocked(true)) return;
@@ -1250,7 +1253,9 @@ public synchronized void listeSelect(BALabel bal, int row, int mX, int mY,
 }
 
 
-private synchronized void aktienPopup(BenutzerAktie ba, BALabel bal, int mX, int mY) {
+
+private synchronized void aktienPopup(BenutzerAktie ba, Component bal, int mX, int mY) {
+
 	if ((ba.getStueckzahl() > 0L) && (ba.getKurs() > 0L) && (!ba.nurBeobachten()))
 	{
 		popVerkaufen.setEnabled(true);
@@ -1311,12 +1316,16 @@ private synchronized void aktienPopup(BenutzerAktie ba, BALabel bal, int mX, int
 }
 
 
+
 public synchronized void displayAktienPopup() {
+
 	aktienpopup.show(popParent,popX,popY);
 }
 
 
+
 private synchronized void portfolioNeu() {
+
 	if (AktienMan.portfolioneu != null)
 	{
 		AktienMan.portfolioneu.toFront();
@@ -1330,7 +1339,9 @@ private synchronized void portfolioNeu() {
 }
 
 
+
 private synchronized void portfolioUmbenennen() {
+
 	if (AktienMan.portfolioumbenennen != null)
 	{
 		AktienMan.portfolioumbenennen.toFront();
@@ -1344,7 +1355,9 @@ private synchronized void portfolioUmbenennen() {
 }
 
 
+
 private synchronized void portfolioLoeschen() {
+
 	if (AktienMan.portfolioloeschen != null)
 	{
 		AktienMan.portfolioloeschen.toFront();
@@ -1608,7 +1621,18 @@ public synchronized void listeSpeichern() {
 
 	FileDialog fd = new FileDialog(this,AktienMan.AMFENSTERTITEL+"HTML-Datei exportieren...",FileDialog.SAVE);
 
-	fd.setFile("Meine Aktien.html");
+	String dateiname;
+	
+	if (Portfolios.isDefault())
+	{
+		dateiname = "Meine Aktien";
+	}
+	else
+	{
+		dateiname = Portfolios.getCurrentName();
+	}
+
+	fd.setFile(dateiname+".html");
 	fd.show();
 	
 	String pfad = fd.getDirectory();
@@ -1660,6 +1684,11 @@ public synchronized void listeSpeichern() {
 
 			String nachname = AktienMan.properties.getString("Key.Nachname");
 			String vorname = AktienMan.properties.getString("Key.Vorname");
+
+			out.write("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\"");
+			out.newLine();
+			out.write("    \"http://www.w3.org/TR/REC-html40/strict.dtd\">");
+			out.newLine();
 			
 			out.write("<HTML>");
 			out.newLine();
@@ -1682,6 +1711,20 @@ public synchronized void listeSpeichern() {
 			out.write("<BODY>");
 			out.newLine();
 			out.newLine();
+			
+			out.write("<H2>"+AktienMan.AMNAME);
+			
+			String titel = Portfolios.getCurrentWindowTitle();
+			
+			if (titel.length() == 0)
+			{
+				titel = " - Standardportfolio";
+			}
+
+			out.write(titel+"</H2>");
+			out.newLine();
+			out.newLine();
+
 			out.write("<TABLE BORDER>");
 			out.newLine();
 			out.newLine();

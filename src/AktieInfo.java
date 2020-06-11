@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-15
+ @version 1999-07-13
 */
 
 import java.awt.*;
@@ -8,10 +8,12 @@ import java.awt.event.*;
 
 
 
+
 public final class AktieInfo extends AFrame {
 
 private Panel panelInfo;
 private BenutzerAktie ba;
+
 
 
 
@@ -26,12 +28,15 @@ public AktieInfo(BenutzerAktie ba) {
 }
 
 
+
 public void setupElements() {
 	setLayout(gridbag);
 }
 
 
+
 public void display() {}
+
 
 
 public synchronized void setupElements2() {
@@ -49,9 +54,11 @@ public synchronized void setupElements2() {
 }
 
 
+
 public void closed() {
 	ba.infoDialogClosed();
 }
+
 
 
 public synchronized void setValues(boolean draw) {
@@ -63,36 +70,61 @@ public synchronized void setValues(boolean draw) {
 	constrain(panelInfo,new Label("Kaufkurs:"),0,2,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	constrain(panelInfo,new Label(ba.getKaufkursString()),1,2,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 
-	constrain(panelInfo,new Label("akt. Kurs:"),0,3,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,10,0);
-	constrain(panelInfo,new Label(ba.getKursString()),1,3,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,10,0);
-	constrain(panelInfo,new Label(ba.getKursdatumString()),2,3,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,10,0);
-
-	constrain(panelInfo,new Label("Vortag Schlu\u00dfkurs:"),0,4,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
-	constrain(panelInfo,new Label(ba.getVortageskursString()),1,4,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
-	constrain(panelInfo,new Label("Er\u00f6ffnungskurs:"),0,5,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,10,0);
-	constrain(panelInfo,new Label(ba.getEroeffnungskursString()),1,5,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,10,0);
+	constrain(panelInfo,new Label("akt. Kurs:"),0,3,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(panelInfo,new Label(ba.getKursString()),1,3,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
+	constrain(panelInfo,new Label(ba.getKursdatumString()),2,3,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,0,0);
 	
-	constrain(panelInfo,new Label("H\u00f6chstkurs:"),0,6,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
-	constrain(panelInfo,new Label(ba.getHoechstkursString()),1,6,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
-	constrain(panelInfo,new Label("Tiefstkurs:"),0,7,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,10,0);
-	constrain(panelInfo,new Label(ba.getTiefstkursString()),1,7,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,10,0);
+	String difstr = "";
+	
+	long kurs = ba.getKurs();
+	long vortag = ba.getVortageskurs();
+	
+	if ((kurs > BenutzerAktie.VALUE_MISSING) && (vortag > BenutzerAktie.VALUE_MISSING))
+	{
+		long diff = kurs - vortag;
 
-	constrain(panelInfo,new Label("Handelsvolumen:"),0,8,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
-	constrain(panelInfo,new Label(ba.getHandelsvolumenString()),1,8,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
+		difstr = Waehrungen.getString(Waehrungen.exchange(diff,ba.getKurswaehrung(),Waehrungen.getListenWaehrung()),Waehrungen.getListenWaehrung());
+		
+		if (diff >= 0L) difstr = "+" + difstr;
+		
+		long proz = (100000L * kurs) / vortag - 100000L;
+		
+		if (proz > 0L) proz += 5L;
+		else if (proz < 0L) proz -= 5L;
+
+		proz /= 10L;
+
+		difstr += "  " + ((proz<0L)?"":"+") + NumUtil.get00String(proz) + "%";
+	}
+	
+	constrain(panelInfo,new Label(difstr),2,4,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,0,0);
+
+	constrain(panelInfo,new Label("Vortag Schlu\u00dfkurs:"),0,5,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(panelInfo,new Label(ba.getVortageskursString()),1,5,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
+	constrain(panelInfo,new Label("Er\u00f6ffnungskurs:"),0,6,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,10,0);
+	constrain(panelInfo,new Label(ba.getEroeffnungskursString()),1,6,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,10,0);
+	
+	constrain(panelInfo,new Label("H\u00f6chstkurs:"),0,7,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(panelInfo,new Label(ba.getHoechstkursString()),1,7,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
+	constrain(panelInfo,new Label("Tiefstkurs:"),0,8,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,10,0);
+	constrain(panelInfo,new Label(ba.getTiefstkursString()),1,8,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,10,0);
+
+	constrain(panelInfo,new Label("Handelsvolumen:"),0,9,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(panelInfo,new Label(ba.getHandelsvolumenString()),1,9,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 	
 	String seit = ba.getWatchStartString();
 	
 	if (seit.length() > 0)
 	{
-		constrain(panelInfo,new Label("Seit "+seit+":"),0,9,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,10,0,0,0);
+		constrain(panelInfo,new Label("Seit "+seit+":"),0,10,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,10,0,0,0);
 
-		constrain(panelInfo,new Label("H\u00f6chstkurs:"),0,10,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
-		constrain(panelInfo,new Label(ba.getWatchHoechstString()),1,10,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
-		constrain(panelInfo,new Label(ba.getWatchHoechstDatumString()),2,10,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,0,0);
+		constrain(panelInfo,new Label("H\u00f6chstkurs:"),0,11,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
+		constrain(panelInfo,new Label(ba.getWatchHoechstString()),1,11,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
+		constrain(panelInfo,new Label(ba.getWatchHoechstDatumString()),2,11,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,0,0);
 
-		constrain(panelInfo,new Label("Tiefstkurs:"),0,11,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
-		constrain(panelInfo,new Label(ba.getWatchTiefstString()),1,11,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
-		constrain(panelInfo,new Label(ba.getWatchTiefstDatumString()),2,11,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,0,0);
+		constrain(panelInfo,new Label("Tiefstkurs:"),0,12,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
+		constrain(panelInfo,new Label(ba.getWatchTiefstString()),1,12,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
+		constrain(panelInfo,new Label(ba.getWatchTiefstDatumString()),2,12,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,0,0);
 	}
 
 	pack();

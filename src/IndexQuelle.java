@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-30
+ @version 1999-07-13
 */
 
 import java.util.*;
@@ -105,7 +105,7 @@ public synchronized static void updateFinished() {
 
 public static boolean autoIndexOn() {
 
-	return AktienMan.properties.getBoolean("Konfig.Index",true);
+	return AktienMan.properties.getBoolean("Konfig.Index",false);
 }
 
 

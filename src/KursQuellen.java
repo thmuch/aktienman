@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-14
+ @version 1999-07-06
 */
 
 import java.util.*;
@@ -16,7 +16,7 @@ public static final int QUELLE_COMDIRECT    =  0;
 public static final int QUELLE_DEUTSCHEBANK =  1;
 //public static final int QUELLE_YAHOO_DE     =  2;
 
-private static final int STANDARDQUELLE = QUELLE_COMDIRECT;
+private static final int STANDARDQUELLE = QUELLE_DEUTSCHEBANK;
 
 private static KursQuellen quellen = new KursQuellen();
 

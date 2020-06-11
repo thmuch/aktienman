@@ -1,27 +1,30 @@
 /**
  @author Thomas Much
- @version 1998-10-28
+ @version 1999-07-16
 */
 
 import java.awt.*;
 import java.awt.event.*;
 
 
-/* Edit-Text lšschen mit Esc */
 
 
-public class AFrame extends Frame implements WindowListener/*,KeyListener*/ {
+public class AFrame extends Frame implements WindowListener {
 
 public GridBagLayout gridbag = new GridBagLayout();
 
 
 
+
 public AFrame() {
+
 	this("");
 }
 
 
+
 public AFrame(String title) {
+
 	super(title);
 	
 	setResizable(false);
@@ -29,7 +32,6 @@ public AFrame(String title) {
 	setupFrame();
 	
 	addWindowListener(this);
-//	addKeyListener(this);
 	
 	setupElements();
 	
@@ -37,46 +39,63 @@ public AFrame(String title) {
 }
 
 
+
 public void setupFrame() {}
+
+
 
 public void setupElements() {}
 
 
+
 public void setupSize() {
+
 	Dimension d = getSize();
 	setBounds((AktienMan.screenSize.width-d.width)/2,(AktienMan.screenSize.height-d.height)/2,d.width,d.height);
 }
 
 
+
 public void display() {
+
 	pack();
 	setupSize();
 	show();
 }
 
 
+
 public boolean canCancel() {
+
 	return true;
 }
+
 
 
 public boolean canOK() {
+
 	return true;
 }
+
 
 
 public void closed() {}
 
 
+
 public void executeOK() {}
 
 
+
 public void doCancel() {
+
 	if (canCancel()) dispose();
 }
 
 
+
 public void doOK() {
+
 	if (canOK())
 	{
 		executeOK();
@@ -85,33 +104,27 @@ public void doOK() {
 }
 
 
+
 public void windowClosing(WindowEvent e) {
+
 	doCancel();
 }
 
 
+
 public void windowClosed(WindowEvent e) {
+
 	closed();
 }
 
 
-/*public void keyPressed(KeyEvent e) {
-	if (e.getKeyCode() == KeyEvent.VK_ENTER)
-	{
-		e.consume();
-		doOK();
-	}
-}
-
-
-public void keyTyped(KeyEvent e) {}
-public void keyReleased(KeyEvent e) {} */
 
 public void windowActivated(WindowEvent e) {}
 public void windowDeactivated(WindowEvent e) {}
 public void windowDeiconified(WindowEvent e) {}
 public void windowIconified(WindowEvent e) {}
 public void windowOpened(WindowEvent e) {}
+
 
 
 public static void constrain(Container container, Component component,
@@ -133,11 +146,13 @@ public static void constrain(Container container, Component component,
 }
 
 
+
 public static void constrain(Container container, Component component,
 							int grid_x, int grid_y, int grid_width, int grid_height) {
 	constrain(container,component,grid_x,grid_y,grid_width,grid_height,
 			GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,0,0,0,0);
 }
+
 
 
 public static void constrain(Container container, Component component,

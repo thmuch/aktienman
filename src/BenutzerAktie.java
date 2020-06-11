@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-19
+ @version 1999-07-16
 */
 
 import java.awt.*;
@@ -36,6 +36,9 @@ private static ADate heute = new ADate();
 
 private transient static long aktsumme = 0L;
 private transient static long kaufsumme = 0L;
+private transient static long difsteuer = 0L;
+private transient static long diffrei = 0L;
+
 private transient static Label lupdate = null;
 private transient static Color farbeHintergrund;
 private transient static int konfigspekfrist;
@@ -46,6 +49,7 @@ private transient Color farbeSelected;
 private transient boolean selected = false;
 private transient AktieInfo infodialog = null;
 private transient BALabel l1,l2,l3,l4,l5,l6,l7,l8,l9,l10,l11,l12;
+private transient BAImageCanvas l13;
 
 private String name,wkn,kursdatum;
 private Boersenplatz boersenplatz;
@@ -180,6 +184,7 @@ private synchronized void steuerfreiBerechnen() {
 
 
 private synchronized void checkSpekulationsfrist(int neu) {
+
 	if (spekulationsfrist != neu)
 	{
 		spekulationsfrist = neu;
@@ -191,6 +196,7 @@ private synchronized void checkSpekulationsfrist(int neu) {
 
 
 private void setColors() {
+
 	farbeSteuerfrei = Color.yellow.darker().darker();
 	farbeSelected = Color.lightGray;
 	clearStatusRequesting();
@@ -199,45 +205,64 @@ private void setColors() {
 
 
 public synchronized String getProzentString() {
+
 	return (prozgrenze == 0L) ? "" : NumUtil.get00String(prozgrenze);
 }
 
 
 
-private String datum2String(String datum) {
+private String datum2String(String datum, boolean klammern) {
+
 	if (datum == null) return "";
 	if (datum.length() == 0) return "";
 	
-	return "(" + datum + ")";
+	if (klammern)
+	{
+		datum = "(" + datum + ")";
+	}
+	
+	return datum;
 }
 
 
 
 public synchronized String getKursdatumString() {
-	return datum2String(kursdatum);
+
+	return datum2String(kursdatum,true);
+}
+
+
+
+public synchronized String getKursdatumRawString() {
+
+	return datum2String(kursdatum,false);
 }
 
 
 
 public synchronized long getHochkurs() {
+
 	return hochkurs;
 }
 
 
 
 public synchronized String getHochkursString() {
+
 	return (getHochkurs() == 0L) ? "" : NumUtil.get00String(getHochkurs());
 }
 
 
 
 public synchronized long getTiefkurs() {
+
 	return tiefkurs;
 }
 
 
 
 public synchronized String getTiefkursString() {
+
 	return (getTiefkurs() == 0L) ? "" : NumUtil.get00String(getTiefkurs());
 }
 
@@ -262,60 +287,77 @@ public synchronized boolean isBoerseFixed() {
 
 
 public synchronized boolean isFonds() {
+
 	return boersenplatz.isFondsOnly();
 }
 
 
 
 public synchronized boolean doUseGrenze() {
+
 	return usegrenze;
 }
 
 
 
 public synchronized boolean nurBeobachten() {
+
 	return watchonly;
 }
 
 
 
 public synchronized boolean doNotUpdate() {
+
 	return dontUpdate;
 }
 
 
 
+public synchronized long getVortageskurs() {
+
+	return vortageskurs;
+}
+
+
+
 public synchronized String getVortageskursString() {
-	return kurs2String(vortageskurs,getKurswaehrung());
+
+	return kurs2String(getVortageskurs(),getKurswaehrung());
 }
 
 
 
 public synchronized String getEroeffnungskursString() {
+
 	return kurs2String(eroeffnungskurs,getKurswaehrung());
 }
 
 
 
 public synchronized String getHoechstkursString() {
+
 	return kurs2String(hoechstkurs,getKurswaehrung());
 }
 
 
 
 public synchronized String getTiefstkursString() {
+
 	return kurs2String(tiefstkurs,getKurswaehrung());
 }
 
 
 
 public synchronized String getHandelsvolumenString() {
+
 	return "" + handelsvolumen;
 }
 
 
 
 public synchronized String getWatchStartString() {
+
 	if (watchstart == null)
 	{
 		return "";
@@ -329,30 +371,35 @@ public synchronized String getWatchStartString() {
 
 
 public synchronized String getWatchHoechstString() {
+
 	return kurs2String(watchhoechst,watchwaehrung);
 }
 
 
 
 public synchronized String getWatchHoechstDatumString() {
-	return datum2String(watchhdate);
+
+	return datum2String(watchhdate,true);
 }
 
 
 
 public synchronized String getWatchTiefstString() {
+
 	return kurs2String(watchtiefst,watchwaehrung);
 }
 
 
 
 public synchronized String getWatchTiefstDatumString() {
-	return datum2String(watchtdate);
+
+	return datum2String(watchtdate,true);
 }
 
 
 
 public synchronized int getWKN() {
+
 	int wkni = 0;
 	
 	try
@@ -379,7 +426,7 @@ public synchronized String getBoerse(String boerse) {
 	{
 		return getBoerse();
 	}
-	else if (boerse.length() == 0)
+	else if ((boerse.length() == 0) || (isFonds()))
 	{
 		return getBoerse();
 	}
@@ -608,7 +655,7 @@ public synchronized void setValues(String name, long kurs, String kursdatum,
 	{
 		if (name.length() > 0)
 		{
-			if ((this.name.length() == 0) || AktienMan.properties.getBoolean("Konfig.Aktiennamen"))
+			if ((this.name.length() == 0) || BenutzerListe.useOnlineNames())
 			{
 				this.name = name;
 			}
@@ -668,7 +715,7 @@ public synchronized void changeValues(String newName, String newWKN, Boersenplat
 								boolean newNurDiese, ADate newDate, long newKaufkurs,
 								long newAnz, long newHoch, long newTief, long newGrenze,
 								int neueWaehrung, boolean newUseGrenze, boolean newWatchonly,
-								boolean newDontUpdate) {
+								boolean newDontUpdate, long newAktKurs, String newAktDate) {
 
 	boolean reset = ((!newWKN.equalsIgnoreCase(getWKNString())) || (!newBp.getKurz().equalsIgnoreCase(getBoerse())));
 	
@@ -689,7 +736,15 @@ public synchronized void changeValues(String newName, String newWKN, Boersenplat
 
 	setupValues();
 	
-	if (reset)
+	if (dontUpdate)
+	{
+		if (newAktKurs > VALUE_MISSING)
+		{
+			kurs = Waehrungen.exchange(newAktKurs,getKaufwaehrung(),getKurswaehrung());
+			kursdatum = newAktDate;
+		}
+	}
+	else if (reset)
 	{
 		kurs = VALUE_MISSING;
 		kursdatum = "";
@@ -731,6 +786,7 @@ private synchronized void setColorAndRepaint(Color c) {
 	l2.setBackground(c);
 	l11.setBackground(c);
 	l12.setBackground(c);
+	l13.setBackground(c);
 	l3.setBackground(c);
 	l4.setBackground(c);
 	l5.setBackground(c);
@@ -744,6 +800,7 @@ private synchronized void setColorAndRepaint(Color c) {
 	l2.repaint();
 	l11.repaint();
 	l12.repaint();
+	l13.repaint();
 	l3.repaint();
 	l4.repaint();
 	l5.repaint();
@@ -889,6 +946,15 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 			else
 			{
 				sk = Waehrungen.getString(diff,Waehrungen.getListenWaehrung());
+				
+				if (istSteuerfrei())
+				{
+					diffrei += diff;
+				}
+				else
+				{
+					difsteuer += diff;
+				}
 			}
 		}
 		else
@@ -1070,6 +1136,8 @@ public synchronized static void saveHeaderHTML(BufferedWriter out, String aktual
 	heute = new ADate();
 	kaufsumme = 0L;
 	aktsumme = 0L;
+	difsteuer = 0L;
+	diffrei = 0L;
 }
 
 
@@ -1141,6 +1209,42 @@ public synchronized static void saveFooterHTML(BufferedWriter out) {
 		out.write("</TR>");
 		out.newLine();
 		out.newLine();
+		
+		out.write("<TR>");
+		out.newLine();
+
+		out.write("  <TD COLSPAN=\"6\" ALIGN=\"right\">davon steuerfrei:</TD>");
+		out.newLine();
+
+		out.write("  <TD ALIGN=\"right\">");
+		out.write(HTMLUtil.toNbspHTML(Waehrungen.getString(diffrei,Waehrungen.getListenWaehrung())));
+		out.write("</TD>");
+		out.newLine();
+
+		out.write("  <TD COLSPAN=\""+(HTMLCOLS-7)+"\">&nbsp;</TD>");
+		out.newLine();
+		
+		out.write("</TR>");
+		out.newLine();
+		out.newLine();
+
+		out.write("<TR>");
+		out.newLine();
+
+		out.write("  <TD COLSPAN=\"6\" ALIGN=\"right\">davon zu versteuern:</TD>");
+		out.newLine();
+
+		out.write("  <TD ALIGN=\"right\">");
+		out.write(HTMLUtil.toNbspHTML(Waehrungen.getString(difsteuer,Waehrungen.getListenWaehrung())));
+		out.write("</TD>");
+		out.newLine();
+
+		out.write("  <TD COLSPAN=\""+(HTMLCOLS-7)+"\">&nbsp;</TD>");
+		out.newLine();
+		
+		out.write("</TR>");
+		out.newLine();
+		out.newLine();
 	}
 	catch (IOException e) {}
 }
@@ -1166,13 +1270,16 @@ public synchronized static void addSummen(Panel pTxt, String akt, String dif, St
 
 public synchronized static void addFooterToPanel(Panel p, int y, Panel pTxt) {
 	String akt = Waehrungen.getString(aktsumme,Waehrungen.getListenWaehrung());
-	AFrame.constrain(p,new Label("Summe aktuell:",Label.RIGHT),3,y,2,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,FOOTERABSTAND,10,0,0);
-	AFrame.constrain(p,new Label(akt,Label.RIGHT),5,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,FOOTERABSTAND,10,0,0);
+	AFrame.constrain(p,new Label("Summe aktuell:",Label.RIGHT),3,y,3,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,FOOTERABSTAND,10,0,0);
+	AFrame.constrain(p,new Label(akt,Label.RIGHT),6,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,FOOTERABSTAND,10,0,0);
 
 	AFrame.constrain(p,new Label("Summe Kaufwert:",Label.RIGHT),0,y,2,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,FOOTERABSTAND,10,0,0);
 	AFrame.constrain(p,new Label(Waehrungen.getString(kaufsumme,Waehrungen.getListenWaehrung()),Label.RIGHT),2,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,FOOTERABSTAND,10,0,0);
 
-	AFrame.constrain(p,new Label("Differenz zum Kaufwert:",Label.RIGHT),3,y+1,3,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,10,0,0);
+	AFrame.constrain(p,new Label("Differenz zum Kaufwert:",Label.RIGHT),3,y+1,4,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,10,0,0);
+
+	AFrame.constrain(p,new Label("davon steuerfrei:",Label.RIGHT),3,y+2,4,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,10,0,0);
+	AFrame.constrain(p,new Label("davon zu versteuern:",Label.RIGHT),3,y+3,4,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,10,0,0);
 	
 	long d = aktsumme-kaufsumme;
 	String dif = Waehrungen.getString(d,Waehrungen.getListenWaehrung());
@@ -1185,7 +1292,7 @@ public synchronized static void addFooterToPanel(Panel p, int y, Panel pTxt) {
 	{
 		l.setForeground(Color.green.darker());
 	}
-	AFrame.constrain(p,l,6,y+1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,0,0,0);
+	AFrame.constrain(p,l,7,y+1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,0,0,0);
 	
 	String percdif = "";
 
@@ -1207,8 +1314,32 @@ public synchronized static void addFooterToPanel(Panel p, int y, Panel pTxt) {
 		{
 			l.setForeground(Color.red);
 		}
-		AFrame.constrain(p,l,8,y+1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,0,0,0);
+		AFrame.constrain(p,l,9,y+1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,0,0,0);
 	}
+	
+	String steuer = Waehrungen.getString(diffrei,Waehrungen.getListenWaehrung());
+	l = new Label("  " + steuer,Label.RIGHT);
+	if (diffrei < 0L)
+	{
+		l.setForeground(Color.red);
+	}
+	else if (diffrei > 0L)
+	{
+		l.setForeground(Color.green.darker());
+	}
+	AFrame.constrain(p,l,7,y+2,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,0,0,0);
+
+	steuer = Waehrungen.getString(difsteuer,Waehrungen.getListenWaehrung());
+	l = new Label("  " + steuer,Label.RIGHT);
+	if (difsteuer < 0L)
+	{
+		l.setForeground(Color.red);
+	}
+	else if (difsteuer > 0L)
+	{
+		l.setForeground(Color.green.darker());
+	}
+	AFrame.constrain(p,l,7,y+3,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,0,0,0);
 	
 	addSummen(pTxt,akt,dif,percdif,(d<0.0));
 }
@@ -1233,17 +1364,21 @@ public synchronized static int addHeadingsToPanel(Panel p, String aktualisierung
 	AFrame.constrain(p,new Label("  St\u00fcck",Label.RIGHT),1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
 	AFrame.constrain(p,new Label("  Kaufkurs",Label.RIGHT),2,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
 	AFrame.constrain(p,new Label("  akt. Kurs",Label.RIGHT),3,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
-	AFrame.constrain(p,new Label("  akt. Wert",Label.RIGHT),5,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
-	AFrame.constrain(p,new Label("  Differenz",Label.RIGHT),6,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
-	AFrame.constrain(p,new Label("  Laufzeit",Label.RIGHT),7,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
-	AFrame.constrain(p,new Label("  %absolut",Label.RIGHT),8,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
-	AFrame.constrain(p,new Label("  %Jahr",Label.RIGHT),9,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
-	AFrame.constrain(p,new Label("  Kaufdatum ",Label.RIGHT),10,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
-	AFrame.constrain(p,new Label("  WKN.B\u00f6rse "),11,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,0,0,HEADERABSTAND,0);
+	AFrame.constrain(p,new Label("  akt. Wert",Label.RIGHT),6,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
+	AFrame.constrain(p,new Label("  Differenz",Label.RIGHT),7,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
+	AFrame.constrain(p,new Label("  Laufzeit",Label.RIGHT),8,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
+	AFrame.constrain(p,new Label("  %absolut",Label.RIGHT),9,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
+	AFrame.constrain(p,new Label("  %Jahr",Label.RIGHT),10,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
+	AFrame.constrain(p,new Label("  Kaufdatum ",Label.RIGHT),11,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
+	AFrame.constrain(p,new Label("  WKN.B\u00f6rse "),12,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,0,0,HEADERABSTAND,0);
 
 	heute = new ADate();
+
 	kaufsumme = 0L;
 	aktsumme = 0L;
+	difsteuer = 0L;
+	diffrei = 0L;
+
 	farbeHintergrund = p.getBackground();
 	konfigspekfrist = 12/*AktienMan.properties.getInt("Konfig.Spekulationsfrist")*/;
 
@@ -1385,6 +1520,9 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 	
 	l11 = new BALabel(" "+getKursdatumString(),row);
 	AFrame.constrain(p,l11,4,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,ZEILENABSTAND,0,0,0);
+
+	l13 = new BAImageCanvas(row,aktKurs,getVortageskurs(),getKurswaehrung(),l11);
+	AFrame.constrain(p,l13,5,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,ZEILENABSTAND,0,0,0);
 	
 	/* (5) akt. Wert: */
 
@@ -1405,7 +1543,7 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 		sk = kursString;
 	}
 	l4 = new BALabel("  "+sk,row);
-	AFrame.constrain(p,l4,5,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
+	AFrame.constrain(p,l4,6,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
 	
 	/* (6) Differenz */
 
@@ -1418,6 +1556,15 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 		else
 		{
 			sk = Waehrungen.getString(diff,Waehrungen.getListenWaehrung());
+			
+			if (istSteuerfrei())
+			{
+				diffrei += diff;
+			}
+			else
+			{
+				difsteuer += diff;
+			}
 		}
 	}
 	else
@@ -1437,7 +1584,7 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 	{
 		l12.setForeground(Color.red);
 	}
-	AFrame.constrain(p,l12,6,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
+	AFrame.constrain(p,l12,7,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
 	
 	/* (7) Laufzeit: */
 
@@ -1452,7 +1599,7 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 		l5 = new BALabel("  "+getLaufzeitMonateString(),row);
 		if (frei) l5.setForeground(farbeSteuerfrei);
 	}
-	AFrame.constrain(p,l5,7,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
+	AFrame.constrain(p,l5,8,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
 	
 	/* (8) % absolut: */
 
@@ -1490,7 +1637,7 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 	{
 		l6.setForeground(Color.red);
 	}
-	AFrame.constrain(p,l6,8,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
+	AFrame.constrain(p,l6,9,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
 	
 	/* (9) % Jahr: */
 	
@@ -1532,7 +1679,7 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 			l7.setForeground(Color.red);
 		}
 	}
-	AFrame.constrain(p,l7,9,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
+	AFrame.constrain(p,l7,10,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
 	
 	/* (10) Kaufdatum: */
 	
@@ -1541,12 +1688,12 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 	{
 		l9.setForeground(Color.gray);
 	}
-	AFrame.constrain(p,l9,10,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
+	AFrame.constrain(p,l9,11,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
 	
 	/* (11) WKN.Bšrse: */
 	
 	l10 = new BALabel("  "+getWKNString()+"."+getBoerse()+" ",row,Label.LEFT);
-	AFrame.constrain(p,l10,11,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,ZEILENABSTAND,0,0,0);
+	AFrame.constrain(p,l10,12,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,ZEILENABSTAND,0,0,0);
 	
 	/* */
 	

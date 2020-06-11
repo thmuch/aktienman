@@ -1,11 +1,12 @@
 /**
  @author Thomas Much
- @version 1999-03-29
+ @version 1999-07-16
 */
 
 import java.util.*;
 import java.io.*;
 import java.util.zip.*;
+
 
 
 
@@ -23,12 +24,16 @@ private transient String portfolioFile = "";
 
 
 
+
 public BenutzerListe() {
+
 	super(50);
 }
 
 
+
 public synchronized void destroy() {
+
 	for (int i = 0; i < size(); i++)
 	{
 		getAt(i).destroy();
@@ -38,49 +43,67 @@ public synchronized void destroy() {
 }
 
 
+
 public synchronized void setPortfolioFile(String name) {
+
 	portfolioFile = name;
 }
 
 
+
 public synchronized String getPortfolioFile() {
+
 	return portfolioFile;
 }
 
 
+
 public synchronized void add(BenutzerAktie ba) {
+
 	addElement(ba);
 }
 
 
+
 public synchronized void removeAt(int index) {
+
 	getAt(index).destroy();
 	removeElementAt(index);
 }
 
 
+
 public synchronized BenutzerAktie getAt(int index) {
+
 	return (BenutzerAktie)elementAt(index);
 }
 
 
+
 public synchronized void setDate(String boerse) {
+
 	letzteAktualisierung = new ADate();
 	festeBoerse = boerse;
 }
 
 
+
 public synchronized void clearDate() {
+
 	letzteAktualisierung = null;
 }
 
 
+
 private synchronized ADate getDate() {
+
 	return letzteAktualisierung;
 }
 
 
+
 public synchronized String getFesteBoerse() {
+
 	if (festeBoerse == null)
 	{
 		return "";
@@ -96,7 +119,9 @@ public synchronized String getFesteBoerse() {
 }
 
 
+
 public synchronized String getDateString() {
+
 	String s;
 	ADate d = getDate();
 	
@@ -113,33 +138,45 @@ public synchronized String getDateString() {
 }
 
 
+
 public synchronized long getErloes() {
+
 	return verkaufserloes;
 }
 
 
+
 public synchronized void clearErloes() {
+
 	verkaufserloes = 0L;
 }
 
 
+
 public synchronized void addToErloes(long delta) {
+
 	verkaufserloes += delta;
 }
 
 
+
 public synchronized int getErloesWaehrung() {
+
 	return erloesWaehrung;
 }
 
 
+
 public synchronized void erloesToWaehrung(int neueWaehrung) {
+
 	verkaufserloes = Waehrungen.exchange(verkaufserloes,getErloesWaehrung(),neueWaehrung);
 	erloesWaehrung = neueWaehrung;
 }
 
 
+
 public synchronized void sortByName(boolean kurz) {
+
 	for (int i = size(); --i >= 0; )
 	{
 		boolean swapped = false;
@@ -161,28 +198,45 @@ public synchronized void sortByName(boolean kurz) {
 }
 
 
+
 private void writeObject(ObjectOutputStream out) throws IOException {
+
 	portfoliover = 0/*AktienMan.PORTFOLIOVER*/;
 	out.defaultWriteObject();
 }
 
 
+
 public synchronized static boolean useShortNames() {
+
 	return AktienMan.properties.getBoolean("Konfig.Aktiennamen.kuerzen",true);
 }
 
 
+
+public synchronized static boolean useOnlineNames() {
+
+	return AktienMan.properties.getBoolean("Konfig.Aktiennamen",true);
+}
+
+
+
 public synchronized static boolean useSteuerfrei() {
+
 	return AktienMan.properties.getBoolean("Konfig.Steuerfrei",true);
 }
 
 
+
 public synchronized static boolean calcProzJahr() {
+
 	return AktienMan.properties.getBoolean("Konfig.ProzJahr",true);
 }
 
 
+
 public static void store(BenutzerListe benutzerliste){
+
 	ObjectOutputStream out = null;
 
 	try
@@ -213,7 +267,9 @@ public static void store(BenutzerListe benutzerliste){
 }
 
 
+
 public static BenutzerListe restore(String datei) {
+
 	ObjectInputStream in = null;
 	
 	BenutzerListe benutzerliste = new BenutzerListe();

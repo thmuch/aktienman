@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-30
+ @version 1999-07-13
 */
 
 import java.awt.*;
@@ -10,16 +10,7 @@ import java.awt.*;
 
 public final class IndexCanvas extends Component {
 
-private static final Image img_hi    = Toolkit.getDefaultToolkit().getImage(ClassLoader.getSystemResource("arrow-hi.gif"));
-private static final Image img_up    = Toolkit.getDefaultToolkit().getImage(ClassLoader.getSystemResource("arrow-up.gif"));
-private static final Image img_equal = Toolkit.getDefaultToolkit().getImage(ClassLoader.getSystemResource("arrow-equal.gif"));
-private static final Image img_down  = Toolkit.getDefaultToolkit().getImage(ClassLoader.getSystemResource("arrow-down.gif"));
-private static final Image img_lo    = Toolkit.getDefaultToolkit().getImage(ClassLoader.getSystemResource("arrow-lo.gif"));
-
 private static final String TITEL = ": ";
-
-private static final int IMAGEWIDTH  = 10;
-private static final int IMAGEHEIGHT = 10;
 
 private static final long EQUAL   =  10L;
 private static final long UPDOWN  = 100L;
@@ -148,7 +139,7 @@ private synchronized int getWidth() {
 	
 	if (breite > 0) x += breite;
 	
-	return x + plen + metrics.stringWidth(getDatum()) + IMAGEWIDTH + metrics.stringWidth(getDiff());
+	return x + plen + metrics.stringWidth(getDatum()) + Images.ARROW_WIDTH + metrics.stringWidth(getDiff());
 }
 
 
@@ -164,7 +155,7 @@ public synchronized void paint(Graphics g)
 	
 	int x = 0;
 	int y = metrics.getAscent();
-	int imgy = y + metrics.getDescent() - IMAGEHEIGHT;
+	int imgy = y + metrics.getDescent() - Images.ARROW_HEIGHT;
 	
 	g.setColor(Color.black);
 	g.drawString(getTitle(),x,y);
@@ -202,26 +193,26 @@ public synchronized void paint(Graphics g)
 	
 	if (proz >= UPDOWN)
 	{
-		g.drawImage(img_hi,x,imgy,this);
+		g.drawImage(Images.ARROW_HI,x,imgy,this);
 	}
 	else if (proz >= EQUAL)
 	{
-		g.drawImage(img_up,x,imgy,this);
+		g.drawImage(Images.ARROW_UP,x,imgy,this);
 	}
 	else if (proz <= -UPDOWN)
 	{
-		g.drawImage(img_lo,x,imgy,this);
+		g.drawImage(Images.ARROW_LO,x,imgy,this);
 	}
 	else if (proz <= -EQUAL)
 	{
-		g.drawImage(img_down,x,imgy,this);
+		g.drawImage(Images.ARROW_DOWN,x,imgy,this);
 	}
 	else
 	{
-		g.drawImage(img_equal,x,imgy,this);
+		g.drawImage(Images.ARROW_EQUAL,x,imgy,this);
 	}
 	
-	x += IMAGEWIDTH;
+	x += Images.ARROW_WIDTH;
 
 	String difstr = getDiff();
 	

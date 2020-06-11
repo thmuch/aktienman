@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-30
+ @version 1999-07-16
 */
 
 import java.awt.*;
@@ -34,7 +34,7 @@ public void setupElements() {
 	
 	cbAktualisieren = new Checkbox("Liste beim Programmstart automatisch aktualisieren",AktienMan.properties.getBoolean("Konfig.Aktualisieren"));
 	cbKamera = new Checkbox("DAX-Kamera beim Programmstart automatisch anzeigen",AktienMan.properties.getBoolean("Konfig.Kamera"));
-	cbAktiennamen = new Checkbox("Aktiennamen aus Onlinedaten \u00fcbernehmen",AktienMan.properties.getBoolean("Konfig.Aktiennamen"));
+	cbAktiennamen = new Checkbox("Aktiennamen aus Onlinedaten \u00fcbernehmen",BenutzerListe.useOnlineNames());
 	cbKuerzen = new Checkbox("Aktiennamen k\u00fcrzen",BenutzerListe.useShortNames());
 	cbSteuerfrei = new Checkbox("\"steuerfrei\" statt Laufzeit anzeigen",BenutzerListe.useSteuerfrei());
 	cbTimeout = new Checkbox("Liste automatisch aktualisieren alle",AktienMan.properties.getBoolean("Konfig.KursTimeout"));
