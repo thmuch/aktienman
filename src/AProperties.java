@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-13
+ @version 1998-12-07
 */
 
 import java.util.*;
@@ -113,9 +113,7 @@ public void loadParameters() {
 	{
 		in = null;
 	}
-	catch (IOException e)
-	{
-	}
+	catch (IOException e) {}
 	finally
 	{
 		if (in != null)
@@ -138,7 +136,10 @@ public void saveParameters() {
 	try
 	{
 		out = new FileOutputStream(folder+filesep+filename);
+
 		save(out,comment);
+
+		out.flush();
 	}
 	catch (IOException e) {}
 	finally

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-30
+ @version 1998-12-07
 */
 
 import java.net.*;
@@ -21,13 +21,14 @@ public UpdateChecker() {
 
 
 public void run() {
+	BufferedReader in = null;
 	boolean valid = false;
 	
 	try
 	{
 		URL url = new URL(URLs.AMUPDATE);
 		
-		BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+		in = new BufferedReader(new InputStreamReader(url.openStream()));
 		
 		String s;
 		
@@ -45,15 +46,12 @@ public void run() {
 					String archiv = st.nextToken().trim();
 					String text   = st.nextToken().trim();
 					
-					int newrelease;
+					int newrelease = 0;
 					try
 					{
 						newrelease = Integer.parseInt(nrs);
 					}
-					catch (NumberFormatException e)
-					{
-						newrelease = 0;
-					}
+					catch (NumberFormatException e) {}
 
 					if (newrelease > AktienMan.RELEASE)
 					{
@@ -69,7 +67,6 @@ public void run() {
 		}
 		
 		valid = true;
-		in.close();
 	}
 	catch (MalformedURLException e)
 	{
@@ -80,6 +77,17 @@ public void run() {
 	finally
 	{
 		if (!valid) checked = false;
+
+		if (in != null)
+		{
+			try
+			{
+				in.close();
+			}
+			catch (IOException e) {}
+		
+			in = null;
+		}
 	}
 }
 

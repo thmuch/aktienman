@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-25
+ @version 1998-12-21
 */
 
 
@@ -16,13 +16,14 @@ public static final String NO     = "   Nein   ";
 public static final String CHANGE = "  \u00c4ndern  ";
 public static final String DELETE = "  L\u00f6schen  ";
 
-public static final String LOADKAMERA = "DAX-Kamera wird geladen...";
-public static final String LOADCHART  = "Chart wird geladen...";
+public static final String LOADKAMERA  = "DAX-Kamera wird geladen...";
+public static final String LOADCHART   = "Chart wird geladen...";
+public static final String CHARTERROR  = "Chart konnte nicht geladen werden.";
 
 public static final String EDITMENUTITLE = "Bearbeiten";
 
 /* #Ablaufdatum */
-public static final String DEMOVERSION = "DEMO-VERSION, L\u00c4UFT AM 21.12.1998 AB!";
+public static final String DEMOVERSION = "DEMO-VERSION, L\u00c4UFT AM 18.1.1999 AB!";
 
 
 

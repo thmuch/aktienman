@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-23
+ @version 1998-12-07
 */
 
 import java.awt.*;
@@ -84,7 +84,7 @@ public void closed() {
 
 	if (kameraLeser != null)
 	{
-		kameraLeser.stop();
+		kameraLeser.stopLoading();
 		kameraLeser = null;
 	}
 	

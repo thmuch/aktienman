@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-29
+ @version 1998-12-07
 */
 
 import java.net.*;
@@ -36,11 +36,13 @@ public AktienlistenLeser(String listenname, String request, String ignore,
 
 
 public void run() {
+	BufferedReader in = null;
+
 	try
 	{
 		URL url = new URL(URLs.POPUPLISTEN+request);
 		
-		BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+		in = new BufferedReader(new InputStreamReader(url.openStream()));
 
 		String s;
 		int status = STATUS_EMPTY;
@@ -127,12 +129,11 @@ public void run() {
 				}
 			}
 		}
-		
-		in.close();
 	}
 	catch (MalformedURLException e)
 	{
 		System.out.println("Aktienlisten-URL fehlerhaft.");
+		aadialog.setError(index);
 	}
 	catch (NullPointerException e)
 	{
@@ -141,6 +142,19 @@ public void run() {
 	catch (IOException e)
 	{
 		aadialog.setError(index);
+	}
+	finally
+	{
+		if (in != null)
+		{
+			try
+			{
+				in.close();
+			}
+			catch (IOException e) {}
+		
+			in = null;
+		}
 	}
 }
 

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-21
+ @version 1998-12-07
 */
 
 import java.net.*;
@@ -25,13 +25,16 @@ public ChartLeser(String request, String monate) {
 
 
 public void run() {
+	BufferedReader in = null;
+	boolean valid = false;
+
 	chartviewer = new ChartViewer(null,"Chart "+request,monate,400,330,ChartViewer.TYPE_COMDIRECT);
 
 	try
 	{
 		URL url = new URL(URLs.TELEDATA+request);
 		
-		BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+		in = new BufferedReader(new InputStreamReader(url.openStream()));
 
 		String s;
 		
@@ -50,25 +53,38 @@ public void run() {
 					String s1 = s.substring(i,i2) + "COMDIRECT";
 					String s2 = "GIF&" + s.substring(i3+1,i4);
 					
-					in.close();
-
 					chartviewer.setComdirectStrings(s1,s2);
 
-					new ChartLoader(chartviewer,s1+monate+s2,true).start();
-					return;
+					new ChartLoader(chartviewer,s1+monate+s2,false).start();
+					valid = true;
+					break;
 				}
 			}
 		}
-		
-		in.close();
-		
-		// Fehler!
 	}
 	catch (MalformedURLException e)
 	{
 		System.out.println("Teledata-URL fehlerhaft.");
 	}
 	catch (IOException e) {}
+	finally
+	{
+		if (!valid)
+		{
+			chartviewer.setStatusError();
+		}
+		
+		if (in != null)
+		{
+			try
+			{
+				in.close();
+			}
+			catch (IOException e) {}
+		
+			in = null;
+		}
+	}
 }
 
 }

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-30
+ @version 1998-12-21
 */
 
 import java.io.*;
@@ -26,15 +26,17 @@ public ComdirectLeser(String request, String baWKN, String baBoerse) {
 
 
 public void run() {
+	BufferedReader in = null;
+
 	/* #Ablaufdatum */
 	/* #Demoversion */
-	if (!(new ADate().before(new ADate(1998,12,22))) && !AktienMan.hauptdialog.main()) return;
+	if (!(new ADate().before(new ADate(1999,1,19))) && !AktienMan.hauptdialog.main()) return;
 
 	try
 	{
 		URL url = new URL(URLs.COMDIRECT+request);
 		
-		BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+		in = new BufferedReader(new InputStreamReader(url.openStream()));
 		
 		String s;
 		String name = null, platz = null, wkn = null, kursdatum = "", kurz = "";
@@ -281,8 +283,6 @@ public void run() {
 				}
 			}
 		}
-		
-		in.close();
 	}
 	catch (MalformedURLException e)
 	{
@@ -296,6 +296,19 @@ public void run() {
 	catch (IOException e)
 	{
 		AktienMan.hauptdialog.listeAnfrageFehler(baWKN,baBoerse);
+	}
+	finally
+	{
+		if (in != null)
+		{
+			try
+			{
+				in.close();
+			}
+			catch (IOException e) {}
+		
+			in = null;
+		}
 	}
 }
 

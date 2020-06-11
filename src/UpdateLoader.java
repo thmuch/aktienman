@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-30
+ @version 1998-12-07
 */
 
 import java.net.*;
@@ -83,6 +83,17 @@ public void run() {
 	catch (NegativeArraySizeException e) {}
 	finally
 	{
+		if (in != null)
+		{
+			try
+			{
+				in.close();
+			}
+			catch (IOException e) {}
+		
+			in = null;
+		}
+
 		if (stopped)
 		{
 			udisplay.setStatus(UpdateDisplay.STATUS_CANCELLED);
@@ -94,17 +105,6 @@ public void run() {
 		else
 		{
 			udisplay.setStatus(UpdateDisplay.STATUS_ERROR);
-		}
-
-		if (in != null)
-		{
-			try
-			{
-				in.close();
-			}
-			catch (IOException e) {}
-		
-			in = null;
 		}
 	}
 }
@@ -130,7 +130,8 @@ private boolean save(byte[] daten) {
 		out = new DataOutputStream(new FileOutputStream(filename));
 
 		out.write(daten,0,daten.length);
-		
+		out.flush();
+
 		valid = true;
 	}
 	catch (IOException e) {}

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-27
+ @version 1998-12-07
 */
 
 import java.awt.*;
@@ -24,7 +24,7 @@ public void paint(Graphics g)
 	Dimension d = getSize();
 	g.clearRect(0,0,d.width,d.height);
 
-	g.drawString(Lang.LOADCHART,20,35);
+	g.drawString(chartviewer.getStatusString(),20,35);
 	
 	Image chartImage = chartviewer.getImage();
 	if (chartImage != null) g.drawImage(chartImage,0,0,this);

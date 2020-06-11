@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-21
+ @version 1998-12-07
 */
 
 import java.net.*;
@@ -12,6 +12,8 @@ import java.io.*;
 public class ChartLoader extends Thread {
 
 private static final long TIMEOUT = 120000L;
+
+private boolean stopped = false;
 
 private String filename;
 private boolean reload;
@@ -27,11 +29,25 @@ public ChartLoader(ChartViewer chartviewer, String filename, boolean reload) {
 }
 
 
+public void stopLoading() {
+	stopped = true;
+}
+
+
 public void run() {
+	DataInputStream in;
+
 	chartviewer.setChartLoader(this);
 
 	do
 	{
+		in = null;
+		
+		if (reload)
+		{
+			chartviewer.setStatusEmpty();
+		}
+		
 		try
 		{
 			URL url = new URL(filename);
@@ -40,22 +56,43 @@ public void run() {
 			
 			byte[] daten = new byte[curl.getContentLength()];
 			
-			DataInputStream in = new DataInputStream(curl.getInputStream());
+			in = new DataInputStream(curl.getInputStream());
 			
 			in.readFully(daten);
 
-			in.close();
-			
-			chartviewer.setImage(AktienMan.hauptdialog.getToolkit().createImage(daten));
+			if (!stopped)
+			{
+				chartviewer.setImage(AktienMan.hauptdialog.getToolkit().createImage(daten));
+			}
 		}
 		catch (MalformedURLException e)
 		{
 			System.out.println("URL des Charts fehlerhaft.");
+			chartviewer.setStatusError();
 		}
-		catch (IOException e) {}
-		catch (NegativeArraySizeException e) {}
+		catch (IOException e)
+		{
+			chartviewer.setStatusError();
+		}
+		catch (NegativeArraySizeException e)
+		{
+			chartviewer.setStatusError();
+		}
+		finally
+		{
+			if (in != null)
+			{
+				try
+				{
+					in.close();
+				}
+				catch (IOException e) {}
+			
+				in = null;
+			}
+		}
 
-		if (reload)
+		if (!stopped && reload)
 		{
 			try
 			{
@@ -64,7 +101,7 @@ public void run() {
 			catch (InterruptedException e) {}
 		}
 
-	} while (reload);
+	} while (!stopped && reload);
 }
 
 }

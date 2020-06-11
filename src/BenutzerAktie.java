@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-29
+ @version 1998-12-21
 */
 
 import java.awt.*;
@@ -36,6 +36,7 @@ private transient static long aktsumme = 0L;
 private transient static long kaufsumme = 0L;
 private transient static Label lupdate = null;
 private transient static Color farbeHintergrund;
+private transient static int konfigspekfrist;
 
 private transient Color farbeSteuerfrei;
 private transient Color farbeName;
@@ -64,6 +65,7 @@ private String watchhdate = null;
 private String watchtdate = null;
 
 private int waehrung = Waehrungen.DEM;
+private int spekulationsfrist = 6;
 private boolean nurdiese = false;
 private boolean usegrenze = true;
 private boolean watchonly = false;
@@ -89,6 +91,8 @@ public BenutzerAktie(String name, String wkn, Boersenplatz platz, boolean nurdie
 	boersenplatz = platz;
 
 	kursdatum = "";
+
+	spekulationsfrist = AktienMan.properties.getInt("Konfig.Spekulationsfrist");
 	
 	setupValues();
 	setColors();
@@ -97,32 +101,70 @@ public BenutzerAktie(String name, String wkn, Boersenplatz platz, boolean nurdie
 
 private void setupValues() {
 	gewinngrenze = (prozgrenze == 0L) ? 0L : (getKaufkurs()*(Waehrungen.PRECISION*100L+prozgrenze))/(Waehrungen.PRECISION*100L);
-	
+
+	steuerfreiBerechnen();
+}
+
+
+private void steuerfreiBerechnen() {
 	if (kaufdatum == null) kaufdatum = new ADate();
-
-	int jahr = kaufdatum.getYear();
-	int monat = kaufdatum.getMonth() + 6;
-	int tag = kaufdatum.getDay() + 1;
-
-	if (monat > ADate.DECEMBER)
-	{
-		monat -= 12;
-		jahr++;
-	}
 	
-	if (tag > ADate.getDays(jahr,monat))
+	int jahr,monat,tag;
+
+	if (spekulationsfrist == 12)
 	{
-		tag = 1;
-		monat ++;
-		
+		jahr = kaufdatum.getYear() + 1;
+		monat = kaufdatum.getMonth();
+		tag = kaufdatum.getDay() + 1;
+
+		if (tag > ADate.getDays(jahr,monat))
+		{
+			tag = 1;
+			monat ++;
+			
+			if (monat > ADate.DECEMBER)
+			{
+				monat = ADate.JANUARY;
+				jahr++;
+			}
+		}
+	}
+	else
+	{
+		jahr = kaufdatum.getYear();
+		monat = kaufdatum.getMonth() + 6;
+		tag = kaufdatum.getDay() + 1;
+
 		if (monat > ADate.DECEMBER)
 		{
-			monat = ADate.JANUARY;
+			monat -= 12;
 			jahr++;
+		}
+		
+		if (tag > ADate.getDays(jahr,monat))
+		{
+			tag = 1;
+			monat ++;
+			
+			if (monat > ADate.DECEMBER)
+			{
+				monat = ADate.JANUARY;
+				jahr++;
+			}
 		}
 	}
 
 	steuerfrei = new ADate(jahr,monat,tag);
+}
+
+
+private void checkSpekulationsfrist(int neu) {
+	if (spekulationsfrist != neu)
+	{
+		spekulationsfrist = neu;
+
+		steuerfreiBerechnen();
+	}
 }
 
 
@@ -1199,7 +1241,8 @@ public static int addHeadingsToPanel(Panel p, String aktualisierung) {
 	kaufsumme = 0L;
 	aktsumme = 0L;
 	farbeHintergrund = p.getBackground();
-	
+	konfigspekfrist = AktienMan.properties.getInt("Konfig.Spekulationsfrist");
+
 	return HEADROWS;
 }
 
@@ -1268,6 +1311,8 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 	String s,sk;
 	Label l;
 	long pabs;
+	
+	checkSpekulationsfrist(konfigspekfrist);
 	
 	/* (0) Aktienname: */
 	

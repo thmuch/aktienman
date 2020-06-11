@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-01
+ @version 1998-12-07
 */
 
 import java.io.*;
@@ -26,11 +26,13 @@ public MaxkursLeser(AktieMaximalkurs parent, int index, String request) {
 
 
 public void run() {
+	BufferedReader in = null;
+	
 	try
 	{
 		URL url = new URL(URLs.COMDIRECT+request);
 		
-		BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+		in = new BufferedReader(new InputStreamReader(url.openStream()));
 		
 		String s;
 		int status = 0;
@@ -107,16 +109,28 @@ public void run() {
 				}
 			}
 		}
-		
-		in.close();
 	}
 	catch (MalformedURLException e)
 	{
 		System.out.println("Comdirect-URL fehlerhaft.");
+		parent.setKurs(index,BenutzerAktie.VALUE_ERROR,"");
 	}
 	catch (IOException e)
 	{
 		parent.setKurs(index,BenutzerAktie.VALUE_ERROR,"");
+	}
+	finally
+	{
+		if (in != null)
+		{
+			try
+			{
+				in.close();
+			}
+			catch (IOException e) {}
+		
+			in = null;
+		}
 	}
 }
 

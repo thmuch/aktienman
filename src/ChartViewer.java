@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-21
+ @version 1998-12-07
 */
 
 import java.awt.*;
@@ -15,9 +15,10 @@ private static final int TYPE_UNKNOWN   = 0;
 public  static final int TYPE_COMDIRECT = 1;
 public  static final int TYPE_INTRADAY  = 2;
 
-private static final int STATUS_EMPTY    = 0;
-private static final int STATUS_LOADING  = 1;
-private static final int STATUS_FINISHED = 2;
+private static final int STATUS_ERROR    = -1;
+private static final int STATUS_EMPTY    =  0;
+private static final int STATUS_LOADING  =  1;
+private static final int STATUS_FINISHED =  2;
 
 private Image[] comdirectCharts = new Image[3];
 private Image chartImage = null;
@@ -58,22 +59,55 @@ public void display() {
 }
 
 
+private void setStatus(int status) {
+	this.status = status;
+}
+
+
+private int getStatus() {
+	return status;
+}
+
+
+public String getStatusString() {
+	switch (getStatus()) {
+	case STATUS_ERROR:
+		return Lang.CHARTERROR;
+	case STATUS_FINISHED:
+		return "";
+	default:
+		return Lang.LOADCHART;
+	}
+}
+
+
+public void setStatusError() {
+	setStatus(STATUS_ERROR);
+	neuZeichnen();
+}
+
+
+public void setStatusEmpty() {
+	setStatus(STATUS_EMPTY);
+	neuZeichnen();
+}
+
+
 public synchronized void setImage(Image chartImage) {
 	this.chartImage = chartImage;
 	
 	if (chartImage == null)
 	{
-		status = STATUS_EMPTY;
+		setStatusEmpty();
 	}
 	else
 	{
 		this.chartImage.getWidth(this);
 		this.chartImage.getHeight(this);
 
-		status = STATUS_LOADING;
+		setStatus(STATUS_LOADING);
+		neuZeichnen();
 	}
-
-	neuZeichnen();
 }
 
 
@@ -107,7 +141,7 @@ public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, in
 	if ((infoflags & (ERROR | FRAMEBITS | ALLBITS)) != 0)
 	{
 		toFront();
-		status = STATUS_FINISHED;
+		setStatus(STATUS_FINISHED);
 
 		if (type == TYPE_COMDIRECT) setComdirectImage(aktMonate,getImage());
 	}
@@ -130,7 +164,7 @@ public synchronized void setChartLoader(ChartLoader chartloader) {
 public void closed() {
 	if (chartloader != null)
 	{
-		chartloader.stop();
+		chartloader.stopLoading();
 		chartloader = null;
 	}
 }
@@ -181,7 +215,7 @@ private synchronized void switchImage(String monate) {
 		}
 		else
 		{
-			status = STATUS_FINISHED;
+			setStatus(STATUS_FINISHED);
 		}
 	}
 }
@@ -207,7 +241,7 @@ private synchronized void checkComdirectXY(int x, int y) {
 
 
 public void mouseClicked(MouseEvent e) {
-	if (status != STATUS_FINISHED) return;
+	if (getStatus() != STATUS_FINISHED) return;
 	
 	int y = e.getY();
 	int x = e.getX();
@@ -217,7 +251,7 @@ public void mouseClicked(MouseEvent e) {
 
 
 public void mousePressed(MouseEvent e) {
-	if (status != STATUS_FINISHED) return;
+	if (getStatus() != STATUS_FINISHED) return;
 	
 	int y = e.getY();
 	int x = e.getX();

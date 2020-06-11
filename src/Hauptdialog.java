@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-29
+ @version 1998-12-21
 */
 
 import java.awt.*;
@@ -79,6 +79,8 @@ private void resolutionCheck() {
 
 
 private synchronized void saveBenutzerAktien() {
+	ObjectOutputStream out = null;
+
 	String folder = System.getProperty("user.home");
 	String filesep = System.getProperty("file.separator");
 	
@@ -88,19 +90,33 @@ private synchronized void saveBenutzerAktien() {
 	{
 		FileOutputStream fos = new FileOutputStream(folder+filesep+AktienMan.getFilenameList());
 		GZIPOutputStream gzos = new GZIPOutputStream(fos);
-		ObjectOutputStream out = new ObjectOutputStream(fos);
+		out = new ObjectOutputStream(fos);
 		out.writeObject(benutzerliste);
 		out.flush();
-		out.close();
 	}
 	catch (IOException e)
 	{
 		System.out.println("Fehler beim Speichern der Aktienliste.");
 	}
+	finally
+	{
+		if (out != null)
+		{
+			try
+			{
+				out.close();
+			}
+			catch (IOException e) {}
+		
+			out = null;
+		}
+	}
 }
 
 
 private synchronized void loadBenutzerAktien() {
+	ObjectInputStream in = null;
+
 	String folder = System.getProperty("user.home");
 	String filesep = System.getProperty("file.separator");
 
@@ -112,14 +128,26 @@ private synchronized void loadBenutzerAktien() {
 	{
 		FileInputStream fis = new FileInputStream(folder+filesep+AktienMan.getFilenameList());
 		GZIPInputStream gzis = new GZIPInputStream(fis);
-		ObjectInputStream in = new ObjectInputStream(fis);
+		in = new ObjectInputStream(fis);
 		benutzerliste = (BenutzerListe)in.readObject();
-		in.close();
 	}
 	catch (IOException e) {}
 	catch (ClassNotFoundException e)
 	{
 		System.out.println("Gespeicherte Aktienliste fehlerhaft.");
+	}
+	finally
+	{
+		if (in != null)
+		{
+			try
+			{
+				in.close();
+			}
+			catch (IOException e) {}
+		
+			in = null;
+		}
 	}
 }
 
@@ -844,7 +872,7 @@ public synchronized void listeAktualisieren(String boerse) {
 
 	/* #Ablaufdatum */
 	/* #Demoversion */
-	if ((new ADate().after(new ADate(1998,12,22))) && (!main())) System.exit(0);
+	if ((new ADate().after(new ADate(1999,1,19))) && (!main())) System.exit(0);
 	
 	benutzerliste.setDate(boerse);
 	
@@ -855,7 +883,7 @@ public synchronized void listeAktualisieren(String boerse) {
 
 	/* #Ablaufdatum */
 	/* #Demoversion */
-	if ((new ADate().after(new ADate(1998,12,23)))
+	if ((new ADate().after(new ADate(1999,1,20)))
 		&& (RegAM.string(AktienMan.properties.getString("Key.1"),
 			AktienMan.properties.getString("Key.2"),
 			AktienMan.properties.getString("Key.3")) >= 0)) return;
@@ -1408,6 +1436,8 @@ public synchronized void listeSpeichern() {
 			out.newLine();
 			out.write("</HTML>");
 			out.newLine();
+			
+			out.flush();
 		}
 		catch (IOException e) {}
 		finally
@@ -1417,6 +1447,8 @@ public synchronized void listeSpeichern() {
 				if (out != null) out.close();
 			}
 			catch (IOException e) {}
+			
+			out = null;
 		}
 		
 		try

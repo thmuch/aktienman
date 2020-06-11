@@ -1,4 +1,7 @@
-// 1998-09-12 tm
+/**
+ @author Thomas Much
+ @version 1998-12-07
+*/
 
 import java.net.*;
 import java.awt.*;
@@ -10,6 +13,8 @@ public class DAXKameraLeser extends Thread {
 
 private static final long TIMEOUT = 120000L;
 
+private boolean stopped = false;
+
 
 
 public DAXKameraLeser() {
@@ -17,10 +22,19 @@ public DAXKameraLeser() {
 }
 
 
+public void stopLoading() {
+	stopped = true;
+}
+
+
 public void run() {
-	while (true)
+	DataInputStream in;
+
+	while (!stopped)
 	{
 		if (AktienMan.daxImage == null) AktienMan.daxKamera.setStatus(DAXKamera.S_LOADING);
+		
+		in = null;
 
 		try
 		{
@@ -30,22 +44,24 @@ public void run() {
 			
 			byte[] daten = new byte[curl.getContentLength()];
 			
-			DataInputStream in = new DataInputStream(curl.getInputStream());
+			in = new DataInputStream(curl.getInputStream());
 			
 			in.readFully(daten);
 
-			in.close();
-
-			AktienMan.daxImage = AktienMan.hauptdialog.getToolkit().createImage(daten);
-			
-			AktienMan.daxImage.getWidth(AktienMan.daxKamera);
-			AktienMan.daxImage.getHeight(AktienMan.daxKamera);
-			
-			AktienMan.daxKamera.neuZeichnen();
+			if (!stopped)
+			{
+				AktienMan.daxImage = AktienMan.hauptdialog.getToolkit().createImage(daten);
+				
+				AktienMan.daxImage.getWidth(AktienMan.daxKamera);
+				AktienMan.daxImage.getHeight(AktienMan.daxKamera);
+				
+				AktienMan.daxKamera.neuZeichnen();
+			}
 		}
 		catch (MalformedURLException e)
 		{
 			System.out.println("URL der DAX-Kamera fehlerhaft.");
+			AktienMan.daxKamera.setStatus(DAXKamera.S_ERROR);
 		}
 		catch (IOException e)
 		{
@@ -55,12 +71,28 @@ public void run() {
 		{
 			AktienMan.daxKamera.setStatus(DAXKamera.S_OFFLINE);
 		}
-
-		try
+		finally
 		{
-			sleep(TIMEOUT);
+			if (in != null)
+			{
+				try
+				{
+					in.close();
+				}
+				catch (IOException e) {}
+			
+				in = null;
+			}
 		}
-		catch (InterruptedException e) {}
+
+		if (!stopped)
+		{
+			try
+			{
+				sleep(TIMEOUT);
+			}
+			catch (InterruptedException e) {}
+		}
 	}
 }
 

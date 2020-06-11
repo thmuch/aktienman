@@ -1,9 +1,12 @@
-// 1998-09-10 tm
+/**
+ @author Thomas Much
+ @version 1998-12-15
+*/
 
 
 public class Bankenliste extends Aktienliste {
 
-public static final String STAND = "1.9.1998";
+public static final String STAND = "1.12.1998";
 
 private static final int STANDARDBANK = 0;
 

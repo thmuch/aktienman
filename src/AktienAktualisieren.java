@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-29
+ @version 1998-12-07
 */
 
 import java.awt.*;
@@ -156,6 +156,8 @@ public synchronized void setError(int index) {
 
 
 private synchronized void savePopups() {
+	ObjectOutputStream out = null;
+
 	String folder = System.getProperty("user.home");
 	String filesep = System.getProperty("file.separator");
 
@@ -163,23 +165,37 @@ private synchronized void savePopups() {
 	{
 		FileOutputStream fos = new FileOutputStream(folder+filesep+AktienMan.getFilenamePopups());
 		GZIPOutputStream gzos = new GZIPOutputStream(fos);
-		ObjectOutputStream out = new ObjectOutputStream(fos);
+		out = new ObjectOutputStream(fos);
 		out.writeObject(AktienMan.listeDAX);
 		out.writeObject(AktienMan.listeMDAX);
 		out.writeObject(AktienMan.listeNMarkt);
 		out.writeObject(AktienMan.listeEuroSTOXX);
 		out.writeObject(AktienMan.listeAusland);
 		out.flush();
-		out.close();
 	}
 	catch (IOException e)
 	{
 		System.out.println("Fehler beim Speichern der Aktienpopups.");
 	}
+	finally
+	{
+		if (out != null)
+		{
+			try
+			{
+				out.close();
+			}
+			catch (IOException e) {}
+		
+			out = null;
+		}
+	}
 }
 
 
 public static void loadPopups() {
+	ObjectInputStream in = null;
+
 	String folder = System.getProperty("user.home");
 	String filesep = System.getProperty("file.separator");
 
@@ -187,18 +203,30 @@ public static void loadPopups() {
 	{
 		FileInputStream fis = new FileInputStream(folder+filesep+AktienMan.getFilenamePopups());
 		GZIPInputStream gzis = new GZIPInputStream(fis);
-		ObjectInputStream in = new ObjectInputStream(fis);
+		in = new ObjectInputStream(fis);
 		AktienMan.listeDAX = (Aktienliste)in.readObject();
 		AktienMan.listeMDAX = (Aktienliste)in.readObject();
 		AktienMan.listeNMarkt = (Aktienliste)in.readObject();
 		AktienMan.listeEuroSTOXX = (Aktienliste)in.readObject();
 		AktienMan.listeAusland = (Aktienliste)in.readObject();
-		in.close();
 	}
 	catch (IOException e) {}
 	catch (ClassNotFoundException e)
 	{
 		System.out.println("Gespeicherte Aktienpopups fehlerhaft.");
+	}
+	finally
+	{
+		if (in != null)
+		{
+			try
+			{
+				in.close();
+			}
+			catch (IOException e) {}
+		
+			in = null;
+		}
 	}
 }
 

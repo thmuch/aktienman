@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-21
+ @version 1998-12-07
 */
 
 import java.net.*;
@@ -26,6 +26,9 @@ public IntradayChartLeser(String boerse, BenutzerAktie ba) {
 
 
 public void run() {
+	BufferedReader in = null;
+	boolean valid = false;
+	
 	String wkn = ba.getWKNString();
 
 	chartviewer = new ChartViewer(null,"Intraday "+ba.getName(true),"",620,285,ChartViewer.TYPE_INTRADAY);
@@ -34,7 +37,7 @@ public void run() {
 	{
 		URL url = new URL(URLs.DAXREALTIME);
 		
-		BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+		in = new BufferedReader(new InputStreamReader(url.openStream()));
 
 		String s;
 		
@@ -49,23 +52,36 @@ public void run() {
 					int i2 = s.indexOf(">",s.indexOf(">",i)+1);
 					int i3 = s.indexOf("<",i2);
 					
-					in.close();
-
 					new ChartLoader(chartviewer,URLs.DAXINTRADAY + s.substring(i2+1,i3).trim() + "." + boerse + ".DEM.gif",true).start();
-					return;
+					valid = true;
+					break;
 				}
 			}
 		}
-		
-		in.close();
-		
-		// Fehler!
 	}
 	catch (MalformedURLException e)
 	{
 		System.out.println("Exchange-URL fehlerhaft.");
 	}
 	catch (IOException e) {}
+	finally
+	{
+		if (!valid)
+		{
+			chartviewer.setStatusError();
+		}
+
+		if (in != null)
+		{
+			try
+			{
+				in.close();
+			}
+			catch (IOException e) {}
+		
+			in = null;
+		}
+	}
 }
 
 }

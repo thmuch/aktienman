@@ -1,4 +1,4 @@
-AktienMan 1.00
+AktienMan 1.0
 Copyright ©1998 Thomas Much
 Ein Programm von AktienMan&Friends (<http://www.aktienman.de>).
 
@@ -25,31 +25,12 @@ Rechtliches
 AktienMan kann auf einem beliebigen Rechner/Betriebssystem eingesetzt werden. Es muß lediglich gewährleistet sein, daß AktienMan nur vom registrierten Benutzer zum Einsatz kommt. Jeder registrierte Benutzer kann für jeweils DM 50,-- (inkl. Mwst.) weitere Schlüssel von AktienMan&Friends bestellen.
 
 Versionsübersicht
-Version 0.95 (26.11.98)
-- AktienMan kann nun beim Programmstart registriert werden, wenn man die Vollversion
-  (und damit einen passenden Schlüssel) gekauft hat
-- neue globale Menüs "Aktualisieren" und "Aktie" (funktionieren wie die Buttons oder das
-  Kontextpopup im Hauptdialog)
-- neuer "Info"-Dialog; darin zeigt AktienMan die Tagesdaten zur Aktie sowie Höchst- und
-  Tiefstkurs seit der ersten Aktualisierung an
-- Reihenfolge der Buttons im Hauptdialog etwas optimiert
-- das Löschen von Aktien erfolgt nun entweder über das Kontextpopup oder über den
-  "Aktie ändern"-Dialog
-- auch die Intraday-Charts werden nun per Timer automatisch aktualisiert
-Version 0.92 (16.11.98)
-- Button "Beobachten" im Dialog "Neue Aktie"; dabei braucht außer der Aktie bzw. WKN
-  nichts eingegeben werden; damit kann man Aktienkurse überwachen, ohne daß solche
-  Werte bei den Summen auftauchen
-- "Liste exportieren" speichert das Portfolio als HTML-Tabelle ab
-- bei den 6/12/24-Monats-Charts kann zwischen den Charts durch Anklicken der
-  entsprechenden Monatszahl umgeschaltet werden
-- im Dialog "Konfiguration" kann eingestellt werden, ob bei steuerfreien Aktien wie
-  bisher die Laufzeit oder stattdessen der Text "steuerfrei" ausgegeben wird
-Version 0.91 (05.11.98)
-- Mac: Menüleiste überarbeitet
-- Mac: Redrawprobleme mit MRJ 2.1 EA3 beseitigt
-Version 0.90 (03.11.98)
-- erste öffentliche Version (Preview)
+1998-12-21
+- im Dialog "Konfiguration" kann die Spekulationsfrist von 6 auf 12 Monate umgestellt werden, falls der Gesetzgeber das entsprechende Gesetz beschließt
+- fehlerhafte Onlinedaten werden besser erkannt
+- kleinere Korrekturen und Optimierungen
+1998-12-01
+- Version 1.00
 
 Kontakt
 Bestellungen richten Sie bitte an <mailto:bestellung@aktienman.de>, am besten wickeln Sie Ihre Bestellung aber über die AktienMan-Homepage <http://www.aktienman.de> ab. Supportanfragen beantwortet <mailto:support@aktienman.de>.

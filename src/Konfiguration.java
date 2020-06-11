@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-23
+ @version 1998-12-21
 */
 
 import java.awt.*;
@@ -12,6 +12,7 @@ public class Konfiguration extends AFrame {
 
 private Choice plaetze,waehrung,bank;
 private Checkbox cbAktualisieren,cbKamera,cbAktiennamen,cbKuerzen,cbSteuerfrei;
+private Checkbox rb6Monate,rb12Monate;
 private TextField tfStdGewinn,tfStdGebuehren;
 
 
@@ -41,7 +42,27 @@ public void setupElements() {
 	constrain(panelOben,cbKamera,0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	constrain(panelOben,cbAktiennamen,0,2,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
 	constrain(panelOben,cbKuerzen,0,3,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
-	constrain(panelOben,cbSteuerfrei,0,4,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
+
+	Panel spekuPanel = new Panel(gridbag);
+	CheckboxGroup spekuGroup = new CheckboxGroup();
+
+	rb6Monate = new Checkbox("6 Monate",false,spekuGroup);
+	rb12Monate = new Checkbox("12 Monate",false,spekuGroup);
+	if (AktienMan.properties.getInt("Konfig.Spekulationsfrist") == 12)
+	{
+		spekuGroup.setSelectedCheckbox(rb12Monate);
+	}
+	else
+	{
+		spekuGroup.setSelectedCheckbox(rb6Monate);
+	}
+
+	constrain(spekuPanel,new Label("Spekulationsfrist:"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(spekuPanel,rb6Monate,1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,0,0);
+	constrain(spekuPanel,rb12Monate,2,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
+	constrain(panelOben,spekuPanel,0,4,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
+
+	constrain(panelOben,cbSteuerfrei,0,5,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 
 	constrain(panelStandard,new Label("Standard-B\u00f6rse:"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
 
@@ -106,6 +127,7 @@ public void executeOK() {
 	AktienMan.properties.setInt("Konfig.StdBoerse",plaetze.getSelectedIndex());
 	AktienMan.properties.setInt("Konfig.StdWaehrung",waehrung.getSelectedIndex());
 	AktienMan.properties.setInt("Konfig.StdBank",bank.getSelectedIndex());
+	AktienMan.properties.setInt("Konfig.Spekulationsfrist",(rb12Monate.getState()) ? 12 : 6);
 	
 	AktienMan.properties.saveParameters();
 	

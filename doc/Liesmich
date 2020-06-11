@@ -1,4 +1,4 @@
-AktienMan 1.00-beta (1998-12-01)
+AktienMan 1.0-beta (1998-12-21)
 Copyright (c)1998 by Thomas Much (thomas@aktienman.de)
 
 >>>>> BETAVERSION, LÄUFT AM 21.12.1998 AB <<<<<
@@ -28,13 +28,13 @@ allg. Bugs
 Mac-Bugs
 //
 Win-Bugs
-// 
+// Chartfenster werden minimal zu klein geöffnet
+// Umschalten bei 6/12/24-Charts geht nicht
 Linux-Bugs
 // alle Dialoge (bis auf DAX-Kamera) werden direkt nach dem Öffnen wieder geschlossen
 todo
 // Konfigurierbarkeit der Farben
 // Test auf Online-Verbindung
-// Kurse merken, daraus Höchstkurs ermitteln
 // Mehrfachselektion mit <Shift>
 // auch EUR für Werte, Umrechnung der Summenwerte in DM oder EUR
 // Ausdruck über mehrere Seiten
@@ -49,21 +49,30 @@ todo
 // Börsen konfigurierbar machen
 // HTML-Export mit Farben
 // Kurse auch von yahoo holen
+// Kurse auch von teledata direkt holen (+ Anfragen zusammenfassen)
+// DAX-Kamera optional von yahoo
 // Dialog, um zu Aktien die WKN abzufragen (und umgekehrt)
 // Börsenplätze NAS (NASDAQ) und NYS (Wallstreet)
-// in.close() immer in finally{} ausführen
-// .stop() entfernen
-// mehrere Portfolios verwalten
-//
+// Liste der aktuellen Währungskurse
 // Tool "Obfuscator": Variablennamen aus Klassen entfernen
 // Linux: Archiv, Skript
-// Splash-Screen: Versionsnummer etc.
-// Mac: neue Icons von Sven
 // Layout an EA3 anpassen (Abstände größer)
 // Layout von "Neue Aktie" verbessern
 // beim Kaufen optional Gebühren errechnen
 // aktuelle Nachrichten auf www.aktienman.de abfragen+anzeigen
-// AM&F-Logo beim Reg.Dialog anzeigen
+// Verfall der Listendaten (bei Demoversion)
+// mehrere Portfolios verwalten
+// Redraw per Thread, der alle ca. 5 Sekunden aktualisiert
+// Konfiguration: Kurse automatisch aktualisieren alle XXX Minuten
+Version 1.0 (21.12.98)
+- auf CW Pro 4 umgestellt
+- neues Ablaufdatum der Demoversion: 18.1.99
+- "Konfiguration": Schalter für 6/12 Monate Spekulationsfrist
+- Stand der Bankdaten: 1.12.98
+- die 6/12/24-Monats-Charts werden nun nicht mehr per Timer aktualisiert...
+- Fehler beim Laden eines Charts werden nun angezeigt
+- bei Fehlern während der Übertragung werden alle Verbindungen nun immer korrekt geschlossen
+- beim vorzeitigen Schließen von DAX- und Chart-Fenstern werden alle Threads korrekt beendet
 Version 1.00 (01.12.98)
 - letzte Java 1.0-Reste entfernt, d.h. AktienMan ist nun eine echte Java 1.1-Applikation
 - wenn ein Fehler beim Einlesen der Comdirect-Daten auftritt (z.B. offline), werden die

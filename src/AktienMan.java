@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-12-01
+ @version 1998-12-21
 */
 
 /**
@@ -16,7 +16,7 @@ import java.awt.*;
 public class AktienMan {
 
 public static final String AMNAME         = "AktienMan";
-public static final String AMVERSION      = "1.00";
+public static final String AMVERSION      = "1.0";
 public static final String AMFENSTERTITEL = AMNAME + " - ";
 
 public static final String OS_MAC         = "MACOS";
@@ -25,8 +25,8 @@ public static final String OS_LINUX       = "LINUX";
 
 public static final char DEZSEPARATOR     = ',';
 
-public static ADate compDate              = new ADate(1998,12,01); /* Compilierdatum */
-public static final int RELEASE           = 2;
+public static ADate compDate              = new ADate(1998,12,21); /* Compilierdatum */
+public static final int RELEASE           = 3; /* 1.01 21.12.98 */
 public static final int PORTFOLIOVER      = 0;
 
 public static Aktienliste listeDAX        = new Aktienliste();
@@ -169,7 +169,7 @@ private static void registerCheck() {}
 
 private static void main(int a) throws Exception {
 	ADate heute = new ADate();
-	ADate morgen = new ADate(1998,12,21); /* #Ablaufdatum */
+	ADate morgen = new ADate(1999,1,18); /* #Ablaufdatum */
 
 	/* #Demoversion */
 	if ((heute.before(compDate) || heute.after(morgen)) && (!hauptdialog.main())) throw new Exception();
