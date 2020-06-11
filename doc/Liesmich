@@ -1,0 +1,321 @@
+AktienMan 0.90-beta (1998-11-03)
+Copyright (c)1998 by Thomas Much (thomas@aktienman.de)
+
+>>>>> BETAVERSION, LÄUFT AM 30.11.1998 AB <<<<<
+
+
+Systemanforderungen:
+- Mac: Apple MRJ 2.0, MacOS 8.x
+- Win: Win 95/98/NT, IE4 (bzw. JVIEW.EXE von 1997 oder neuer)
+
+Dateien:
+- AktienMan: Binary für den Mac
+- AktienMan.exe, AktienMan.jar: Binaries für Win
+- AktienMan.cfg: Konfigurationsdaten (wird automatisch angelegt)
+- AktienMan.lst: Aktienliste (wird automatisch angelegt)
+- AktienMan.pop: Aktienpopups (wird automatisch angelegt)
+
+Bekannte Probleme:
+- die Warnalerts sind leider unmodal, da MRJ beim Schließen modaler Dialoge das System
+  aufhängt und die MW-VM dabei ab und zu abstürzt...; als "Ausgleich" werden nicht sofort
+  geschlossene Warnalerts zusammen mit dem Parentdialog geschlossen
+
+
+History
+-------
+allg. Bugs
+// 
+Mac-Bugs
+//
+Win-Bugs
+// nach dem Löschen der letzten Aktie spinnt der Slider nach dem Einfügen einer neuen Aktie
+Linux-Bugs
+// alle Dialoge (bis auf DAX-Kamera) werden direkt nach dem Öffnen wieder geschlossen
+todo
+// Konfigurierbarkeit der Farben
+// Test auf Online-Verbindung
+// Kurse merken, daraus Höchstkurs ermitteln
+// HTML-Export
+// "Liste speichern"
+// Mehrfachselektion mit <Shift>
+// auch EUR für Werte, Umrechnung der Summenwerte in DM oder EUR
+// Ausdruck über mehrere Seiten
+// Registrierung, Demoversion
+// Spaltenreihenfolge bel. festlegbar
+// Aktie splitten
+// "Beobachten": Kaufkurs/Stückzahl zum Beobachten von Aktien auch leerlassen können (autom. Init.)
+// beim Kaufen optional Gebühren errechnen
+// Info-Dialog (auch bei Doppelklick)
+// ComdirectLeser: Fehler an Liste melden
+// DAX-Kamera: "Derzeit keine Online-Verbindung" nicht immer korrekt?!?
+// warum werden Charts nicht immer angezeigt?
+// Backup der Listendaten
+// ADate: Sommerzeit beachten
+// -> Checkbox für Sommerzeit
+// Checkbox für Online-Euro-Kurse
+// Differenz zum Vortageskurs (von comdirect)
+// Konfig-Dialog zur Auswahl, welche Spalten angezeigt werden
+Version 1.0:
+// Tool "Obfuscator": Variablennamen aus Klassen entfernen
+// Linux: Archiv, Skript
+// Mac: neue Icons von Sven
+// About-Dialog fertigstellen
+// Registrierung, Demoversion
+// Neue Aktie: "Beobachten"
+// HTML-Export
+// innerhalb des Chart-Image zwischen 6/12/24 umschalten
+Version 0.90 (03.11.98)
+- neue Börse "Fonds (DFK)"
+- bei "Maximalkurs" wird DFK nicht berücksichtigt
+- bei Fonds kann "Maximalkurs" nicht aufgerufen werden
+- About-Dialog ergänzt
+- Farben für minimalen und maximalen Kurs ausgetauscht
+- das Ablaufdatum wird an mehreren Stellen auf unterschiedliche Art getestet
+- unter Linux sind die Konfigurationsdateien nun Unix-mäßig benannt und versteckt
+- Versionsnummer für Demoversion in Aktienliste eingebaut
+Version 0.84 (01.11.98)
+- Position des Kontextpopups korrigiert (auch unter Windows)
+- unter Windows werden per Kontextpopup geöffnete Dialoge nun explizit getoppt
+- bei "Neue Aktie" wird der Radiobutton der Aktiengruppe korrekt initialisiert (sonst hängt Windows)
+- der Maximalkurs zeigt nun auch Datum und Uhrzeit des Kurses an
+- Workaround für Windows eingebaut, damit die erste eingegebene Aktie korrekt angezeigt wird;
+  trotzdem ist immer noch der Wurm drin, wenn die einzige Aktie gelöscht und wieder angelegt wird...
+- die Ablaufmeldung der Preview-Version wird nun als Konsolentext und als Warnalert ausgegeben
+Version 0.83 (01.11.98)
+- Dialog "Aktiendaten ändern"
+- die Kontextpopup-Probleme sollten nun weitestgehend beseitigt sein; allerdings *muß*
+  man nun die Maustaste gedrückt halten, sonst geht das Popup wieder zu
+Version 0.82 (30.10.98)
+- die AM-Preview läuft bis zum 30.11.; bei jedem Start wird der About-Dialog angezeigt
+- Intraday-Charts werden nun mit max. 620 Pixeln Breite angezeigt
+- neue Buttons für "Maximalkurs" und "Charts"
+- Buttons "Ende", "Konfiguration" und "Über AktienMan" entfernt
+- die Buttons "Liste drucken" und "Liste speichern" sind erstmal wieder disabled
+Version 0.81 (28.10.98)
+- bei DAX-Werten können via Kontextpopup nun auch Intraday-Charts angezeigt werden
+- Tastatursteuerung (Return) erstmal wieder ausgebaut...
+Version 0.80 (27.10.98)
+- mit "AktienMan - Aktienlisten aktualisieren" werden alle Aktienpopups nun online
+  ermittelt; solange man das nicht gemacht hat, erscheint beim Programmstart ein
+  entsprechender Warnalert
+- Dialog "Neue Aktie" neu layoutet (das Errechnen der Gebühren beim Kaufen folgt später)
+- zwischen abs. Gewinngrenze und der Angabe in % wird nun per Radiobutton umgeschaltet
+- Zeilenabstand der Liste verringert/optimiert
+- Kürzen der Aktiennamen optimiert (alle Popups müßten OK sein)
+Version 0.30 (23.10.98)
+- Spaltenreihenfolge geändert
+- Differenz vom aktuellen Wert zum Kaufwert dazugenommen
+- Differenzen werden rot/grün dargestellt
+- Konfiguration: "Aktiennamen kürzen"
+- "Tiefkursalarm" heißt nun "Stop Loss"
+Version 0.29 (12.10.98)
+- intern auf ein eigenes Datumsobjekt umgestellt; dadurch können bei der Datums-/Laufzeit-
+  berechnung eigentlich nur noch dann Fehler auftreten, wenn das aktuelle Datum nicht korrekt
+  ermittelt werden kann; bitte daher die Console-Debugausgabe mal genau ansehen (!); im Moment
+  wird die Sommerzeit noch nicht erkannt, was aber nach dem 1.11. (Verkaufsstart) erstmal
+  nicht auffallen würde; und bis zum Beginn der nächsten Sommerzeit sollte ich das Problem
+  beseitigt haben... (aber vielleicht kann ich das ja auch noch kurzfristig fixen)
+- das neue Datumsobjekt beinhaltet auch neue Parseroutinen für Datumseingabe; bitte also genau
+  testen, ob beim Kaufdatum alle gültigen Daten akzeptiert und alle falschen abgewiesen werden
+- "%Jahr" zeigt nun wieder diesen Wert an...
+- Popup-Trigger verbessert
+Version 0.28 (21.09.98)
+- Mac: neues Icon
+- Debugausgaben zur Laufzeitberechnung eingebaut
+- der "Verkaufserlös" bietet jetzt in einem Popup die Möglichkeit, den Wert beliebig
+  einzustellen; evtl. sollte der Name "Verkaufserlös" noch geändert werden (?)
+- der Win-Rundungsworkaround produziert bei Werten<0 keine falschen Ausgaben mehr...
+- interne "Online-Währung" eingeführt (bis 31.12. DEM, danach EUR)
+- das "Ablage"-Menü heißt unter Windows nun "Datei"
+- alle Fließkommaeingabefelder anzeptieren nun auch das Komma als Dezimaltrenner
+- der Verkaufskurs bei "Aktie verkaufen" wird mit einer Kommazahl mit zwei Nachkommastellen
+  vorbelegt
+- "Verkaufserlös berechnen" im Dialog "Aktie verkaufen" bestimmt, ob Gebühren und Aktienwerte
+  zum Verkaufserlös addiert werden
+Version 0.27 (16.09.98)
+- testweise eine Menüleiste implementiert (sie könnte die entsprechenden Buttons ersetzen)
+- Gebühren für den Telefonverkauf eingebaut (siehe Dialog "Aktie verkaufen")
+- Workaround für Windows-Rundungsfehler eingebaut; bitte genau testen, ob der Mac dadurch
+  falsche Kaufkurse etc. produziert (sollte aber eigentlich nicht passieren)
+- "Chart" öffnet nun ein Subpopup, in dem man die Anzahl der Monate (6,12,24) auswählen kann
+- die Trennstriche im Kontextpopup werden nun portabel gesetzt
+- Debugausgaben bei den Charts entfernt...
+Version 0.26 (14.09.98)
+- Kontextpopup: "Maximalkurs"
+- Aktien gleicher WKN+Börse werden nur noch einmal pro Aktualisierung angefordert
+- interne Prozentrechnung vereinheitlicht; dadurch könnte ich nun jederzeit die interne
+  Genauigkeit von Währungsberechnungen erhöhen, falls dies nötig werden sollte (die Aktienliste
+  müßte dann allerdings neu eingegeben werden)
+- im Chart-Fenster wird nun der Hinweis ausgegeben, daß das Bild geladen wird
+Version 0.25 (12.09.98)
+- Kontextpopup: "Chart" :-)
+- auch "Aktie löschen", "Aktie verkaufen" und "Verkaufserlös löschen" disablen nun den
+  Aktionsbutton nach der Anwahl
+- bei "Neue Aktie" wird beim Kaufdatum das aktuelle Jahr automatisch ergänzt, wenn nur Tag
+  und Monat ("tt.mm.") eingegeben werden
+- die Buttons in "Aktie verkaufen" sind nun immer rechtsbündig (auch wenn der "...steuerfrei"-
+  Text fehlt)
+Version 0.24 (10.09.98)
+- mit "Nur an dieser Börse" bei "Neue Aktie" haben "Akt.FSE/ETR" auf die Aktie keinen Einfluß
+- interne Modularisierung der Listendarstellung begonnen
+- die Laufzeit wird nun im Format "x Monate y Tage" ausgegeben (bei 0 Monaten fällt die
+  Monatsangabe weg); die alte Form (absolute Tage) wird man später wieder zuschalten können
+- Währungs(ausgabe)routinen modularisiert (stimmen alle Werte noch?)
+- Vorbereitung für das Erkennen von Doppelklicks (funktioniert auf'm Mac nicht...)
+- Kontextpopup beim Klick auf einen Listeneintrag; zumindest mein 68k-Mac scheint damit
+  allerdings ein kleines Problem zu haben: das Popup erscheint manchmal zweimal, und beim
+  zweiten Erscheinen ist die Position dann oft falsch...
+- Konfiguration: Standard-Bank
+- "Aktie verkaufen": die Gebühren der eingestellten Bank werden ermittelt und beim Verkaufen
+  zusätzlich zu den sonstigen Gebühren vom Erlös abgezogen; dafür Layout des Dialogs geändert;
+  außerdem wird nun eine Warnung angezeigt, wenn die zu verkaufende Aktie noch nicht
+  steuerfrei ist
+- der Button "Kaufen" in "Aktie kaufen" wird nach Anwahl disabled, damit man ihn auf langsamen
+  Rechnern nicht mehrmals anwählen kann
+Version 0.23 (08.09.98)
+- "Aktie verkaufen", Verkaufserlös wird aufsummiert
+- verkaufen nur möglich, wenn sowohl Stückzahl>0 (sollte eigentlich immer der Fall sein)
+  als auch Kurs>0.0 sind
+- Sicherheitsabfrage vor Löschen des Verkaufserlöses
+- Konfiguration: Standard-Gebühren, Standard-Börse (default: FSE), Standard-Währung
+- Vorbereitung für Verwendung mehrerer Währungen
+- nach Konfiguration/OK werden die Einstellungen automatisch gesichert
+- Layout von "Neue Aktie" verbessert
+- bei "Neue Aktie" wird im WKN-Feld nun auch ein Aktienkürzel akzeptiert; fängt die
+  Eingabe mit einer Ziffer an, muß der Text exakt sechs Zeichen lang sein und darf nur
+  aus Ziffern bestehen; wenn die Eingabe mit einem Buchstaben beginnt, muß sie mind.
+  drei Zeichen lang sein, darf nur aus Buchstaben und Ziffern bestehen und wird ansonsten
+  ungeprüft als Kürzel übernommen
+Version 0.22 (05.09.98)
+- die Buttons/Dialoge zum Bearbeiten der Liste sind nun "modal"; dadurch nicht anwählbare
+  Buttons werden disabled oder erzeugen beim Anklicken einen Warnton
+- vor dem Löschen einer Aktie erfolgt eine Sicherheitsabfrage
+- die Aktualisierung FSE/ETR funktioniert jetzt wirklich...
+- (Button-)Texte werden in einer Klasse zusammengefaßt
+- nicht verfügbare Kurse werden erkannt (z.B. 508900.ETR) und als "n/a" angezeigt
+- Erkennung rechter Maustaste (für Kontextpopup) vorbereitet
+- die Aktienliste wird nicht nur beim Programmende gespeichert, sondern auch nach dem
+  Neuanlegen bzw. Löschen einer Aktie sowie dem Eintreffen /jedes/ aktualisierten
+  Aktienkurses (stimmt die Performance noch?); die Größe+Position des Dialogs wird
+  nach wie vor nur vom "Ende"-Button gespeichert
+Version 0.21 (04.09.98)
+- die Liste wird nun alphabetisch sortiert
+- "Akt. FSE" und "Akt. Xetra" aktualisieren alle Aktien an der jeweiligen Börse; in der
+  Liste wird dies durch den Börsennamen in der Zeile "Letzte Aktualisierung ..." angezeigt
+- aktuelle Summe und Verkaufserlös stehen nun in zwei Zeilen untereinander (sonst sieht
+  man auf 640x480 nicht alles...)
+- "Über AktienMan..." funktioniert jetzt
+- bei Aktien ohne gültigen Kurs wird der Kaufwert bei den Summen nicht berücksichtigt
+  und grau dargestellt
+Version 0.20 (26.08.98)
+- der Hintergrund der Liste wird nun fest auf weiß gesetzt; dadurch sieht man auch
+  unter Windows die Selektion...
+- der Button "OK" bei "Neue Aktie" heißt nun "Kaufen"
+- interne Berechnung der Geldwerte komplett auf long umgestellt
+- es gibt jetzt ein Feld "Verkaufserlös" samt "löschen"-Button (derzeit noch ohne
+  Sicherheitsabfrage!); das würde auch schon richtig funktionieren, wenn man Aktien
+  verkaufen könnte
+- neues Logo von Sven eingebaut (Mac-only)
+Version 0.19 (24.08.98)
+- in der Spalte rechts neben dem Kurs werden Datum+Uhrzeit des Kurswertes angezeigt
+- Listendarstellung optimiert
+- unter der Liste werden der Kaufwert und die Differenz zum aktuellen Wert angezeigt
+- die drei Werte erscheinen nun auch außerhalb der Liste
+Version 0.18 (22.08.98)
+- man kann nun Hochkurs, Tiefkurs und Gewinngrenze eingeben; erreicht der Kurs
+  einen dieser Werte, wird der Kurswert rot (Tiefkurs), grün (Hochkurs) oder blau
+  (Gewinngrenze) dargestellt; Priorität der Farben ist dabei Tiefkurs > Hochkurs >
+  Gewinngrenze, d.h. wenn ein Kurs sowohl über Hochkurs als auch über der Gewinn-
+  grenze liegt, wird er immer grün dargestellt - unabhängig von den Zahlen für
+  Hochkurs und Gewinngrenze
+- auch die Kamera speichert nun ihre Größe und Position ab
+Version 0.17 (21.08.98)
+- im Konfigurationsdialog kann die Standard-Gewinngrenze festgelegt werden
+- der Hauptdialog merkt sich jetzt seine Position und Größe
+- Anfangsminimalgröße des Hauptdialogs auf 620x300 Pixel erhöht
+- "Liste drucken/speichern" ist nur noch enabled, wenn mind. eine Aktie in der
+  Liste eingetragen ist; "Liste speichern" funktioniert derzeit noch nicht
+- "Aktie löschen" funktioniert nun - allerdings noch ohne (!) Sicherheitsabfrage
+- bei der Mac-Version sind nun vers- und BNDL-Resource vorhanden
+- die Redrawprobleme der Liste sollten weitestgehend beseitigt sein
+- Geldwerte werden jetzt im DM-Format ausgegeben
+- neue Liste des Neuen Marktes eingebunden
+Version 0.16 (20.08.98)
+- bei Apple ist die Creator-ID "tmAM" für AktienMan reserviert
+- mit JBindery aus dem MRJ-SDK 2.0.1 gibt es jetzt endlich eine richtig schön
+  kleine Java-Applikation, die allerdings MRJ 2.0 zwingend voraussetzt; nebenbei
+  sind wohl noch ein paar Bugs gefixed (Resizing funktioniert, d.h. es macht
+  endlich Sinn, die Positionen abzuspeichern; kommt demnächst); außerdem ist
+  damit noch ein bißchen optischer Schnickschnack möglich... :-)
+- AM kann nicht mehr als Applet gestartet werden
+- im Hauptdialog werden Zahlen jetzt rechtsbündig ausgegeben
+- die (De-)Selektion von Aktien in der Liste funktioniert nun
+- alle Beträge werden bei der Ausgabe auf zwei Stellen nach dem Komma gerundet
+Version 0.15 (18.08.98)
+- der Hauptdialog ist jetzt beim Start 4/5 des Bildschirms breit
+- die Aktienpopups in "Neue Aktie" sind jetzt alle gleich breit
+- das Datum bei "Neue Aktie" kann nun auch zweistellig eingegeben werden; Werte >80
+  werden als "19xx", alle anderen als "20xx" aufgefaßt
+- das Kaufdatum kann nicht mehr in der Zukunft liegen
+- das automatische Aktualisieren der Kamera (alle zwei Minuten) und das sofortige
+  (jedesmal beim Anklicken des DAX-Buttons) funktioniert nun endlich... das ist
+  jetzt allerdings nicht mehr ganz so trivial wie das einfache Anzeigen eines
+  Bildes ;-)
+- die Kamera sollte beim ersten Aufruf jetzt wirklich immer gezeichnet werden
+- die Größe des Kamerafensters wird nun aus der Bildgröße berechnet, damit man auch
+  unter Windows alles sieht (hoffentlich)
+- %Jahr entspricht bei einer Laufzeit<360 nun %absolut, außerdem werden die Werte
+  dann grau dargestellt
+Version 0.14 (16.08.98)
+- Aktien, die momentan angefragt werden, haben einen blauen Namen
+- die Laufzeit (in Tagen) wird berechnet
+- beträgt die Laufzeit mehr als 6 Monate, wird sie dunkelgelb dargestellt
+- %absolut und %Jahr werden berechnet; positive Werte erscheinen in Rot,
+  negative in Dunkelgrün
+- die Aktienliste wird nun unter "AktienMan.lst" gespeichert; WICHTIG: Das
+  Format wird sich in den nächsten Tagen garantiert nochmal *inkompatibel*
+  ändern, also nicht allzuviel Arbeit in die Eingabe stecken!
+- unter der "Wert"-Spalte wird die Portfolio-Summe ausgegeben
+- "Liste drucken" macht genau das, derzeit allerdings *ohne* Sicherheitsabfrage;
+  leider habe ich keinen Einfluß auf die Orientierung oder Auflösung der Druck-
+  seite, da muß ich mir noch etwas einfallen lassen
+- in der Liste werden Datum+Uhrzeit der letzten Aktualisierung angezeigt
+Version 0.13 (15.08.98)
+- die Aktienpopups schalten bei Anwahl automatisch "ihren" Radiobutton an
+- die Kamera sollte nun auch beim Autostart korrekt gezeichnet werden
+- Anfangsminimalgröße des Hauptdialogs korrigiert
+- bei "OK" im "neue Aktie"-Dialog werden WKN (falls die Checkbox davor angekreuzt ist),
+  Kaufdatum, Kaufkurs und Stückzahl auf Gültigkeit überprüft
+- "Konfiguration - Aktiennamen aus Onlinedaten übernehmen" legt fest, ob die Aktiennamen
+  in der Liste mit den Onlinennamen aktualisiert werden; ist der Aktienname in der Liste
+  leer (z.B. wegen WKN-Eingabe), wird der Onlinename auf jeden Fall übernommen
+- der "Neue Aktie"-Dialog funktioniert jetzt, d.h. man kann Aktien eingeben, die in die
+  Liste übernommen werden; ACHTUNG: die Daten der Liste werden derzeit noch *nicht*
+  gespeichert!!! Eine Nachbearbeitung der Liste ist auch noch nicht möglich
+- der Button "Aktualisieren!" funktioniert nun, d.h. alle Aktien der Liste werden
+  online aktualisiert; wenn eine falsche Kombination Aktie+Börse (oder eine ungültige
+  WKN) eingegeben wurde, wird dies durch "<Fehler>" signalisiert
+Version 0.12 (11.08.98)
+- der "heute"-Button reagiert schneller
+- Aktienlisten werden nun in "schönen" Datenstrukturen verwaltet
+- der Konfigurationsdialog merkt sich seine Werte; wie es sich beim Mac
+  gehört, landet "AktienMan.cfg" im Preferences-Ordner
+- dadurch kann die DAX-Kamera bereits beim Starten angezeigt werden
+- Ablaufdatum für Betaversionen eingebaut
+- MDAX-, NMarkt- und STOXX-Popups in den "Neue Aktie"-Dialog integriert
+- dort auch Popup für die Gewinngrenze eingebaut
+Version 0.11 (08.08.98)
+- Dialoglayout neu
+- der Button "heute" im "Neue Aktie"-Dialog funktioniert
+- in Dialogen mit OK-Button kann dieser nun mit <Return> angewählt werden;
+  ein optisches Feedback fehlt aber noch; ebenso funktioniert <Return> nicht
+  mehr wenn das Fenster einmal im Hintergrund lag (keine Ahnung wieso)
+Version 0.10 (06.08.98)
+- erste "öffentliche" Betaversion
+
+
+Preview-/Demotests:
+- AktienMan.readConfig()
+- Hauptdialog.listeAktualisieren() (2x)
+- ComdirectLeser.run()
+- NeueAktie.canOK()
