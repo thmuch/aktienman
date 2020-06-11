@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-02-17
+ @version 1999-05-06
 */
 
 import java.awt.*;
@@ -200,7 +200,7 @@ public synchronized static void loadPopups() {
 
 	try
 	{
-		FileInputStream fis;
+		InputStream fis;
 		
 		try
 		{
@@ -208,7 +208,8 @@ public synchronized static void loadPopups() {
 		}
 		catch (IOException e)
 		{
-			fis = new FileInputStream(FileUtil.findLocalFile(AktienMan.AMNAME + FileUtil.EXT_POPUP));
+			fis = ClassLoader.getSystemResourceAsStream(AktienMan.AMNAME + FileUtil.EXT_POPUP);
+//			fis = new FileInputStream(FileUtil.findLocalFile(AktienMan.AMNAME + FileUtil.EXT_POPUP));
 		}
 		
 		GZIPInputStream gzis = new GZIPInputStream(fis);

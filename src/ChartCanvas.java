@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-03-25
+ @version 1999-05-07
 */
 
 import java.awt.*;
@@ -32,7 +32,7 @@ public void paint(Graphics g)
 	
 	if (chartImage != null)
 	{
-		if (canScale)
+		if (canScale && (!SysUtil.isWindows()))
 		{
 			g.drawImage(chartImage,0,0,d.width,d.height,this);
 		}

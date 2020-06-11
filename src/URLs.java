@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-03-15
+ @version 1999-05-06
 */
 
 
@@ -21,12 +21,12 @@ public static final String KURSE_DEUTSCHEBANK = "http://deuba.teledata.de:9030/d
 public static final String CHART_COMDIRECT    = COMDIRECT_BASE + "chart";
 public static final String CHART_DAXINTRADAY  = "http://www.exchange.de/realtime/";
 
-public static final String POPUPLISTEN        = "http://informer.comdirect.de:9004/cd/";
-public static final String LISTE_DAX30        = "dax30_export.html";
-public static final String LISTE_DAX100       = "dax100_export.html";
-public static final String LISTE_NMARKT       = "neuer-markt_export.html";
-public static final String LISTE_EURO50       = "euro50_export.html";
-public static final String LISTE_AUSLAND      = "ausland_export.html";
+public static final String POPUPLISTEN        = "http://informer2e.teledata.de:9004/cd/";
+public static final String LISTE_DAX30        = "dax30_print.html";
+public static final String LISTE_DAX100       = "dax100_print.html";
+public static final String LISTE_NMARKT       = "neuer-markt_print.html";
+public static final String LISTE_EURO50       = "euro50_print.html";
+public static final String LISTE_AUSLAND      = "ausland_print.html";
 
 // http://www.oanda.com/converter/classic?lang=de&value=1&date=15.03.1999&date_fmt=normal&exch2=USD&expr2=EUR&margin_fixed=0
 // http://www.oanda.com/converter/classic?lang=de&value=1&date=15.03.1999&date_fmt=normal&exch2=EUR&expr2=USD&margin_fixed=0

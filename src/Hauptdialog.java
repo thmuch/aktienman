@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-03-29
+ @version 1999-05-07
 */
 
 import java.awt.*;
@@ -371,7 +371,7 @@ public void setupElements() {
 	MenuBar menubar = new MenuBar();
 	setMenuBar(menubar);
 
-	Menu fileMenu = new Menu(Lang.getFileMenuTitle(),true);
+	Menu fileMenu = new Menu(Lang.FILEMENUTITLE,true);
 	menubar.add(fileMenu);
 	
 	Menu amMenu = new Menu(Lang.EDITMENUTITLE,true);
@@ -407,19 +407,7 @@ public void setupElements() {
 	mi = new MenuItem("Aktienmen\u00fcs aktualisieren...");
 	mi.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			/* #Demoversion */
-/*			if (!main() && (AktienMan.listeDAX.getChoice(false).getItemCount() > 0)
-				&& (AktienMan.listeMDAX.getChoice(false).getItemCount() > 0)
-				&& (AktienMan.listeNMarkt.getChoice(false).getItemCount() > 0)
-				&& (AktienMan.listeEuroSTOXX.getChoice(false).getItemCount() > 0)
-				&& (AktienMan.listeAusland.getChoice(false).getItemCount() > 0))
-			{
-				new Warnalert(AktienMan.hauptdialog,"Die Demoversion kann die Listen nur einmal aktualisieren.");
-			}
-			else
-			{*/
-				new AktienAktualisieren();
-//			}
+			new AktienAktualisieren();
 		}
 	});
 	amMenu.add(mi);
@@ -433,19 +421,6 @@ public void setupElements() {
 		}
 	});
 	amMenu.add(mi);
-
-	if (!SysUtil.isMacOS())
-	{
-		amMenu.addSeparator();
-
-		mi = new MenuItem("\u00dcber AktienMan...");
-		mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				callAbout();
-			}
-		});
-		amMenu.add(mi);
-	}
 	
 	mi = new MenuItem("An der jeweiligen B\u00f6rse",new MenuShortcut(KeyEvent.VK_A));
 	mi.addActionListener(new ActionListener() {
@@ -567,6 +542,21 @@ public void setupElements() {
 		}
 	});
 	pofoMenu.add(pofoDelete);
+	
+	if (!SysUtil.isMacOS())
+	{
+		Menu hilfeMenu = new Menu("Hilfe",true);
+		menubar.add(hilfeMenu);
+		menubar.setHelpMenu(hilfeMenu);
+
+		mi = new MenuItem("\u00dcber AktienMan...");
+		mi.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				callAbout();
+			}
+		});
+		hilfeMenu.add(mi);
+	}
 
 	disableAktienButtons();
 	Portfolios.updateMenu();
@@ -939,10 +929,6 @@ public synchronized void listeAktualisieren(String boerse) {
 
 public synchronized void listeAktualisierenAusfuehren(String boerse) {
 	if (isLocked(true)) return;
-
-	/* #Ablaufdatum */
-	/* #Demoversion */
-//	if ((new ADate().after(new ADate(1999,6,9))) && (!main())) System.exit(0);
 	
 	benutzerliste.setDate(boerse);
 	
@@ -950,13 +936,6 @@ public synchronized void listeAktualisierenAusfuehren(String boerse) {
 	{
 		getAktieNr(i).setStatusRequestingAndRepaint();
 	}
-
-	/* #Ablaufdatum */
-	/* #Demoversion */
-/*	if ((new ADate().after(new ADate(1999,6,10)))
-		&& (RegAM.string(AktienMan.properties.getString("Key.1"),
-			AktienMan.properties.getString("Key.2"),
-			AktienMan.properties.getString("Key.3")) >= 0)) return; */
 
 	KursQuelle quelle = KursQuellen.getKursQuelle();
 	KursQuelle fonds = KursQuellen.getFondsQuelle();
@@ -996,10 +975,6 @@ private synchronized void listeSelektierteAktieAktualisieren() {
 		if (ba.isSelected())
 		{
 			ba.setStatusRequestingAndRepaint();
-
-			/* #Ablaufdatum */
-			/* #Demoversion */
-//			if ((new ADate().after(new ADate(1999,6,9))) && (!main())) return;
 
 			if (ba.isFonds())
 			{
@@ -1090,6 +1065,11 @@ public synchronized void listeAnfrageFalsch(String wkn, String platz, boolean so
 
 
 public synchronized void listeAnfrageFehler(String request, String wkn, String platz, boolean sofortZeichnen, int nextID) {
+	if (AktienMan.DEBUG)
+	{
+		System.out.println("Fehler beim Einlesen der Kursdaten von "+wkn+"."+platz+"  -> "+nextID);
+	}
+
 	if (nextID == KursQuellen.QUELLE_NONE)
 	{
 		if (wkn.length() == 0) return;

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-29
+ @version 1999-05-04
 */
 
 import java.awt.*;
@@ -165,6 +165,11 @@ private synchronized void fillKursPanel(boolean draw) {
 
 
 public synchronized void setKurs(int index, long kurs, int nextID) {
+	if (AktienMan.DEBUG)
+	{
+		System.out.println("Fehler beim Einlesen der Maximalkurse  -> "+nextID);
+	}
+
 	if (nextID == KursQuellen.QUELLE_NONE)
 	{
 		setKurs(index,kurs);

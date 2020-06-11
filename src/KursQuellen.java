@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-03-14
+ @version 1999-05-04
 */
 
 import java.util.*;
@@ -69,7 +69,8 @@ public synchronized static KursQuelle getKursQuelle() {
 
 
 public synchronized static KursQuelle getFondsQuelle() {
-	return getKursQuelle(QUELLE_COMDIRECT);
+	return getKursQuelle();
+//	return getKursQuelle(QUELLE_COMDIRECT);
 }
 
 

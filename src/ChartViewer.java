@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-03-25
+ @version 1999-05-07
 */
 
 import java.awt.*;
@@ -134,17 +134,21 @@ private void neuZeichnen() {
 
 
 public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
-	if (((infoflags & WIDTH) != 0) && ((infoflags & HEIGHT) != 0))
-	{
-		neuZeichnen();
-	}
+
+	boolean neuzeichnen = (((infoflags & WIDTH) != 0) && ((infoflags & HEIGHT) != 0));
 
 	if ((infoflags & (ERROR | FRAMEBITS | ALLBITS)) != 0)
 	{
 		toFront();
 		setStatus(STATUS_FINISHED);
+		neuzeichnen = true;
 
 		if (type == TYPE_COMDIRECT) setComdirectImage(aktMonate,getImage());
+	}
+	
+	if (neuzeichnen)
+	{
+		neuZeichnen();
 	}
 
 	return super.imageUpdate(img,infoflags,x,y,width,height);

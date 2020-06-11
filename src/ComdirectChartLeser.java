@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-03-25
+ @version 1999-05-04
 */
 
 import java.net.*;
@@ -39,7 +39,9 @@ public void run() {
 		
 		while ((s = in.readLine()) != null)
 		{
-			int i = s.indexOf(".html?show=");
+			int i = s.indexOf(".html?");
+			/**/
+//	<TD><FONT SIZE="2"><A HREF="chart6.html?sb=1&show=DBK.STU">DEUTSCHE BANK AG AKTIEN O.N.</A></FONT></TD>
 			
 			if (i > 0)
 			{

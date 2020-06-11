@@ -1,6 +1,6 @@
-AktienMan Euro MP 1.24
+AktienMan 1.25
 Copyright ©1998,99 Thomas Much
-Ein Programm von AktienMan&Friends (<http://www.aktienman.de>).
+Ein Programm von AktienMan&Friends (http://www.aktienman.de).
 
 Zielsetzung
 AktienMan ist ein modernes Programm, das die Verwaltung der eigenen Aktien ermöglicht. Es ermittelt jederzeit alle aktuellen Kurse des persönlichen Portfolios (Aktienwerte) aus dem Internet. An keiner Stelle erfolgt die Bekanntgabe des eigenen Portfolios oder der Anzahl der Aktien an Dritte.
@@ -10,16 +10,14 @@ Wer bisher jeden Tag die aktuellen Kurse seiner Aktien aus n-tv, T-Online oder d
 
 Installation
 Systemvoraussetzung für AktienMan/Mac sind ein Apple PowerMacintosh mit mindestens 166 Mhz Systemtakt, das Betriebssystem MacOS in der Version 8.0 oder höher sowie ein fertig installiertes "Macintosh Runtime for Java" (MRJ) in der Version 2.1 (oder höher).
-Normalerweise wird MRJ 2.0 bei der Installation von MacOS 8.1 bzw. 8.5 automatisch mitinstalliert. Diese Version ist jedoch fehlerhaft, so daß wir dringend zu MRJ 2.1 raten müssen. Apple stellt MRJ 2.1 unter <http://www.apple.com/java/> zum kostenlosen Download zur Verfügung, ebenso finden Sie auf der AktienMan-Homepage Verweise auf die entsprechenden Archive.
+Normalerweise wird MRJ 2.0 bei der Installation von MacOS 8.1 bzw. 8.5 automatisch mitinstalliert. Diese Version ist jedoch fehlerhaft, so daß wir dringend zu MRJ 2.1.1 raten müssen. Apple stellt MRJ 2.1.1 unter http://www.apple.com/java/ zum kostenlosen Download zur Verfügung, ebenso finden Sie auf der AktienMan-Homepage Verweise auf die entsprechenden Archive.
 Die eigentliche Installation von AktienMan ist denkbar einfach: Sie haben das AktienMan-Archiv bereits heruntergeladen und mit StuffIt ausgepackt. Das war es auch schon, eine weitere Installation ist nicht notwendig! Klicken Sie einfach doppelt auf das Programmsymbol "AktienMan". AktienMan wird geladen, und nach wenigen Sekunden - abhängig von der Geschwindigkeit des Rechners - erscheint das Hauptfenster. Wer mit dem Aktienhandel bereits vertraut ist, sollte AktienMan weitestgehend intuitiv bedienen können. Und ansonsten erhält man nach der Registrierung natürlich ein gedrucktes Handbuch.
 
 Einschränkungen der Demo-Version
-Die wesentlichste Einschränkung der Demo-Version ist, daß sie nach dem 8.6.99 ihren Dienst verweigert. Sie können dann entweder eine aktuelle Demoversion herunterladen (müssen dann aber alle Aktiendaten neu eingeben), oder aber sie lassen sich registrieren.
-In der Demo-Version können außerdem maximal drei Aktien in einem einzigen Portfolio verwaltet werden.
+Die Demo-Version kann nur das Standardportfolio mit maximal drei Aktien verwalten. Die registrierte Vollversion besitzt dagegen keine Einschränkung bei der Zahl der Portfolios oder der zu verwaltenden Aktien.
 
 Bestellung der Vollversion
-Sie können jederzeit eine aktuelle Version von AktienMan aus dem Internet von der Seite <http://www.aktienman.de> herunterladen. Diese Version funktioniert über eine Dauer von ca. vier Wochen und kann in dieser Zeit kostenlos benutzt werden. Danach läuft die Version ab. Wenn Sie Gefallen an AktienMan gefunden haben und weiter benutzen möchten, können Sie das komplette Handbuch und einen Schlüssel zur dauerhaften Freischaltung von
-AktienMan bei AktienMan&Friends direkt im Internet bestellen. AktienMan&Friends liefert dann die Anleitung und den notwendigen Freischalt-Schlüssel mit einer Rechnung über DM 79,-- (EUR 40,39) inkl. 16% Mwst. an Ihre Adresse. Mit der Bestellung sind Sie automatisch für AktienMan bei AktienMan&Friends registriert.
+Sie können jederzeit eine aktuelle Version von AktienMan aus dem Internet von der Seite http://www.aktienman.de herunterladen. Wenn Sie Gefallen an AktienMan gefunden haben und dauerhaft benutzen möchten, können Sie das komplette Handbuch und einen Schlüssel zur Freischaltung von AktienMan bei AktienMan&Friends direkt im Internet bestellen. AktienMan&Friends liefert dann die Anleitung und den notwendigen Freischalt-Schlüssel mit einer Rechnung über DM 79,-- (EUR 40,39) inkl. 16% Mwst. an Ihre Adresse. Mit der Bestellung sind Sie automatisch für AktienMan bei AktienMan&Friends registriert.
 
 Rechtliches
 AktienMan kann auf einem beliebigen Rechner/Betriebssystem eingesetzt werden. Es muß lediglich gewährleistet sein, daß AktienMan nur vom registrierten Benutzer zum Einsatz kommt. Jeder registrierte Benutzer kann für jeweils DM 50,-- (EUR 25,56) inkl. Mwst. weitere Schlüssel von AktienMan&Friends bestellen.
@@ -31,6 +29,11 @@ AktienMan kennt nun drei unabhängige Währungen, die bei Bedarf automatisch inein
 - die Listenwährung bestimmt, in welcher Währung die Aktien in der Liste des Hauptdialogs angezeigt werden; unten links im Hauptdialog kann man die Listenwährung umschalten.
 
 Versionsübersicht
+1999-03-29
+- Die DAX-Kamera und Intraday-Charts werden nun so skaliert, daß sie genau in ihr Fenster passen.
+- Im "Voreinstellungen"-Dialog gibt es nun die Option "%Jahr erst nach 360 Tagen Laufzeit berechnen".
+- Aktiennamen werden besser gekürzt
+- sonstige kleinere Änderungen
 1999-03-15
 - Das Aktualisieren der Fonds funktioniert wieder.
 - Die Intraday-Chart-Grafiken werden bei der Anzeige rechts nicht mehr abgeschnitten.
@@ -70,6 +73,6 @@ Versionsübersicht
 - Version 1.00
 
 Kontakt
-Bestellungen richten Sie bitte an <mailto:bestellung@aktienman.de>, am besten wickeln Sie Ihre Bestellung aber über die AktienMan-Homepage <http://www.aktienman.de> ab. Supportanfragen beantwortet <mailto:support@aktienman.de>.
+Bestellungen richten Sie bitte an bestellung@aktienman.de, am besten wickeln Sie Ihre Bestellung aber über die AktienMan-Homepage http://www.aktienman.de ab. Supportanfragen beantwortet support@aktienman.de.
 
 Viel Spaß & Erfolg mit AktienMan!

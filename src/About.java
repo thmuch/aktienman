@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-03-12
+ @version 1999-05-04
 */
 
 import java.awt.*;
@@ -23,7 +23,8 @@ public About() {
 
 public void setupFrame() {
 	setResizable(false);
-	aboutImage = getToolkit().getImage(FileUtil.findLocalFile(AMABOUT));
+	aboutImage = getToolkit().getImage(ClassLoader.getSystemResource(AMABOUT));
+//	aboutImage = getToolkit().getImage(FileUtil.findLocalFile(AMABOUT));
 }
 
 

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-03-25
+ @version 1999-05-06
 */
 
 
@@ -10,6 +10,7 @@ public final class SysUtil {
 private static final String OS_MAC     = "MACOS";
 private static final String OS_WINDOWS = "WINOS";
 private static final String OS_LINUX   = "LINUX";
+private static final String OS_2       = "OS2";
 
 
 
@@ -31,6 +32,11 @@ public static boolean isWindows() {
 }
 
 
+public static boolean isOS2() {
+	return (System.getProperty("os.name").indexOf("OS/2") >= 0);
+}
+
+
 public static String getOSString() {
 	if (isMacOS())
 	{
@@ -39,6 +45,10 @@ public static String getOSString() {
 	else if (isWindows())
 	{
 		return OS_WINDOWS;
+	}
+	else if (isOS2())
+	{
+		return OS_2;
 	}
 	else
 	{

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-03-25
+ @version 1999-05-07
 */
 
 import java.awt.*;
@@ -42,8 +42,14 @@ public void paint(Graphics g)
 	
 	if (AktienMan.daxImage != null)
 	{
-//		g.drawImage(AktienMan.daxImage,0,0,this);
-		g.drawImage(AktienMan.daxImage,0,0,d.width,d.height,this);
+		if (SysUtil.isWindows())
+		{
+			g.drawImage(AktienMan.daxImage,0,0,this);
+		}
+		else
+		{
+			g.drawImage(AktienMan.daxImage,0,0,d.width,d.height,this);
+		}
 	}
 }
 

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-29
+ @version 1999-05-04
 */
 
 import java.io.*;
@@ -35,10 +35,6 @@ public ComdirectLeser(String request, String baWKN, String baBoerse, boolean sof
 public void run() {
 	BufferedReader in = null;
 
-	/* #Ablaufdatum */
-	/* #Demoversion */
-//	if (!(new ADate().before(new ADate(1999,6,9))) && !AktienMan.hauptdialog.main()) return;
-
 	try
 	{
 		URL url = new URL(URLs.KURSE_COMDIRECT+request);
@@ -54,6 +50,7 @@ public void run() {
 		long vortageskurs = BenutzerAktie.VALUE_MISSING;
 		long handelsvolumen = 0L;
 		int i,i2,i3, status = 0;
+		boolean found = false;
 		
 		while ((s = in.readLine()) != null)
 		{
@@ -73,10 +70,11 @@ public void run() {
 					platz = s.substring(i3+1,i2).trim();
 
 					AktienMan.hauptdialog.listeAnfrageFalsch(wkn,platz,sofortZeichnen);
+					found = true;
 					break;
 				}
 
-				i = s.indexOf(".html?show=");
+				i = s.indexOf(".html?");
 				
 				if (i > 0)
 				{
@@ -117,10 +115,12 @@ public void run() {
 																		vortageskurs,eroeffnungskurs,
 																		hoechstkurs,tiefstkurs,handelsvolumen,
 																		kurswaehrung,sofortZeichnen);
+							found = true;
 						}
 						else
 						{
 							AktienMan.hauptdialog.listeAktienkursNA(wkn,kurz,platz,name,sofortZeichnen);
+							found = true;
 						}
 					}
 					
@@ -154,6 +154,7 @@ public void run() {
 							if (kstr.equalsIgnoreCase(ComdirectQuelle.VALUENA))
 							{
 								AktienMan.hauptdialog.listeAktienkursNA(wkn,kurz,platz,name,sofortZeichnen);
+								found = true;
 								
 								status = 0;
 								continue;
@@ -291,6 +292,11 @@ public void run() {
 					}
 				}
 			}
+		}
+		
+		if (!found)
+		{
+			AktienMan.hauptdialog.listeAnfrageFehler(request,baWKN,baBoerse,sofortZeichnen,nextID);
 		}
 	}
 	catch (MalformedURLException e)

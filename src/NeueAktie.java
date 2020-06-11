@@ -567,13 +567,6 @@ public synchronized boolean canOK() {
 		}
 	}
 
-	/* #Ablaufdatum */
-	/* #Demoversion */
-/*	if ((!(new ADate().before(new ADate(1999,6,10))))
-		&& (!(RegAM.string(AktienMan.properties.getString("Key.1"),
-			AktienMan.properties.getString("Key.2"),
-			AktienMan.properties.getString("Key.3")) < 0))) for(;;); */
-
 	return true;
 }
 

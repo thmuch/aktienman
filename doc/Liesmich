@@ -1,5 +1,5 @@
-AktienMan 1.25-beta (1999-03-29)
-Copyright (c)1998 by Thomas Much (thomas@aktienman.de)
+AktienMan 1.30-beta (1999-05-07)
+Copyright (c)1998,99 by Thomas Much (thomas@aktienman.de)
 
 
 History
@@ -59,7 +59,6 @@ todo
 // Aktien sofort nach Kauf bei Kaufwert-Summe berücksichtigen
 // Popuplisten: Choice mit fester Pixelrückgabe überschreiben
 // Realtime-Kurse von Comdirect
-// Aktienlisten etc. in XML speichern (Strings als UTF8)
 // Yahoo-Kursleser
 // beim Kaufen optional Gebühren errechnen
 // Charts auch von der Deuba abrufen
@@ -67,7 +66,24 @@ todo
 // auch Maximalskurs per Timer anzeigen
 // Liste/Portfolio mit Verkäufen
 // DAX-Kamera optional im Hauptfenster darstellen
+// Aktien verwalten, die keine WKN haben, d.h. deren Kurs manuell eingetragen werden muß
+// Aktienlisten etc. in XML speichern (Strings als UTF8)
+// Backupfunktion für Listen
 // neue Charts von Comdirect
+// Kurse auch von bbbank.de
+Version 1.30 (07.05.99)
+- Win etc: pop und gif in jar enthalten, Konsole wird nicht mehr geöffnet
+- da das Windows-Java offenbar Probleme mit dem Skalieren von Bildern hat, kann die
+  Windows-Version die DAX-Kamera und Intraday-Charts nicht mehr skalieren
+- OS/2-Anpassung (Update-Mechanismus) -> Windows-ZIP-Archiv!!!
+- besserer Mechanismus zum Laden von AktienMan.gif und AktienMan.pop, so daß sie unter
+  nicht-MacOS-Systemen aus der jar-Datei geladen werden können
+- bei nicht-MacOS-Systemen erscheint "Über AktienMan" nun im Hilfe-Menü
+- Aktienlisten können wieder aktualisiert werden
+- Comdirect-Charts und -Kurse werden wieder geladen
+- Fonds können wieder an DeuBa aktualisiert werden
+- Fehler bei den Kurslesern werden nun besser erkannt
+- Debugoption eingebaut
 Version 1.25 (29.03.99)
 - DAX-Kamera und Intraday-Charts werden nun an die Fenstergröße angepaßt
 - "Voreinstellungen": Neue Option "%Jahr erst nach 360 Tagen berechnen"
@@ -537,19 +553,9 @@ Version 0.10 (06.08.98)
 - erste "öffentliche" Betaversion
 
 
-/* #Ablaufdatum
-- AktienMan.main(int)
-- Hauptdialog.listeAktualisieren() (2x)
-- Hauptdialog.listeSelektierteAktieAktualisieren()
-- ComdirectLeser.run()
-- DeutscheBankLeser.run()
-- NeueAktie.canOK()
-- Lang */
-
 /* #Demoversion */
 - AktienMan.main(int)
 - AktienMan.main(String[])
-- Hauptdialog.setupElements()
 - Hauptdialog.listeNeueAktie()
 - Hauptdialog.listeAktualisieren() (2x)
 - Hauptdialog.listeSelektierteAktieAktualisieren()

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-29
+ @version 1999-05-04
 */
 
 import java.io.*;
@@ -39,6 +39,7 @@ public void run() {
 		long kurs = BenutzerAktie.VALUE_NA;
 		long handelsvolumen = 0L;
 		int status = 0;
+		boolean found = false;
 		
 		while ((s = in.readLine()) != null)
 		{
@@ -47,6 +48,7 @@ public void run() {
 				if (s.indexOf(" keine Ergebnisse ") > 0)
 				{
 					parent.setKurs(index,BenutzerAktie.VALUE_NA);
+					found = true;
 					break;
 				}
 
@@ -61,6 +63,7 @@ public void run() {
 				if (s.indexOf("</TR>") >= 0)
 				{
 					parent.setKurs(index,BenutzerAktie.VALUE_NA);
+					found = true;
 					status = 0;
 				}
 				else
@@ -79,6 +82,7 @@ public void run() {
 							if (kstr.equalsIgnoreCase(DeutscheBankQuelle.VALUENA))
 							{
 								parent.setKurs(index,BenutzerAktie.VALUE_NA);
+								found = true;
 								break;
 							}
 
@@ -122,6 +126,7 @@ public void run() {
 							int kurswaehrung = Waehrungen.getOnlineWaehrung();
 							
 							parent.setKurs(index,kurs,kursdatum,kurswaehrung,handelsvolumen);
+							found = true;
 							break;
 						}
 
@@ -129,6 +134,11 @@ public void run() {
 					}
 				}
 			}
+		}
+		
+		if (!found)
+		{
+			parent.setKurs(index,BenutzerAktie.VALUE_ERROR,nextID);
 		}
 	}
 	catch (MalformedURLException e)
