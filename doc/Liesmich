@@ -1,4 +1,4 @@
-AktienMan 1.22-beta (1999-02-22)
+AktienMan 1.23-beta (1999-03-02)
 Copyright (c)1998 by Thomas Much (thomas@aktienman.de)
 
 >>>>> BETAVERSION, L€UFT AM 8.5.1999 AB <<<<<
@@ -55,12 +55,19 @@ todo
 // PoFo-Umschalten beim allerersten Start nicht mšglich (wenn AktienMan.lst fehlt) (?)
 // Win: passendes Programmicon
 // bei jedem Aktualisieren Thread starten, der aktuelle Umtauschkurse ermittelt
-Version 1.23 (.03.99)
+Version 1.24 (.03.99)
+// Aktien sofort nach Kauf bei Kaufwert-Summe berŸcksichtigen
+// Austausch der lst-Dateien noch mšglich?
 // beim Kaufen optional GebŸhren errechnen
 // Anzeige unwichtiger Spalten ausschaltbar
 // Voreinstellungen: CardLayout
 // šS
-- nach HTML-Export Browser (derzeit nur Netscape) nachstarten (nur Mac, ab MRJ 2.1)
+// nach HTML-Export Browser (derzeit nur Netscape) nachstarten (nur Mac, ab MRJ 2.1)
+Version 1.23 (02.03.99)
+- unter jedem Portfolio, in der Summenzeile und beim HTML-Export wird nun die Gesamtperformance
+  des Portfolios angegeben
+- die 6/12/24-Monats-Charts kšnnen nun wieder geladen werden
+- HTML-Export optimiert
 Version 1.22 (22.02.99)
 - wenn AktienMan.pop nicht existiert, werden die Popups beim Mac intern aus der Programmdatei
   geladen; unter Windows wird versucht, AktienMan.pop aus dem Programmverzeichnis zu laden

@@ -10,7 +10,7 @@ Wer bisher jeden Tag die aktuellen Kurse seiner Aktien aus n-tv, T-Online oder d
 
 Installation
 Systemvoraussetzung für AktienMan/Mac sind ein Apple PowerMacintosh mit mindestens 166 Mhz Systemtakt, das Betriebssystem MacOS in der Version 8.0 oder höher sowie ein fertig installiertes "Macintosh Runtime for Java" (MRJ) in der Version 2.1 (oder höher).
-Normalerweise wird MRJ 2.0 bei der Installation von MacOS 8.1 bzw. 8.5 automatisch mitinstalliert. Diese Version ist jedoch fehlerhaft, so daß wir dringend zu MRJ 2.1 raten müssen, auch wenn es sich dabei derzeit noch um eine Betaversion handelt. Auf der AktienMan-Homepage finden Sie einen Link zu Apples MRJ-Seiten, wo auch MRJ 2.1 erhältlich ist.
+Normalerweise wird MRJ 2.0 bei der Installation von MacOS 8.1 bzw. 8.5 automatisch mitinstalliert. Diese Version ist jedoch fehlerhaft, so daß wir dringend zu MRJ 2.1 raten müssen. Apple stellt MRJ 2.1 unter <http://www.apple.com/java/> zum kostenlosen Download zur Verfügung, ebenso finden Sie auf der AktienMan-Homepage Verweise auf die entsprechenden Archive.
 Die eigentliche Installation von AktienMan ist denkbar einfach: Sie haben das AktienMan-Archiv bereits heruntergeladen und mit StuffIt ausgepackt. Das war es auch schon, eine weitere Installation ist nicht notwendig! Klicken Sie einfach doppelt auf das Programmsymbol "AktienMan". AktienMan wird geladen, und nach wenigen Sekunden - abhängig von der Geschwindigkeit des Rechners - erscheint das Hauptfenster. Wer mit dem Aktienhandel bereits vertraut ist, sollte AktienMan weitestgehend intuitiv bedienen können. Und ansonsten erhält man nach der Registrierung natürlich ein gedrucktes Handbuch.
 
 Einschränkungen der Demo-Version
@@ -32,7 +32,8 @@ AktienMan kennt nun drei unabhängige Währungen, die bei Bedarf automatisch inein
 
 Versionsübersicht
 1999-02-22
-- 
+- AktienMan besitzt intern nun Standard-Aktienlisten (AktienMan.pop), die verwendet werden, wenn der Benutzer die Aktienmenüs bisher noch nicht aktualisiert hat
+- Mindest-Maklercourtage bei "Aktie verkaufen" auf 0,75 EUR korrigiert
 1999-02-12
 - Fehler in der Laufzeitberechnung behoben (bei einer Laufzeit von 12 Monaten wurde nur "11" angezeigt)
 - Fehler beim Aktien-Beobachten behoben (bei Kaufwährung DEM und fehlender Kaufkursangabe war der automatisch zugewiesene Kaufkurs halbiert)

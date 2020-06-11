@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-02-10
+ @version 1999-02-24
 */
 
 import java.awt.*;
@@ -824,17 +824,24 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 		out.write("<TR>");
 		out.newLine();
 
-		out.write("  <TD ALIGN=LEFT>");
+		out.write("  <TD ALIGN=\"left\">");
 		out.write(HTMLUtil.toHTML(getName(namenKurz)));
 		out.write("</TD>");
 		out.newLine();
 
-		out.write("  <TD ALIGN=RIGHT>");
-		if (!nurBeobachten()) out.write(HTMLUtil.toHTML(getStueckzahlString()));
+		out.write("  <TD ALIGN=\"right\">");
+		if (nurBeobachten())
+		{
+			out.write("&nbsp;");
+		}
+		else
+		{
+			out.write(HTMLUtil.toHTML(getStueckzahlString()));
+		}
 		out.write("</TD>");
 		out.newLine();
 		
-		out.write("  <TD ALIGN=RIGHT>");
+		out.write("  <TD ALIGN=\"right\">");
 		s = getKaufkursString();
 		if (nurBeobachten() && (getKaufkurs() > 0L))
 		{
@@ -849,7 +856,7 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 			kaufsumme += diff;
 		}
 
-		out.write("  <TD ALIGN=RIGHT>");
+		out.write("  <TD ALIGN=\"right\">");
 		out.write(HTMLUtil.toNbspHTML(kursString));
 		out.write("</TD>");
 		out.newLine();
@@ -862,14 +869,14 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 		{
 			s = "";
 		}
-		out.write("  <TD ALIGN=CENTER>");
+		out.write("  <TD ALIGN=\"center\">");
 		out.write(HTMLUtil.toHTML(s));
 		out.write("</TD>");
 		out.newLine();
 
 		if (nurBeobachten())
 		{
-			sk = "";
+			sk = " ";
 		}
 		else if (aktKurs > 0L)
 		{
@@ -883,7 +890,7 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 		{
 			sk = kursString;
 		}
-		out.write("  <TD ALIGN=RIGHT>");
+		out.write("  <TD ALIGN=\"right\">");
 		out.write(HTMLUtil.toNbspHTML(sk));
 		out.write("</TD>");
 		out.newLine();
@@ -903,12 +910,12 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 		{
 			sk = kursString;
 		}
-		out.write("  <TD ALIGN=RIGHT>");
+		out.write("  <TD ALIGN=\"right\">");
 		out.write(HTMLUtil.toNbspHTML(sk));
 		out.write("</TD>");
 		out.newLine();
 
-		out.write("  <TD ALIGN=RIGHT>");
+		out.write("  <TD ALIGN=\"right\">");
 		if (nameSteuerfrei && istSteuerfrei() && (!nurBeobachten()))
 		{
 			out.write("steuerfrei");
@@ -937,7 +944,7 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 			pabs = 0L;
 			sk = kursString;
 		}
-		out.write("  <TD ALIGN=RIGHT>");
+		out.write("  <TD ALIGN=\"right\">");
 		out.write(HTMLUtil.toHTML(sk));
 		out.write("</TD>");
 		out.newLine();
@@ -964,17 +971,17 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 		{
 			sk = STR_1JAHR;
 		}
-		out.write("  <TD ALIGN=RIGHT>");
+		out.write("  <TD ALIGN=\"right\">");
 		out.write(HTMLUtil.toNbspHTML(sk));
 		out.write("</TD>");
 		out.newLine();
 
-		out.write("  <TD ALIGN=RIGHT>");
+		out.write("  <TD ALIGN=\"right\">");
 		out.write(HTMLUtil.toHTML(getKaufdatum().toString()));
 		out.write("</TD>");
 		out.newLine();
 
-		out.write("  <TD ALIGN=CENTER>");
+		out.write("  <TD ALIGN=\"center\">");
 		out.write(HTMLUtil.toHTML(getWKNString())+"<BR>"+HTMLUtil.toHTML(getBoerse()));
 		out.write("</TD>");
 		out.newLine();
@@ -993,7 +1000,7 @@ public synchronized static void saveHeaderHTML(BufferedWriter out, String aktual
 		out.write("<TR>");
 		out.newLine();
 
-		out.write("  <TD COLSPAN="+HTMLCOLS+">");
+		out.write("  <TD COLSPAN=\""+HTMLCOLS+"\">");
 		out.write(HTMLUtil.toHTML(aktualisierung));
 		out.write("</TD>");
 		out.newLine();
@@ -1005,57 +1012,57 @@ public synchronized static void saveHeaderHTML(BufferedWriter out, String aktual
 		out.write("<TR>");
 		out.newLine();
 
-		out.write("  <TH ALIGN=LEFT>");
+		out.write("  <TH ALIGN=\"left\">");
 		out.write("Aktienname");
 		out.write("</TH>");
 		out.newLine();
 
-		out.write("  <TH ALIGN=CENTER>");
+		out.write("  <TH ALIGN=\"center\">");
 		out.write("St&uuml;ck");
 		out.write("</TH>");
 		out.newLine();
 
-		out.write("  <TH ALIGN=CENTER>");
+		out.write("  <TH ALIGN=\"center\">");
 		out.write("Kaufkurs");
 		out.write("</TH>");
 		out.newLine();
 
-		out.write("  <TH ALIGN=CENTER COLSPAN=2>");
+		out.write("  <TH ALIGN=\"center\" COLSPAN=\"2\">");
 		out.write("akt. Kurs");
 		out.write("</TH>");
 		out.newLine();
 
-		out.write("  <TH ALIGN=CENTER>");
+		out.write("  <TH ALIGN=\"center\">");
 		out.write("akt. Wert");
 		out.write("</TH>");
 		out.newLine();
 
-		out.write("  <TH ALIGN=CENTER>");
+		out.write("  <TH ALIGN=\"center\">");
 		out.write("Differenz");
 		out.write("</TH>");
 		out.newLine();
 
-		out.write("  <TH ALIGN=CENTER>");
+		out.write("  <TH ALIGN=\"center\">");
 		out.write("Laufzeit");
 		out.write("</TH>");
 		out.newLine();
 
-		out.write("  <TH ALIGN=CENTER>");
+		out.write("  <TH ALIGN=\"center\">");
 		out.write("%<BR>absolut");
 		out.write("</TH>");
 		out.newLine();
 
-		out.write("  <TH ALIGN=CENTER>");
+		out.write("  <TH ALIGN=\"center\">");
 		out.write("%<BR>Jahr");
 		out.write("</TH>");
 		out.newLine();
 
-		out.write("  <TH ALIGN=CENTER>");
+		out.write("  <TH ALIGN=\"center\">");
 		out.write("Kaufdatum");
 		out.write("</TH>");
 		out.newLine();
 
-		out.write("  <TH ALIGN=CENTER>");
+		out.write("  <TH ALIGN=\"center\">");
 		out.write("WKN<BR>B&ouml;rse");
 		out.write("</TH>");
 		out.newLine();
@@ -1078,23 +1085,23 @@ public synchronized static void saveFooterHTML(BufferedWriter out) {
 		out.write("<TR>");
 		out.newLine();
 
-		out.write("  <TD COLSPAN=2 ALIGN=RIGHT>Summe Kaufwert:</TD>");
+		out.write("  <TD COLSPAN=\"2\" ALIGN=\"right\">Summe Kaufwert:</TD>");
 		out.newLine();
 		
-		out.write("  <TD ALIGN=RIGHT>");
+		out.write("  <TD ALIGN=\"right\">");
 		out.write(HTMLUtil.toNbspHTML(Waehrungen.getString(kaufsumme,Waehrungen.getListenWaehrung())));
 		out.write("</TD>");
 		out.newLine();
 
-		out.write("  <TD COLSPAN=2 ALIGN=RIGHT>Summe aktuell:</TD>");
+		out.write("  <TD COLSPAN=\"2\" ALIGN=\"right\">Summe aktuell:</TD>");
 		out.newLine();
 
-		out.write("  <TD ALIGN=RIGHT>");
+		out.write("  <TD ALIGN=\"right\">");
 		out.write(HTMLUtil.toNbspHTML(Waehrungen.getString(aktsumme,Waehrungen.getListenWaehrung())));
 		out.write("</TD>");
 		out.newLine();
 
-		out.write("  <TD COLSPAN="+(HTMLCOLS-6)+"></TD>");
+		out.write("  <TD COLSPAN=\""+(HTMLCOLS-6)+"\">&nbsp;</TD>");
 		out.newLine();
 
 		out.write("</TR>");
@@ -1104,16 +1111,37 @@ public synchronized static void saveFooterHTML(BufferedWriter out) {
 		out.write("<TR>");
 		out.newLine();
 
-		out.write("  <TD COLSPAN=6 ALIGN=RIGHT>Differenz zum Kaufwert:</TD>");
+		out.write("  <TD COLSPAN=\"6\" ALIGN=\"right\">Differenz zum Kaufwert:</TD>");
 		out.newLine();
 
-		out.write("  <TD ALIGN=RIGHT>");
+		out.write("  <TD ALIGN=\"right\">");
 		out.write(HTMLUtil.toNbspHTML(Waehrungen.getString(aktsumme-kaufsumme,Waehrungen.getListenWaehrung())));
 		out.write("</TD>");
 		out.newLine();
+		
+		if (kaufsumme > 0L)
+		{
+			out.write("  <TD COLSPAN=\"2\" ALIGN=\"right\">");
 
-		out.write("  <TD COLSPAN="+(HTMLCOLS-7)+"></TD>");
-		out.newLine();
+			long kdif = ((aktsumme * 10000L) / kaufsumme) - 10000L;
+			if (kdif > 0L) kdif += 5L;
+			else if (kdif < 0L) kdif -= 5L;
+			kdif /= 10L;
+			String percdif = new Double((double)kdif/10.0).toString();
+			if (kdif > 0L) percdif = "+" + percdif;
+			out.write(HTMLUtil.toNbspHTML(percdif));
+
+			out.write("</TD>");
+			out.newLine();
+			
+			out.write("  <TD COLSPAN=\""+(HTMLCOLS-9)+"\">&nbsp;</TD>");
+			out.newLine();
+		}
+		else
+		{
+			out.write("  <TD COLSPAN=\""+(HTMLCOLS-7)+"\">&nbsp;</TD>");
+			out.newLine();
+		}
 
 		out.write("</TR>");
 		out.newLine();
@@ -1123,10 +1151,16 @@ public synchronized static void saveFooterHTML(BufferedWriter out) {
 }
 
 
-public synchronized static void addSummen(Panel pTxt, String akt, String dif, boolean isRed) {
+public synchronized static void addSummen(Panel pTxt, String akt, String dif, String percdif, boolean isRed) {
 	AFrame.constrain(pTxt,new Label("Summe aktuell:"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	AFrame.constrain(pTxt,new Label(akt),1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,2,0,0);
 	AFrame.constrain(pTxt,new Label("Differenz zum Kaufwert:"),2,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,18,0,0);
+	
+	if (percdif.length() > 0)
+	{
+		dif += "  (" + percdif + "%)";
+	}
+	
 	Label l = new Label(dif);
 	if (isRed) l.setForeground(Color.red);
 	AFrame.constrain(pTxt,l,3,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,2,0,0);
@@ -1145,7 +1179,7 @@ public synchronized static void addFooterToPanel(Panel p, int y, Panel pTxt) {
 	
 	long d = aktsumme-kaufsumme;
 	String dif = Waehrungen.getString(d,Waehrungen.getListenWaehrung());
-	Label l = new Label(dif,Label.RIGHT);
+	Label l = new Label("  " + dif,Label.RIGHT);
 	if (d < 0L)
 	{
 		l.setForeground(Color.red);
@@ -1154,9 +1188,32 @@ public synchronized static void addFooterToPanel(Panel p, int y, Panel pTxt) {
 	{
 		l.setForeground(Color.green.darker());
 	}
-	AFrame.constrain(p,l,6,y+1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,10,0,0);
+	AFrame.constrain(p,l,6,y+1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,0,0,0);
 	
-	addSummen(pTxt,akt,dif,(d<0.0));
+	String percdif = "";
+
+	if (kaufsumme > 0L)
+	{
+		long kdif = ((aktsumme * 10000L) / kaufsumme) - 10000L;
+		if (kdif > 0L) kdif += 5L;
+		else if (kdif < 0L) kdif -= 5L;
+		kdif /= 10L;
+		percdif = new Double((double)kdif/10.0).toString();
+		if (kdif > 0L) percdif = "+" + percdif;
+		
+		l = new Label("  " + percdif,Label.RIGHT);
+		if (kdif > 0L)
+		{
+			l.setForeground(Color.green.darker());
+		}
+		else if (kdif < 0L)
+		{
+			l.setForeground(Color.red);
+		}
+		AFrame.constrain(p,l,8,y+1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,0,0,0);
+	}
+	
+	addSummen(pTxt,akt,dif,percdif,(d<0.0));
 }
 
 

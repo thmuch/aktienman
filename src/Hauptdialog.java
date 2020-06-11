@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-02-20
+ @version 1999-02-23
 */
 
 import java.awt.*;
@@ -289,7 +289,7 @@ public void setupElements() {
 	constrain(panelUMitte,buttonAendern,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,10,0,0);
 	constrain(panelUMitte,buttonMaxkurs,2,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,10,0,0);
 	
-	BenutzerAktie.addSummen(panelText,"-----","-----",false);
+	BenutzerAktie.addSummen(panelText,"-----","-----","",false);
 	
 	pane = new ScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED);
 	pane.add(panelListe);
@@ -1363,7 +1363,7 @@ public synchronized void listeSelektierteAktieChart(String monate) {
 	{
 		if (getAktieNr(i).isSelected())
 		{
-			new ChartLeser(getAktieNr(i).getRequest(""),monate).start();
+			new ComdirectChartLeser(getAktieNr(i).getRequest(""),monate).start();
 			break;
 		}
 	}

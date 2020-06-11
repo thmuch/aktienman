@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-19
+ @version 1999-02-23
 */
 
 import java.awt.*;
@@ -211,7 +211,7 @@ private synchronized void switchImage(String monate) {
 		
 		if (newChart == null)
 		{
-			new ChartLoader(this,comstr1+aktMonate+comstr2,false).start();
+			new ComdirectChartLoader(this,comstr1 + aktMonate + comstr2).start();
 		}
 		else
 		{

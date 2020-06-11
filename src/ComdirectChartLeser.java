@@ -1,15 +1,14 @@
 /**
  @author Thomas Much
- @version 1999-01-20
+ @version 1999-02-23
 */
 
 import java.net.*;
-import java.awt.*;
 import java.io.*;
 
 
 
-public final class ChartLeser extends Thread {
+public final class ComdirectChartLeser extends Thread {
 
 private String request;
 private String monate;
@@ -17,7 +16,7 @@ private ChartViewer chartviewer;
 
 
 
-public ChartLeser(String request, String monate) {
+public ComdirectChartLeser(String request, String monate) {
 	super();
 	this.request = request;
 	this.monate = monate;
@@ -29,10 +28,10 @@ public void run() {
 	boolean valid = false;
 
 	chartviewer = new ChartViewer(null,"Chart "+request,monate,400,330,ChartViewer.TYPE_COMDIRECT);
-
+	
 	try
 	{
-		URL url = new URL(URLs.CHART_TELEDATA+request);
+		URL url = new URL(URLs.KURSE_COMDIRECT+request);
 		
 		in = new BufferedReader(new InputStreamReader(url.openStream()));
 
@@ -40,31 +39,27 @@ public void run() {
 		
 		while ((s = in.readLine()) != null)
 		{
-			if (s.indexOf("asgw?COMDIRECTGIF") > 0)
+			int i = s.indexOf(".html?show=");
+			
+			if (i > 0)
 			{
-				int i = s.indexOf("http://");
-				
-				if (i > 0)
-				{
-					int i2 = s.indexOf("COMDIRECTGIF");
-					int i3 = s.indexOf(';',i2);
-					int i4 = s.indexOf('"',i3);
-					
-					String s1 = s.substring(i,i2) + "COMDIRECT";
-					String s2 = "GIF&" + s.substring(i3+1,i4);
-					
-					chartviewer.setComdirectStrings(s1,s2);
+				int i2 = s.indexOf("\"",i);
 
-					new ChartLoader(chartviewer,s1+monate+s2,false).start();
-					valid = true;
-					break;
-				}
+				String s1 = URLs.CHART_COMDIRECT;
+				String s2 = s.substring(i,i2);
+				
+				chartviewer.setComdirectStrings(s1,s2);
+
+				new ComdirectChartLoader(chartviewer,s1+monate+s2).start();
+
+				valid = true;
+				break;
 			}
 		}
 	}
 	catch (MalformedURLException e)
 	{
-		System.out.println("Teledata-URL fehlerhaft.");
+		System.out.println("Comdirect-Chart-URL fehlerhaft.");
 	}
 	catch (IOException e) {}
 	finally
