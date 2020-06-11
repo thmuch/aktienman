@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-02
+ @version 1999-01-15
 */
 
 import java.awt.*;
@@ -10,7 +10,7 @@ import java.util.*;
 
 
 
-public class About extends AFrame {
+public final class About extends AFrame {
 
 public static Image aboutImage;
 

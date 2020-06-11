@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-20
+ @version 1999-01-15
 */
 
 import java.awt.*;
@@ -8,7 +8,7 @@ import java.awt.event.*;
 
 
 
-public class AktieInfo extends AFrame {
+public final class AktieInfo extends AFrame {
 
 private Panel panelInfo;
 private BenutzerAktie ba;

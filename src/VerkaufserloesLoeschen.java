@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-02
+ @version 1999-02-04
 */
 
 import java.awt.*;
@@ -8,14 +8,14 @@ import java.awt.event.*;
 
 
 
-public class VerkaufserloesLoeschen extends AktienFrame {
+public final class VerkaufserloesLoeschen extends AktienFrame {
 
 private Button buttonJa;
 
 
 
 public VerkaufserloesLoeschen() {
-	super(AktienMan.AMFENSTERTITEL+"Gesamtaufwand l\u00f6schen",-1,null);
+	super(AktienMan.AMFENSTERTITEL+"Gesamtaufwand l\u00f6schen");
 }
 
 

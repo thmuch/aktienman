@@ -1,5 +1,5 @@
-AktienMan 1.0
-Copyright ©1998 Thomas Much
+AktienMan Euro MP 1.20
+Copyright ©1998,99 Thomas Much
 Ein Programm von AktienMan&Friends (<http://www.aktienman.de>).
 
 Zielsetzung
@@ -9,22 +9,36 @@ Einsatzbereiche
 Wer bisher jeden Tag die aktuellen Kurse seiner Aktien aus n-tv, T-Online oder dem Internet ermittelte und ausrechnen mußte, welchen Wert die eigenen Aktien im Einzelnen und insgesamt haben, wird von AktienMan spürbar entlastet. Ein kurzer Klick auf den Knopf "Aktualisieren" genügt, und AktienMan holt sich alle aktuellen Kurse von allen deutschen Börsen automatisch aus dem Internet und berechnet den Wert des eigenen Portfolios. Zusätzlich können die Kaufs- und Verkaufskosten der wichtigsten deutschen Banken berechnet werden.
 
 Installation
-Systemvoraussetzung für AktienMan/Mac sind ein Apple PowerMacintosh mit mindestens 166 Mhz Systemtakt, das Betriebssystem MacOS in der Version 8.0 oder höher sowie ein fertig installiertes "Macintosh Runtime for Java" (MRJ) in der Version 2.0 (oder höher).
-Normalerweise wird MRJ 2.0 bei der Installation von MacOS 8.1 bzw. 8.5 automatisch mitinstalliert. Haben sie MRJ dennoch nicht installiert, legen Sie bitte Ihre MacOS-System-CD ein und lassen MRJ vom Aktualisierer nachträglich installieren.
+Systemvoraussetzung für AktienMan/Mac sind ein Apple PowerMacintosh mit mindestens 166 Mhz Systemtakt, das Betriebssystem MacOS in der Version 8.0 oder höher sowie ein fertig installiertes "Macintosh Runtime for Java" (MRJ) in der Version 2.1 (oder höher).
+Normalerweise wird MRJ 2.0 bei der Installation von MacOS 8.1 bzw. 8.5 automatisch mitinstalliert. Diese Version ist jedoch fehlerhaft, so daß wir dringend zu MRJ 2.1 raten müssen, auch wenn es sich dabei derzeit noch um eine Betaversion handelt. Auf der AktienMan-Homepage finden Sie einen Link zu Apples MRJ-Seiten, wo auch MRJ 2.1 erhältlich ist.
 Die eigentliche Installation von AktienMan ist denkbar einfach: Sie haben das AktienMan-Archiv bereits heruntergeladen und mit StuffIt ausgepackt. Das war es auch schon, eine weitere Installation ist nicht notwendig! Klicken Sie einfach doppelt auf das Programmsymbol "AktienMan". AktienMan wird geladen, und nach wenigen Sekunden - abhängig von der Geschwindigkeit des Rechners - erscheint das Hauptfenster. Wer mit dem Aktienhandel bereits vertraut ist, sollte AktienMan weitestgehend intuitiv bedienen können. Und ansonsten erhält man nach der Registrierung natürlich ein gedrucktes Handbuch.
 
 Einschränkungen der Demo-Version
-Die wesentlichste Einschränkung der Demo-Version ist, daß sie nach dem 21.12.98 ihren Dienst verweigert. Sie können dann entweder eine aktuelle Demoversion herunterladen (müssen dann aber alle Aktiendaten neu eingeben), oder aber sie lassen sich registrieren.
-In der Demo-Version können außerdem max. drei Aktien verwaltet werden.
+Die wesentlichste Einschränkung der Demo-Version ist, daß sie nach dem 8.4.99 ihren Dienst verweigert. Sie können dann entweder eine aktuelle Demoversion herunterladen (müssen dann aber alle Aktiendaten neu eingeben), oder aber sie lassen sich registrieren.
+In der Demo-Version können außerdem maximal drei Aktien in einem einzigen Portfolio verwaltet werden.
 
 Bestellung der Vollversion
-Sie können jederzeit eine aktuelle Version von AktienMan aus dem Internet von der Seite <http://www.aktienman.de> herunterladen. Diese Version funktioniert über eine Dauer von zwei Wochen und kann in dieser Zeit kostenlos benutzt werden. Nach zwei Wochen läuft die Version ab. Wenn Sie Gefallen an AktienMan gefunden haben und weiter benutzen möchten, können Sie das komplette Handbuch und einen Schlüssel zur dauerhaften Freischaltung von
-AktienMan bei AktienMan&Friends direkt im Internet bestellen. AktienMan&Friends liefert dann die Anleitung und den notwendigen Freischalt-Schlüssel mit einer Rechnung über DM 79,-- (inkl. 16% Mwst.) an Ihre Adresse. Mit der Bestellung sind Sie automatisch für AktienMan bei AktienMan&Friends registriert.
+Sie können jederzeit eine aktuelle Version von AktienMan aus dem Internet von der Seite <http://www.aktienman.de> herunterladen. Diese Version funktioniert über eine Dauer von ca. vier Wochen und kann in dieser Zeit kostenlos benutzt werden. Danach läuft die Version ab. Wenn Sie Gefallen an AktienMan gefunden haben und weiter benutzen möchten, können Sie das komplette Handbuch und einen Schlüssel zur dauerhaften Freischaltung von
+AktienMan bei AktienMan&Friends direkt im Internet bestellen. AktienMan&Friends liefert dann die Anleitung und den notwendigen Freischalt-Schlüssel mit einer Rechnung über DM 79,-- (EUR 40,39) inkl. 16% Mwst. an Ihre Adresse. Mit der Bestellung sind Sie automatisch für AktienMan bei AktienMan&Friends registriert.
 
 Rechtliches
-AktienMan kann auf einem beliebigen Rechner/Betriebssystem eingesetzt werden. Es muß lediglich gewährleistet sein, daß AktienMan nur vom registrierten Benutzer zum Einsatz kommt. Jeder registrierte Benutzer kann für jeweils DM 50,-- (inkl. Mwst.) weitere Schlüssel von AktienMan&Friends bestellen.
+AktienMan kann auf einem beliebigen Rechner/Betriebssystem eingesetzt werden. Es muß lediglich gewährleistet sein, daß AktienMan nur vom registrierten Benutzer zum Einsatz kommt. Jeder registrierte Benutzer kann für jeweils DM 50,-- (EUR 25,56) inkl. Mwst. weitere Schlüssel von AktienMan&Friends bestellen.
+
+Hinweise zur Euro-Version
+AktienMan kennt nun drei unabhängige Währungen, die bei Bedarf automatisch ineinander umgerechnet werden:
+- die Online-Währung: Seit dem 4.1.99 werden Aktien an deutschen Börsen nur noch in EUR notiert, dementsprechend werden die Online-Aktienkurse nur noch in EUR geliefert
+- die Kaufwährung ist bei 1999 gekauften Aktien EUR; um alte Aktien verwalten zu können, kann man bei solchen Aktien auch noch DEM als Kaufwährung eintragen; wichtig ist die Kaufwährung in den Dialogen "Aktie kaufen" und "Aktie ändern", alle dort eingetragenen Geldbeträge sind in der Kaufwährung zu verstehen, die man in diesen beiden Dialogen auch umschalten kann
+- die Listenwährung bestimmt, in welcher Währung die Aktien in der Liste des Hauptdialogs angezeigt werden; unten links im Hauptdialog kann man die Listenwährung umschalten.
 
 Versionsübersicht
+1999-02-08
+- 
+1999-01-05
+- AktienMan ist nun komplett Euro-fähig
+- im Maximalkurs-Dialog wird auch das Handelsvolumen angezeigt
+- im Kontextpopup kann eine einzelne Aktie aktualisiert werden
+- Fehler in der Laufzeitberechnung behoben (nach einem Jahreswechsel war die Laufzeit einen Monat zu lang)
+- wie immer: kleinere Korrekturen und Optimierungen
 1998-12-21
 - im Dialog "Konfiguration" kann die Spekulationsfrist von 6 auf 12 Monate umgestellt werden, falls der Gesetzgeber das entsprechende Gesetz beschließt
 - fehlerhafte Onlinedaten werden besser erkannt

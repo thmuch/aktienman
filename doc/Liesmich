@@ -1,24 +1,7 @@
-AktienMan 1.10-beta (1999-01-05)
+AktienMan 1.20-beta (1999-02-08)
 Copyright (c)1998 by Thomas Much (thomas@aktienman.de)
 
->>>>> BETAVERSION, LÄUFT AM 8.2.1999 AB <<<<<
-
-
-Systemanforderungen:
-- Mac: Apple MRJ 2.x, MacOS 8.x
-- Win: Win 95/98/NT, IE4 (bzw. JVIEW.EXE von 1997 oder neuer)
-
-Dateien:
-- AktienMan: Binary für den Mac
-- AktienMan.exe, AktienMan.jar: Binaries für Win
-- AktienMan.cfg: Konfigurationsdaten (wird automatisch angelegt)
-- AktienMan.lst: Aktienliste (wird automatisch angelegt)
-- AktienMan.pop: Aktienpopups (wird automatisch angelegt)
-
-Bekannte Probleme:
-- die Warnalerts sind leider unmodal, da MRJ beim Schließen modaler Dialoge das System
-  aufhängt und die MW-VM dabei ab und zu abstürzt...; als "Ausgleich" werden nicht sofort
-  geschlossene Warnalerts zusammen mit dem Parentdialog geschlossen
+>>>>> BETAVERSION, LÄUFT AM 8.4.1999 AB <<<<<
 
 
 History
@@ -29,7 +12,6 @@ Mac-Bugs
 //
 Win-Bugs
 // Chartfenster werden minimal zu klein geöffnet
-// Umschalten bei 6/12/24-Charts geht nicht
 // unter Win98 fehlt der erste Redraw, wenn .lst nicht vorhanden ist (?)
 Linux-Bugs
 // alle Dialoge (bis auf DAX-Kamera) werden direkt nach dem Öffnen wieder geschlossen
@@ -43,7 +25,6 @@ todo
 // Backup der Listendaten
 // ADate: Sommerzeit beachten
 // -> Checkbox für Sommerzeit
-// Differenz zum Vortageskurs (von comdirect)
 // Konfig-Dialog zur Auswahl, welche Spalten angezeigt werden
 // Börsen konfigurierbar machen
 // HTML-Export mit Farben
@@ -60,15 +41,71 @@ todo
 // beim Kaufen optional Gebühren errechnen
 // € statt EUR anzeigen (oder Zeichen[kette] einstellbar machen)
 // Verfall der Listendaten (bei Demoversion)
-// mehrere Portfolios verwalten
-// bei "Aktie kaufen" und "ändern" Währung anzeigen
-// Redraw per Thread, der alle ca. 5 Sekunden aktualisiert
-// Zeilenweise aktualisieren?
-// Konfiguration: Kurse automatisch aktualisieren alle XXX Minuten
+// Spalte für +/-% zum Vortag (direkt von Comdirect übernehmen)
 // Info: Button "Zurücksetzen"
 // Maximalkurs: Button "Aktualisieren"
+// bei "Aktie kaufen" und "ändern" Währung anzeigen
+// Speicherung von x Börsentagen incl. Mini-Chart (gleitender Durchschnitt)
+// Konfiguration: Allgemein, Anzeige, Spezial (Browser etc.)
+// S-DAX-Popup (im Sommer)
+// FSE-Abschaffung vorbereiten
+// separate Quelle für Charts: Comdirect, Deutsche Bank (incl. Intraday!)
+// Yahoo-Kursleser
+// KursQuelle incl. Abfrage der verfügbaren Börsenplätze
+// Online-Währung -> KursQuelle
+// Anzeige unwichtiger Spalten ausschaltbar
+// PoFo-Umschalten beim allerersten Start nicht möglich (wenn AktienMan.lst fehlt) (?)
+// neues Logo + Icon (?)
+Version 1.20 (08.02.99)
+- die Demoversion läuft bis zum 8.4.99
+- die Demoversion kann nur das Standard-Portfolio anzeigen/bearbeiten
+- "Konfiguration" heißt nun "Voreinstellungen"; passend dazu hat sich die Position im
+  "Bearbeiten"-Menü geändert
+- Portfolionamen können nicht mehr mit einem Minuszeichen beginnen
+- im Portfolio-Menü können nun auch neue Portfolios angelegt werden; AM achtet darauf,
+  daß Namen nicht doppelt vergeben werden; die Namen dürfen maximal 27 Zeichen lang sein
+  (damit incl. Extension das Mac-Maximum von 32 Zeichen nicht erreicht wird)
+- in diesem Menü ist auch das Umbenennen des aktuellen Portfolios möglich, sofern es nicht
+  das Standard-Portfolio ist
+- direkt nach dem Umschalten wurde das neu gewählte Portfolio unnötigerweise gespeichert
+- alle nicht-Standard-Portofolios können im Portfolio-Menü gelöscht werden; beim Mac
+  werden die lst-Dateien in den Papierkorb geschoben, unter Windows werden sie nach einem
+  Warnalert gleich ganz gelöscht; nach dem Löschen wird auf das Standard-Portfolio
+  umgeschaltet
+- die Warnung bei fehlenden Aktienpopups erscheint nun beim Aufruf des "Aktie kaufen"-
+  Dialogs (und nicht mehr beim Programmstart)
+- "Aktienlisten aktualisieren" heißt nun "Aktienmenüs aktualisieren"
+- der Prozentwert beim Update-Download sollte nun nicht mehr abgeschnitten werden
+- "Konfiguration": die Online-Kursquelle kann ausgewählt werden
+- Kurse können nun auch von der Deutschen Bank eingelesen werden
+- auch die Maximalkurse werden nun über die Online-Kursquelle bestimmt
+- bei einem Serverfehler schalten die Kurs- und Maximalkursleser nun automatisch auf die
+  andere Bank um; die Kursquelle im Konfigurations-Dialog gibt also nur an, wo die Kurse
+  *zuerst* angefordert werden
+- verstecktes Feature: Wenn man die Aktienlisten aktualisiert hat (geht auch offline)
+  und mit gedrückter Shift-Taste auf den OK-Button des Dialogs klickt, wird man gefragt,
+  ob man die Standard-Portfolios erzeugen lassen möchte; die .lst-Dateien werden dann im
+  Verzeichnis der AktienMan-Applikation abgelegt, müssen also manuell in den entsprechenden
+  (Preferences-)Ordner verschoben werden
+- AktienMan kann nun mehrere Portfolios verwalten; das Standard-Portfolio ist nach
+  wie vor AktienMan.lst im Preferences-Ordner (oder C:\WINDOWS\JAVA); alle anderen
+  Portfolios liegen im Ordner "AktienMan", der im gleichen Ordner wie das Standard-
+  Portfolio liegt; die Werte des Konfigurations-Dialogs sowie die Listenwährung gelten
+  für alle Portfolios; beim Aktualisieren wird derzeit immer nur das aktive Portfolio
+  beachtet
+- "Konfiguration": Kurse automatisch aktualiseren alle XXX Minuten
+- das Umschalten der 6/12/24-Charts sollte nun auch unter Windows funktionieren
+  (Windows übergibt falsche Fensterkoordinaten)
+- beim Löschen einer Aktie wird nun ein evtl. offener Info-Dialog geschlossen
+- bei %Jahr wird bei einer Laufzeit unter einem Jahr nun "<1 J." ausgegeben
+- die Liste wird nun deutlich ruhiger neu gezeichnet (4 Sekunden Verzögerung);
+  Ausnahme davon sind einzeln per Kontextpopup aktualisierte Aktien, diese werden
+  sofort angezeigt
+- statt "EUR x,yz" wird nun "x,yz EUR" ausgegeben
+- "akt. Kurs" wird rechtsbündig ausgegeben
+- Kürzungsroutine für Aktiennamen an neue Auslandswerte angepaßt
+- interne OOP-Optimierungen
 Version 1.10 (05.01.99)
-// README bzgl. MRJ 2.1: "Achtung MRJ 2.0"
 - AktienMan ist nun komplett Euro-fähig; die Umstellung erfolgt durch das Popupmenü
   "Währung" im Hauptdialog; geringe Rundungsfehler sind prinzipiell nicht ganz aus-
   zuschließen; die Bankgebühren beruhen noch auf den DM-Angaben (werden aber in Euro
@@ -448,6 +485,7 @@ Version 0.10 (06.08.98)
 - Hauptdialog.listeAktualisieren() (2x)
 - Hauptdialog.listeSelektierteAktieAktualisieren()
 - ComdirectLeser.run()
+- DeutscheBankLeser.run()
 - NeueAktie.canOK()
 - Lang
 
@@ -459,8 +497,10 @@ Version 0.10 (06.08.98)
 - Hauptdialog.listeAktualisieren() (2x)
 - Hauptdialog.listeSelektierteAktieAktualisieren()
 - ComdirectLeser.run()
+- DeutscheBankLeser.run()
 - NeueAktie.canOK() (2x)
 - About.setupElements()
+- Portfolios.setIndex()
 
 /* #Schlüssel */
 - Hauptdialog.main()

@@ -1,4 +1,7 @@
-// 1998-08-16 tm
+/**
+ @author Thomas Much
+ @version 1998-08-16
+*/
 
 import java.io.*;
 

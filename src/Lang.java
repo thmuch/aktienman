@@ -1,11 +1,11 @@
 /**
  @author Thomas Much
- @version 1999-01-03
+ @version 1999-02-08
 */
 
 
 
-public class Lang {
+public final class Lang {
 
 public static final String OK     = "      OK      ";
 public static final String CANCEL = " Abbrechen ";
@@ -23,12 +23,12 @@ public static final String CHARTERROR  = "Chart konnte nicht geladen werden.";
 public static final String EDITMENUTITLE = "Bearbeiten";
 
 /* #Ablaufdatum */
-public static final String DEMOVERSION = "DEMO-VERSION, L\u00c4UFT AM 8.2.1999 AB!";
+public static final String DEMOVERSION = "DEMO-VERSION, L\u00c4UFT AM 8.4.1999 AB!";
 
 
 
 public static String getFileMenuTitle() {
-	if (AktienMan.isMacOS())
+	if (SysUtil.isMacOS())
 	{
 		return "Ablage";
 	}

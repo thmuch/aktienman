@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-12-07
+ @version 1999-01-20
 */
 
 import java.net.*;
@@ -9,7 +9,7 @@ import java.io.*;
 
 
 
-public class ChartLeser extends Thread {
+public final class ChartLeser extends Thread {
 
 private String request;
 private String monate;
@@ -32,7 +32,7 @@ public void run() {
 
 	try
 	{
-		URL url = new URL(URLs.TELEDATA+request);
+		URL url = new URL(URLs.CHART_TELEDATA+request);
 		
 		in = new BufferedReader(new InputStreamReader(url.openStream()));
 

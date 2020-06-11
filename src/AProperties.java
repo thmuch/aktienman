@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-02
+ @version 1999-01-15
 */
 
 import java.util.*;
@@ -8,22 +8,16 @@ import java.io.*;
 
 
 
-public class AProperties extends Properties {
+public final class AProperties extends Properties {
 
-private String filename;
-private String comment;
+private static final String KOMMENTAR = AktienMan.AMNAME + " " + AktienMan.AMVERSION + " Konfigurationsdatei";
 
-private String folder = System.getProperty("user.home");
-private String filesep = System.getProperty("file.separator");
+private String filename = FileUtil.getConfigFile();
 
 
 
-public AProperties(String filename, String comment) {
+public AProperties() {
 	super();
-	
-	this.filename = filename;
-	this.comment = comment;
-	
 	loadParameters();
 }
 
@@ -111,7 +105,7 @@ public void loadParameters() {
 	
 	try
 	{
-		in = new FileInputStream(folder+filesep+filename);
+		in = new FileInputStream(filename);
 		load(in);
 	}
 	catch (FileNotFoundException e)
@@ -140,9 +134,9 @@ public void saveParameters() {
 	
 	try
 	{
-		out = new FileOutputStream(folder+filesep+filename);
+		out = new FileOutputStream(filename);
 
-		save(out,comment);
+		save(out,KOMMENTAR);
 
 		out.flush();
 	}

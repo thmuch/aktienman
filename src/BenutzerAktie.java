@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-05
+ @version 1999-01-30
 */
 
 import java.awt.*;
@@ -10,7 +10,7 @@ import java.io.*;
 
 
 
-public class BenutzerAktie implements Serializable {
+public final class BenutzerAktie implements Serializable {
 
 static final long serialVersionUID = 1997061300002L;
 
@@ -23,6 +23,7 @@ public static final int HTMLCOLS = 12;
 private static final String STR_MISSING = "<aktualisieren>";
 private static final String STR_ERROR   = "<Fehler>";
 private static final String STR_NA      = "n/a";
+private static final String STR_1JAHR   = "<1 J.";
 
 private static final int HEADROWS = 2;
 
@@ -98,6 +99,11 @@ public BenutzerAktie(String name, String wkn, Boersenplatz platz, boolean nurdie
 	
 	setupValues();
 	setColors();
+}
+
+
+public synchronized void destroy() {
+	infoDialogClose();
 }
 
 
@@ -386,6 +392,9 @@ public static String getKurzName(String langname) {
 	if (i > 0) return getKurzName(n.substring(0,i));
 
 	i = s.indexOf(" NV ");
+	if (i > 0) return getKurzName(n.substring(0,i));
+
+	i = s.indexOf(" NV,");
 	if (i > 0) return getKurzName(n.substring(0,i));
 
 	i = s.indexOf(" S.A.");
@@ -948,8 +957,12 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 				sk = kursString;
 			}
 		}
+		else
+		{
+			sk = STR_1JAHR;
+		}
 		out.write("  <TD ALIGN=RIGHT>");
-		out.write(HTMLUtil.toHTML(sk));
+		out.write(HTMLUtil.toNbspHTML(sk));
 		out.write("</TD>");
 		out.newLine();
 
@@ -1160,7 +1173,7 @@ public synchronized static int addHeadingsToPanel(Panel p, String aktualisierung
 	AFrame.constrain(p,new Label(" Aktienname"),0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,0,0,HEADERABSTAND,0);
 	AFrame.constrain(p,new Label("  St\u00fcck",Label.RIGHT),1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
 	AFrame.constrain(p,new Label("  Kaufkurs",Label.RIGHT),2,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
-	AFrame.constrain(p,new Label("akt. Kurs",Label.CENTER),3,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTH,0.0,0.0,0,0,HEADERABSTAND,0);
+	AFrame.constrain(p,new Label("  akt. Kurs",Label.RIGHT),3,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
 	AFrame.constrain(p,new Label("  akt. Wert",Label.RIGHT),5,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
 	AFrame.constrain(p,new Label("  Differenz",Label.RIGHT),6,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
 	AFrame.constrain(p,new Label("  Laufzeit",Label.RIGHT),7,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
@@ -1422,7 +1435,7 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 	}
 	else
 	{
-		// Wert von sk/l6 Ÿbernehmen
+		sk = STR_1JAHR;
 	}
 	l7 = new BALabel("  "+sk,row);
 	if (tageLaufzeit < 360L)
@@ -1486,6 +1499,15 @@ public synchronized void infoDialogSetValues(boolean draw) {
 	if (infodialog != null)
 	{
 		infodialog.setValues(draw);
+	}
+}
+
+
+public synchronized void infoDialogClose() {
+	if (infodialog != null)
+	{
+		infodialog.dispose();
+		infodialog = null;
 	}
 }
 

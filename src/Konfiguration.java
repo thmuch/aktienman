@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-05
+ @version 1999-02-06
 */
 
 import java.awt.*;
@@ -8,17 +8,17 @@ import java.awt.event.*;
 
 
 
-public class Konfiguration extends AFrame {
+public final class Konfiguration extends AFrame {
 
-private Choice plaetze,waehrung,bank;
-private Checkbox cbAktualisieren,cbKamera,cbAktiennamen,cbKuerzen,cbSteuerfrei;
+private Choice plaetze,waehrung,bank,quelle;
+private Checkbox cbAktualisieren,cbKamera,cbAktiennamen,cbKuerzen,cbSteuerfrei,cbTimeout;
 private Checkbox rb6Monate,rb12Monate;
-private TextField tfStdGewinn,tfStdGebuehren;
+private TextField tfStdGewinn,tfStdGebuehren,tfMinuten;
 
 
 
 public Konfiguration() {
-	super(AktienMan.AMFENSTERTITEL+"Konfiguration");
+	super(AktienMan.AMFENSTERTITEL+"Voreinstellungen");
 }
 
 
@@ -34,14 +34,32 @@ public void setupElements() {
 	cbAktiennamen = new Checkbox("Aktiennamen aus Onlinedaten \u00fcbernehmen",AktienMan.properties.getBoolean("Konfig.Aktiennamen"));
 	cbKuerzen = new Checkbox("Aktiennamen k\u00fcrzen",BenutzerListe.useShortNames());
 	cbSteuerfrei = new Checkbox("\"steuerfrei\" statt Laufzeit anzeigen",BenutzerListe.useSteuerfrei());
+	cbTimeout = new Checkbox("Liste automatisch aktualisieren alle",AktienMan.properties.getBoolean("Konfig.KursTimeout"));
 	
 	tfStdGewinn = new TextField(AktienMan.properties.getString("Konfig.StdGewinn"),6);
 	tfStdGebuehren = new TextField(AktienMan.properties.getString("Konfig.StdGebuehren"),6);
+	tfMinuten = new TextField(KursDemon.getTimeoutMinutenString(),3);
 	
 	constrain(panelOben,cbAktualisieren,0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	constrain(panelOben,cbKamera,0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
-	constrain(panelOben,cbAktiennamen,0,2,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
-	constrain(panelOben,cbKuerzen,0,3,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	
+	Panel timeoutPanel = new Panel(gridbag);
+	constrain(timeoutPanel,cbTimeout,0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(timeoutPanel,tfMinuten,1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
+	constrain(timeoutPanel,new Label("Minuten"),2,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
+	
+	constrain(panelOben,timeoutPanel,0,2,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
+	
+	Panel quellePanel = new Panel(gridbag);
+	quelle = KursQuellen.getChoice();
+	quelle.select(KursQuellen.getKursQuelleIndex());
+	constrain(quellePanel,quelle,0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(quellePanel,new Label("als Quelle f\u00fcr die Online-Kursdaten verwenden"),1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
+	
+	constrain(panelOben,quellePanel,0,3,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
+	
+	constrain(panelOben,cbAktiennamen,0,4,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
+	constrain(panelOben,cbKuerzen,0,5,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 
 	Panel spekuPanel = new Panel(gridbag);
 	CheckboxGroup spekuGroup = new CheckboxGroup();
@@ -60,9 +78,9 @@ public void setupElements() {
 	constrain(spekuPanel,new Label("Spekulationsfrist:"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	constrain(spekuPanel,rb6Monate,1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,0,0);
 	constrain(spekuPanel,rb12Monate,2,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
-	constrain(panelOben,spekuPanel,0,4,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
+	constrain(panelOben,spekuPanel,0,6,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
 
-	constrain(panelOben,cbSteuerfrei,0,5,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(panelOben,cbSteuerfrei,0,7,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	
 	constrain(panelStandard,new Label("Vorgaben f\u00fcr neu zu kaufende Aktien:"),0,0,4,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 
@@ -117,6 +135,29 @@ public void setupElements() {
 }
 
 
+public boolean canOK() {
+	String s = tfMinuten.getText().trim();
+
+	int i;
+	try
+	{
+		i = Integer.parseInt(s);
+	}
+	catch (NumberFormatException e)
+	{
+		new Warnalert(this,"Bitte geben Sie bei den Minuten eine g\u00fcltige Zahl ein.");
+		return false;
+	}
+
+	if (i <= 0)
+	{
+		new Warnalert(this,"Bitte geben Sie eine Minutenanzahl gr\u00f6\u00dfer Null ein.");
+		return false;
+	}
+
+	return true;
+}
+
 
 public void executeOK() {
 	AktienMan.properties.setBoolean("Konfig.Aktualisieren",cbAktualisieren.getState());
@@ -131,9 +172,23 @@ public void executeOK() {
 	AktienMan.properties.setInt("Konfig.StdBank",bank.getSelectedIndex());
 	AktienMan.properties.setInt("Konfig.Spekulationsfrist",(rb12Monate.getState()) ? 12 : 6);
 	
+	KursQuellen.setKursQuelleIndex(quelle.getSelectedIndex());
+	
+	boolean timeoutAktiv = cbTimeout.getState();
+	AktienMan.properties.setBoolean("Konfig.KursTimeout",timeoutAktiv);
+	
+	try
+	{
+		KursDemon.setTimeoutMinuten(Integer.parseInt(tfMinuten.getText().trim()));
+	}
+	catch (NumberFormatException e) {}
+	
 	AktienMan.properties.saveParameters();
 	
-	AktienMan.hauptdialog.listeUpdate(false,false);
+	AktienMan.hauptdialog.listeUpdate(false,false,true,false);
+	
+	KursDemon.deleteKursDemon();
+	if (timeoutAktiv) KursDemon.createKursDemon();
 }
 
 

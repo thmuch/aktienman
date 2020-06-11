@@ -1,8 +1,11 @@
-// 1998-09-10 tm
+/**
+ @author Thomas Much
+ @version 1998-09-10
+*/
 
 
 
-public class BankDeutsche extends BankStandard {
+public final class BankDeutsche extends BankStandard {
 
 
 

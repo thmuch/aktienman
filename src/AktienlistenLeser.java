@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-12-07
+ @version 1999-01-15
 */
 
 import java.net.*;
@@ -11,7 +11,7 @@ import java.util.*;
 
 
 
-public class AktienlistenLeser extends Thread {
+public final class AktienlistenLeser extends Thread {
 
 private static final int STATUS_EMPTY    = 0;
 private static final int STATUS_STARTING = 1;

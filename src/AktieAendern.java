@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-02
+ @version 1999-01-19
 */
 
 import java.awt.*;
@@ -8,7 +8,7 @@ import java.awt.event.*;
 
 
 
-public class AktieAendern extends AktienFrame {
+public final class AktieAendern extends AktienFrame {
 
 private TextField neuername,aktienWKN,kaufdatum,kaufkurs;
 private TextField stueckzahl,hochkurs,tiefkurs,gewinngrenze;
@@ -231,7 +231,7 @@ public synchronized void executeOK() {
 
 	ba.changeValues(name,wkn,bp,nurdiese,kdate,kkurs,anzaktien,khoch,ktief,ggrenze,
 					waehrung.getSelectedIndex(),usegrenze,watchonly);
-	AktienMan.hauptdialog.listeUpdate(true,true);
+	AktienMan.hauptdialog.listeUpdate(true,true,true,false);
 }
 
 

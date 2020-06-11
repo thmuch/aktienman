@@ -1,4 +1,7 @@
-// 1998-09-04 tm
+/**
+ @author Thomas Much
+ @version 1999-02-03
+*/
 
 import java.awt.event.*;
 
@@ -13,8 +16,13 @@ public LockedFrame(String title) {
 }
 
 
+public void cleanupAfterUnlock() {}
+
+
 public void windowClosed(WindowEvent e) {
 	AktienMan.hauptdialog.Unlock();
+	cleanupAfterUnlock();
+
 	super.windowClosed(e);
 }
 

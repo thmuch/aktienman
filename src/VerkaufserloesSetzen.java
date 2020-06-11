@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-03
+ @version 1999-02-04
 */
 
 import java.awt.*;
@@ -8,7 +8,7 @@ import java.awt.event.*;
 
 
 
-public class VerkaufserloesSetzen extends AktienFrame {
+public final class VerkaufserloesSetzen extends AktienFrame {
 
 private Button buttonOK;
 private TextField neuerErloes;
@@ -16,7 +16,7 @@ private TextField neuerErloes;
 
 
 public VerkaufserloesSetzen() {
-	super(AktienMan.AMFENSTERTITEL+"Gesamtaufwand setzen",-1,null);
+	super(AktienMan.AMFENSTERTITEL+"Gesamtaufwand setzen");
 }
 
 

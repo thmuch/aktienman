@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-12-07
+ @version 1999-01-15
 */
 
 import java.awt.*;
@@ -8,7 +8,7 @@ import java.awt.image.*;
 
 
 
-public class DAXKamera extends AFrame implements ImageObserver {
+public final class DAXKamera extends AFrame implements ImageObserver {
 
 private static final int KAMERABREITE = 404;
 private static final int KAMERAHOEHE  = 308;

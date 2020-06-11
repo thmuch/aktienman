@@ -1,11 +1,11 @@
 /**
  @author Thomas Much
- @version 1999-01-03
+ @version 1999-01-15
 */
 
 
 
-public class Bank24 extends Bank {
+public final class Bank24 extends Bank {
 
 
 

@@ -1,14 +1,15 @@
 /**
  @author Thomas Much
- @version 1999-01-04
+ @version 1999-02-04
 */
 
 import java.util.*;
 import java.io.*;
+import java.util.zip.*;
 
 
 
-public class BenutzerListe extends Vector implements Serializable {
+public final class BenutzerListe extends Vector implements Serializable {
 
 static final long serialVersionUID = 1972011800002L;
 
@@ -18,6 +19,8 @@ private long verkaufserloes = 0L;
 private int erloesWaehrung = Waehrungen.DEM;
 private int portfoliover = 0;
 
+private transient String portfolioFile = "";
+
 
 
 public BenutzerListe() {
@@ -25,8 +28,34 @@ public BenutzerListe() {
 }
 
 
+public synchronized void destroy() {
+	for (int i = 0; i < size(); i++)
+	{
+		getAt(i).destroy();
+	}
+	
+	removeAllElements();
+}
+
+
+public synchronized void setPortfolioFile(String name) {
+	portfolioFile = name;
+}
+
+
+public synchronized String getPortfolioFile() {
+	return portfolioFile;
+}
+
+
 public synchronized void add(BenutzerAktie ba) {
 	addElement(ba);
+}
+
+
+public synchronized void removeAt(int index) {
+	getAt(index).destroy();
+	removeElementAt(index);
 }
 
 
@@ -132,6 +161,12 @@ public synchronized void sortByName(boolean kurz) {
 }
 
 
+private void writeObject(ObjectOutputStream out) throws IOException {
+	portfoliover = AktienMan.PORTFOLIOVER;
+	out.defaultWriteObject();
+}
+
+
 public synchronized static boolean useShortNames() {
 	return AktienMan.properties.getBoolean("Konfig.Aktiennamen.kuerzen",true);
 }
@@ -142,8 +177,73 @@ public synchronized static boolean useSteuerfrei() {
 }
 
 
-public synchronized void prepare2Save() {
-	portfoliover = AktienMan.PORTFOLIOVER;
+public static void store(BenutzerListe benutzerliste){
+	ObjectOutputStream out = null;
+
+	try
+	{
+		FileOutputStream fos = new FileOutputStream(benutzerliste.getPortfolioFile());
+		GZIPOutputStream gzos = new GZIPOutputStream(fos);
+		out = new ObjectOutputStream(fos);
+		out.writeObject(benutzerliste);
+		out.flush();
+	}
+	catch (IOException e)
+	{
+		System.out.println("Fehler beim Speichern der Aktienliste.");
+	}
+	finally
+	{
+		if (out != null)
+		{
+			try
+			{
+				out.close();
+			}
+			catch (IOException e) {}
+		
+			out = null;
+		}
+	}
+}
+
+
+public static BenutzerListe restore(String datei) {
+	ObjectInputStream in = null;
+	
+	BenutzerListe benutzerliste = new BenutzerListe();
+	
+	/* nur laden, wenn portfoliover aktuell oder AM registriert ist */
+
+	try
+	{
+		FileInputStream fis = new FileInputStream(datei);
+		GZIPInputStream gzis = new GZIPInputStream(fis);
+		in = new ObjectInputStream(fis);
+		benutzerliste = (BenutzerListe)in.readObject();
+	}
+	catch (IOException e) {}
+	catch (ClassNotFoundException e)
+	{
+		System.out.println("Gespeicherte Aktienliste fehlerhaft.");
+	}
+	finally
+	{
+		if (in != null)
+		{
+			try
+			{
+				in.close();
+			}
+			catch (IOException e) {}
+		
+			in = null;
+		}
+	}
+	
+	benutzerliste.setPortfolioFile(datei);
+	
+	return benutzerliste;
 }
 
 }

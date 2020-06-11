@@ -1,12 +1,15 @@
 /**
  @author Thomas Much
- @version 1999-01-02
+ @version 1999-01-14
 */
 
 
 
-public class HTMLUtil {
+public final class HTMLUtil {
 
+
+
+private HTMLUtil() {}
 
 
 public static String toNbspHTML(String s) {

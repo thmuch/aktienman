@@ -1,13 +1,13 @@
 /**
  @author Thomas Much
- @version 1998-11-01
+ @version 1999-01-15
 */
 
 import java.awt.*;
 
 
 
-public class Listenbereich extends Panel {
+public final class Listenbereich extends Panel {
 
 
 public Listenbereich(LayoutManager layout) {

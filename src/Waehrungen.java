@@ -1,11 +1,11 @@
 /**
  @author Thomas Much
- @version 1999-01-04
+ @version 1999-01-15
 */
 
 
 
-public class Waehrungen extends Aktienliste {
+public final class Waehrungen extends Aktienliste {
 
 public static final int NONE = -1;
 public static final int DEM  =  0;
@@ -19,7 +19,6 @@ private static final long CONVROUND = CONVPREC/2L;
 private static final long DEM2EUR   =  511292L;
 private static final long EUR2DEM   = 1955830L;
 
-private static final int STANDARDKAUFWAEHRUNG = EUR;
 private static final double DFAKTOR = (double)PRECISION;
 // private static final double WINFIX = 0.00001;
 
@@ -94,6 +93,7 @@ private static long sgn(long l) {
 public static String getKuerzel(int waehrung) {
 	if (waehrung == EUR)
 	{
+		/* return "\u20ac"; MacOS 8.5, Win98 */
 		return "EUR";
 	}
 	else if (waehrung == DEM)
@@ -108,18 +108,7 @@ public static String getKuerzel(int waehrung) {
 
 
 public static String getString(long wert, int waehrung) {
-	if (waehrung == EUR)
-	{
-		return getKuerzel(EUR) + " " + AktienMan.get00String(wert);
-	}
-	else if (waehrung == DEM)
-	{
-		return AktienMan.get00String(wert) + " " + getKuerzel(DEM);
-	}
-	else
-	{
-		return AktienMan.get00String(wert);
-	}
+	return AktienMan.get00String(wert) + " " + getKuerzel(waehrung);
 }
 
 
@@ -166,9 +155,7 @@ public synchronized static int getOnlineWaehrung() {
 
 
 public synchronized static int getStandardKaufwaehrung() {
-	int stdw = AktienMan.properties.getInt("Konfig.StdWaehrung");
-	
-	return ((stdw < 0) ? STANDARDKAUFWAEHRUNG : stdw);
+	return AktienMan.properties.getInt("Konfig.StdWaehrung",EUR);
 }
 
 
@@ -180,7 +167,7 @@ public synchronized static int getVerkaufsWaehrung() {
 public synchronized static int getListenWaehrung() {
 	if (listenWaehrung <= NONE)
 	{
-		listenWaehrung = AktienMan.properties.getInt("Konfig.Listenwaehrung",DEM);
+		listenWaehrung = AktienMan.properties.getInt("Konfig.Listenwaehrung",EUR);
 	}
 	
 	return listenWaehrung;

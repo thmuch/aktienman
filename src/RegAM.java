@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-25
+ @version 1999-01-15
 */
 
 import java.awt.*;
@@ -8,7 +8,7 @@ import java.awt.event.*;
 
 
 
-public class RegAM extends AFrame {
+public final class RegAM extends AFrame {
 
 private Button buttonOK;
 private TextField nachname,vorname,key1,key2,key3;

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-30
+ @version 1999-01-15
 */
 
 import java.awt.*;
@@ -8,7 +8,7 @@ import java.awt.event.*;
 
 
 
-public class Updater extends AFrame {
+public final class Updater extends AFrame {
 
 private String archiv,text;
 private Button buttonDownload;

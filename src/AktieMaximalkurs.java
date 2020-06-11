@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-04
+ @version 1999-01-29
 */
 
 import java.awt.*;
@@ -8,7 +8,7 @@ import java.awt.event.*;
 
 
 
-public class AktieMaximalkurs extends AFrame {
+public final class AktieMaximalkurs extends AFrame {
 
 private long[] kurse,volumen;
 private int[] kwaehrung;
@@ -75,11 +75,13 @@ public synchronized void setupElements2() {
 
 
 private void startThreads() {
+	KursQuelle quelle = KursQuellen.getKursQuelle();
+
 	for (int i = 0; i < AktienMan.boersenliste.size(); i++)
 	{
 		if (!AktienMan.boersenliste.getAt(i).isFondsOnly())
 		{
-			new MaxkursLeser(this,i,ba.getWKNString()+"."+AktienMan.boersenliste.getAt(i).getKurz()).start();
+			quelle.sendSingleMaxkursRequest(this,i,ba.getWKNString()+"."+AktienMan.boersenliste.getAt(i).getKurz());
 		}
 	}
 }
@@ -158,6 +160,18 @@ private synchronized void fillKursPanel(boolean draw) {
 		pack();
 		setSize(getSize());
 		panelKurse.paintAll(getGraphics());
+	}
+}
+
+
+public synchronized void setKurs(int index, long kurs, int nextID) {
+	if (nextID == KursQuellen.QUELLE_NONE)
+	{
+		setKurs(index,kurs);
+	}
+	else
+	{
+		KursQuellen.getKursQuelle(nextID).sendSingleMaxkursRequest(this,index,ba.getWKNString()+"."+AktienMan.boersenliste.getAt(index).getKurz(),false);
 	}
 }
 

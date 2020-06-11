@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-04
+ @version 1999-01-19
 */
 
 import java.awt.*;
@@ -9,7 +9,7 @@ import java.awt.image.*;
 
 
 
-public class ChartViewer extends AFrame implements ImageObserver,MouseListener {
+public final class ChartViewer extends AFrame implements ImageObserver,MouseListener {
 
 private static final int TYPE_UNKNOWN   = 0;
 public  static final int TYPE_COMDIRECT = 1;
@@ -222,7 +222,7 @@ private synchronized void switchImage(String monate) {
 
 
 private synchronized void checkComdirectXY(int x, int y) {
-	if ((y >= 10) && (y <= 31))
+	if ((y >= 10) && (y <= 51/*31*/))
 	{
 		if ((x >= 3) && (x <= 74))
 		{

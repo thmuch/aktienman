@@ -1,10 +1,10 @@
 /**
  @author Thomas Much
- @version 1999-01-04
+ @version 1999-01-15
 */
 
 
-public class Boersenliste extends Aktienliste {
+public final class Boersenliste extends Aktienliste {
 
 private static final int STANDARDBOERSE = 3;
 
@@ -45,9 +45,7 @@ public synchronized int getBoersenIndex(String kurz) {
 
 
 public synchronized int getStandardBoerse() {
-	int stdb = AktienMan.properties.getInt("Konfig.StdBoerse");
-	
-	return ((stdb < 0) ? STANDARDBOERSE : stdb);
+	return AktienMan.properties.getInt("Konfig.StdBoerse",STANDARDBOERSE);
 }
 
 }

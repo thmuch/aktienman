@@ -1,11 +1,14 @@
-// 1998-10-12 tm
+/**
+ @author Thomas Much
+ @version 1999-01-15
+*/
 
 import java.util.*;
 import java.io.*;
 
 
 
-public class ADate implements Serializable {
+public final class ADate implements Serializable {
 
 static final long serialVersionUID = 1979090400000L;
 

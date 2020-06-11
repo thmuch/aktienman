@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-04
+ @version 1999-01-15
 */
 
 import java.awt.*;
@@ -8,7 +8,7 @@ import java.awt.event.*;
 
 
 
-public class ChartMenu extends Menu {
+public final class ChartMenu extends Menu {
 
 private Menu popIntraday;
 

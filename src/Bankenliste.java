@@ -1,10 +1,10 @@
 /**
  @author Thomas Much
- @version 1998-12-15
+ @version 1999-01-15
 */
 
 
-public class Bankenliste extends Aktienliste {
+public final class Bankenliste extends Aktienliste {
 
 public static final String STAND = "1.12.1998";
 
@@ -35,9 +35,7 @@ public synchronized Aktie getAktie(int index) {
 
 
 public int getStandardBank() {
-	int stdb = AktienMan.properties.getInt("Konfig.StdBank");
-	
-	return ((stdb < 0) ? STANDARDBANK : stdb);
+	return AktienMan.properties.getInt("Konfig.StdBank",STANDARDBANK);
 }
 
 }

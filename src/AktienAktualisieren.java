@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-04
+ @version 1999-01-21
 */
 
 import java.awt.*;
@@ -10,7 +10,7 @@ import java.util.zip.*;
 
 
 
-public class AktienAktualisieren extends AFrame {
+public final class AktienAktualisieren extends AFrame {
 
 public static final int INDEX_DAX       = 0;
 public static final int INDEX_MDAX      = 1;
@@ -65,12 +65,17 @@ public synchronized void setupElements2() {
 	buttonOK = new Button(Lang.OK);
 	buttonOK.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
+			if ((e.getModifiers() & ActionEvent.SHIFT_MASK) > 0)
+			{
+				new AktienPofosErzeugen();
+			}
+			
 			doCancel();
 		}
 	});
 	buttonOK.setEnabled(false);
 	
-	constrain(this,new Label("Aktienlisten aktualiseren:"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,10,10,0,10);
+	constrain(this,new Label("Aktienmen\u00fcs aktualiseren:"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,10,10,0,10);
 	constrain(this,panelListe,0,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,10,10,0,10);
 	constrain(this,buttonOK,0,2,1,1,GridBagConstraints.NONE,GridBagConstraints.SOUTHEAST,0.0,0.0,15,10,10,10);
 }
@@ -158,12 +163,9 @@ public synchronized void setError(int index) {
 private synchronized void savePopups() {
 	ObjectOutputStream out = null;
 
-	String folder = System.getProperty("user.home");
-	String filesep = System.getProperty("file.separator");
-
 	try
 	{
-		FileOutputStream fos = new FileOutputStream(folder+filesep+AktienMan.getFilenamePopups());
+		FileOutputStream fos = new FileOutputStream(FileUtil.getPopupFile());
 		GZIPOutputStream gzos = new GZIPOutputStream(fos);
 		out = new ObjectOutputStream(fos);
 		out.writeObject(AktienMan.listeDAX);
@@ -196,12 +198,9 @@ private synchronized void savePopups() {
 public synchronized static void loadPopups() {
 	ObjectInputStream in = null;
 
-	String folder = System.getProperty("user.home");
-	String filesep = System.getProperty("file.separator");
-
 	try
 	{
-		FileInputStream fis = new FileInputStream(folder+filesep+AktienMan.getFilenamePopups());
+		FileInputStream fis = new FileInputStream(FileUtil.getPopupFile());
 		GZIPInputStream gzis = new GZIPInputStream(fis);
 		in = new ObjectInputStream(fis);
 		AktienMan.listeDAX = (Aktienliste)in.readObject();

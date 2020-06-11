@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-12-07
+ @version 1999-01-15
 */
 
 import java.net.*;
@@ -9,7 +9,7 @@ import java.io.*;
 
 
 
-public class DAXKameraLeser extends Thread {
+public final class DAXKameraLeser extends Thread {
 
 private static final long TIMEOUT = 120000L;
 

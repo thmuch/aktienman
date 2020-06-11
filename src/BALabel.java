@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-01
+ @version 1999-01-15
 */
 
 import java.awt.*;
@@ -9,7 +9,7 @@ import java.io.*;
 
 
 
-public class BALabel extends Label implements Serializable,MouseListener {
+public final class BALabel extends Label implements Serializable,MouseListener {
 
 static final long serialVersionUID = 1998061300000L;
 

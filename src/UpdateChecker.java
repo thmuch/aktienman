@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-12-07
+ @version 1999-01-15
 */
 
 import java.net.*;
@@ -9,7 +9,7 @@ import java.util.*;
 
 
 
-public class UpdateChecker extends Thread {
+public final class UpdateChecker extends Thread {
 
 private static boolean checked = false;
 
@@ -40,7 +40,7 @@ public void run() {
 			{
 				StringTokenizer st = new StringTokenizer(s,",");
 				
-				if (st.nextToken().trim().equalsIgnoreCase(AktienMan.getOSString()))
+				if (st.nextToken().trim().equalsIgnoreCase(SysUtil.getOSString()))
 				{
 					String nrs    = st.nextToken().trim();
 					String archiv = st.nextToken().trim();

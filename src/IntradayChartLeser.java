@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-03
+ @version 1999-01-20
 */
 
 import java.net.*;
@@ -10,7 +10,7 @@ import java.awt.*;
 
 
 
-public class IntradayChartLeser extends Thread {
+public final class IntradayChartLeser extends Thread {
 
 private String boerse;
 private BenutzerAktie ba;
@@ -52,7 +52,7 @@ public void run() {
 					int i2 = s.indexOf(">",s.indexOf(">",i)+1);
 					int i3 = s.indexOf("<",i2);
 					
-					new ChartLoader(chartviewer,URLs.DAXINTRADAY + s.substring(i2+1,i3).trim() + "." + boerse + ".EUR.gif",true).start();
+					new ChartLoader(chartviewer,URLs.CHART_DAXINTRADAY + s.substring(i2+1,i3).trim() + "." + boerse + ".EUR.gif",true).start();
 					valid = true;
 					break;
 				}

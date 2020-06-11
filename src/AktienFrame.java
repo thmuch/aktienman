@@ -1,4 +1,7 @@
-// 1998-09-04 tm
+/**
+ @author Thomas Much
+ @version 1999-02-04
+*/
 
 
 
@@ -21,6 +24,11 @@ public AktienFrame(String title, int index, BenutzerAktie ba) {
 	setupSize();
 	show();
 
+}
+
+
+public AktienFrame(String title) {
+	this(title,-1,null);
 }
 
 

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-05
+ @version 1999-01-29
 */
 
 import java.io.*;
@@ -10,18 +10,25 @@ import java.net.*;
 
 public class ComdirectLeser extends Thread {
 
-private static final String VALUENA = "n/a";
-
 private String request,baWKN,baBoerse;
+private boolean sofortZeichnen;
+private int nextID;
 
 
 
-public ComdirectLeser(String request, String baWKN, String baBoerse) {
+public ComdirectLeser(String request, String baWKN, String baBoerse, int nextID) {
+	this(request,baWKN,baBoerse,false,nextID);
+}
+
+
+public ComdirectLeser(String request, String baWKN, String baBoerse, boolean sofortZeichnen, int nextID) {
 	super();
 
-	this.request  = request;
-	this.baWKN    = baWKN;
+	this.request = request;
+	this.baWKN = baWKN;
 	this.baBoerse = baBoerse;
+	this.sofortZeichnen = sofortZeichnen;
+	this.nextID = nextID;
 }
 
 
@@ -30,11 +37,11 @@ public void run() {
 
 	/* #Ablaufdatum */
 	/* #Demoversion */
-	if (!(new ADate().before(new ADate(1999,2,9))) && !AktienMan.hauptdialog.main()) return;
+	if (!(new ADate().before(new ADate(1999,4,9))) && !AktienMan.hauptdialog.main()) return;
 
 	try
 	{
-		URL url = new URL(URLs.COMDIRECT+request);
+		URL url = new URL(URLs.KURSE_COMDIRECT+request);
 		
 		in = new BufferedReader(new InputStreamReader(url.openStream()));
 		
@@ -65,7 +72,7 @@ public void run() {
 					
 					platz = s.substring(i3+1,i2).trim();
 
-					AktienMan.hauptdialog.listeAnfrageFalsch(wkn,platz);
+					AktienMan.hauptdialog.listeAnfrageFalsch(wkn,platz,sofortZeichnen);
 					break;
 				}
 
@@ -109,11 +116,11 @@ public void run() {
 							AktienMan.hauptdialog.listeNeuerAktienkurs(wkn,kurz,platz,name,kurs,kursdatum,
 																		vortageskurs,eroeffnungskurs,
 																		hoechstkurs,tiefstkurs,handelsvolumen,
-																		kurswaehrung);
+																		kurswaehrung,sofortZeichnen);
 						}
 						else
 						{
-							AktienMan.hauptdialog.listeAktienkursNA(wkn,kurz,platz,name);
+							AktienMan.hauptdialog.listeAktienkursNA(wkn,kurz,platz,name,sofortZeichnen);
 						}
 					}
 					
@@ -144,9 +151,9 @@ public void run() {
 							
 							String kstr = s.substring(i2+1,i3).trim();
 							
-							if (kstr.equalsIgnoreCase(VALUENA))
+							if (kstr.equalsIgnoreCase(ComdirectQuelle.VALUENA))
 							{
-								AktienMan.hauptdialog.listeAktienkursNA(wkn,kurz,platz,name);
+								AktienMan.hauptdialog.listeAktienkursNA(wkn,kurz,platz,name,sofortZeichnen);
 								
 								status = 0;
 								continue;
@@ -180,7 +187,7 @@ public void run() {
 							
 							String eroeffstr = s.substring(i2+1,i3).trim();
 
-							if (eroeffstr.equalsIgnoreCase(VALUENA))
+							if (eroeffstr.equalsIgnoreCase(ComdirectQuelle.VALUENA))
 							{
 								eroeffnungskurs = BenutzerAktie.VALUE_NA;
 							}
@@ -208,7 +215,7 @@ public void run() {
 
 							String tiefst = s.substring(i2+1,i3).trim();
 							
-							if (hoechst.equalsIgnoreCase(VALUENA))
+							if (hoechst.equalsIgnoreCase(ComdirectQuelle.VALUENA))
 							{
 								hoechstkurs = BenutzerAktie.VALUE_NA;
 							}
@@ -224,7 +231,7 @@ public void run() {
 								}
 							}
 
-							if (tiefst.equalsIgnoreCase(VALUENA))
+							if (tiefst.equalsIgnoreCase(ComdirectQuelle.VALUENA))
 							{
 								tiefstkurs = BenutzerAktie.VALUE_NA;
 							}
@@ -263,7 +270,7 @@ public void run() {
 
 							String vortag = s.substring(i2+1,i3).trim();
 							
-							if (vortag.equalsIgnoreCase(VALUENA))
+							if (vortag.equalsIgnoreCase(ComdirectQuelle.VALUENA))
 							{
 								vortageskurs = BenutzerAktie.VALUE_NA;
 							}
@@ -289,15 +296,15 @@ public void run() {
 	catch (MalformedURLException e)
 	{
 		System.out.println("Comdirect-URL fehlerhaft.");
-		AktienMan.hauptdialog.listeAnfrageFehler(baWKN,baBoerse);
+		AktienMan.hauptdialog.listeAnfrageFehler(request,baWKN,baBoerse,sofortZeichnen,nextID);
 	}
 	catch (NullPointerException e)
 	{
-		AktienMan.hauptdialog.listeAnfrageFehler(baWKN,baBoerse);
+		AktienMan.hauptdialog.listeAnfrageFehler(request,baWKN,baBoerse,sofortZeichnen,nextID);
 	}
 	catch (IOException e)
 	{
-		AktienMan.hauptdialog.listeAnfrageFehler(baWKN,baBoerse);
+		AktienMan.hauptdialog.listeAnfrageFehler(request,baWKN,baBoerse,sofortZeichnen,nextID);
 	}
 	finally
 	{

@@ -1,13 +1,13 @@
 /**
  @author Thomas Much
- @version 1998-12-07
+ @version 1999-01-15
 */
 
 import java.awt.*;
 
 
 
-public class ChartCanvas extends Component {
+public final class ChartCanvas extends Component {
 
 private ChartViewer chartviewer;
 

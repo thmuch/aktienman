@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-05
+ @version 1999-02-08
 */
 
 /**
@@ -13,20 +13,16 @@ import java.awt.*;
 
 
 
-public class AktienMan {
+public final class AktienMan {
 
 public static final String AMNAME         = "AktienMan";
-public static final String AMVERSION      = "1.10 (Euro)";
+public static final String AMVERSION      = "1.20 (Euro MP)";
 public static final String AMFENSTERTITEL = AMNAME + " - ";
-
-public static final String OS_MAC         = "MACOS";
-public static final String OS_WINDOWS     = "WINOS";
-public static final String OS_LINUX       = "LINUX";
 
 public static final char DEZSEPARATOR     = ',';
 
-public static ADate compDate              = new ADate(1999,1,5); /* Compilierdatum */
-public static final int RELEASE           = 4; /* 1.10 05.01.99 */
+public static ADate compDate              = new ADate(1999,2,8); /* Compilierdatum */
+public static final int RELEASE           = 5; /* 1.20 08.02.99 */
 public static final int PORTFOLIOVER      = 0;
 
 public static Aktienliste listeDAX        = new Aktienliste();
@@ -50,82 +46,14 @@ public static AktieVerkaufen aktieverkaufen = null;
 public static AktieAendern aktieaendern = null;
 public static VerkaufserloesLoeschen erloesloeschen = null;
 public static VerkaufserloesSetzen erloessetzen = null;
+public static PortfolioLoeschen portfolioloeschen = null;
+public static PortfolioNeu portfolioneu = null;
+public static PortfolioUmbenennen portfolioumbenennen = null;
 public static About about = null;
 
 public static Hauptdialog hauptdialog = null;
 public static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-
-
-public static boolean isMacOS() {
-	return ((System.getProperty("java.vendor").indexOf("Apple") >= 0) || (System.getProperty("os.name").indexOf("Mac OS") >= 0));
-}
-
-
-public static boolean isLinux() {
-	return (System.getProperty("os.name").indexOf("Linux") >= 0);
-}
-
-
-public static boolean isWindows() {
-	return (System.getProperty("os.name").indexOf("Windows") >= 0);
-}
-
-
-public static String getOSString() {
-	if (isMacOS())
-	{
-		return OS_MAC;
-	}
-	else if (isWindows())
-	{
-		return OS_WINDOWS;
-	}
-	else if (isLinux())
-	{
-		return OS_LINUX;
-	}
-	else
-	{
-		return "";
-	}
-}
-
-
-public static String getFilenameConfig() {
-	String s = AMNAME + ".cfg";
-
-	if (isLinux())
-	{
-		s = "." + s.toLowerCase();
-	}
-
-	return s;
-}
-
-
-public static String getFilenameList() {
-	String s = AMNAME + ".lst";
-
-	if (isLinux())
-	{
-		s = "." + s.toLowerCase();
-	}
-
-	return s;
-}
-
-
-public static String getFilenamePopups() {
-	String s = AMNAME + ".pop";
-
-	if (isLinux())
-	{
-		s = "." + s.toLowerCase();
-	}
-
-	return s;
-}
 
 
 public static double getDouble(String str) throws NumberFormatException {
@@ -169,7 +97,7 @@ private static void registerCheck() {}
 
 private static void main(int a) throws Exception {
 	ADate heute = new ADate();
-	ADate morgen = new ADate(1999,2,8); /* #Ablaufdatum */
+	ADate morgen = new ADate(1999,4,8); /* #Ablaufdatum */
 
 	/* #Demoversion */
 	if ((heute.before(compDate) || heute.after(morgen)) && (!hauptdialog.main())) throw new Exception();
@@ -184,20 +112,13 @@ public static void main(String a) {
 		hauptdialog.show();
 
 		if (properties.getBoolean("Konfig.Aktualisieren")) hauptdialog.listeAktualisieren();
+
+		if (properties.getBoolean("Konfig.KursTimeout")) KursDemon.createKursDemon();
 		
 		if (properties.getBoolean("Konfig.Kamera"))
 		{
 			hauptdialog.callKamera();
 			hauptdialog.toFront();
-		}
-
-		if ((listeDAX.getChoice(false).getItemCount() < 1) ||
-			(listeMDAX.getChoice(false).getItemCount() < 1) ||
-			(listeNMarkt.getChoice(false).getItemCount() < 1) ||
-			(listeEuroSTOXX.getChoice(false).getItemCount() < 1) ||
-			(listeAusland.getChoice(false).getItemCount() < 1))
-		{
-			new Warnalert(hauptdialog,"Bitte gehen Sie online und rufen dann den Men\u00fcpunkt|\"Aktienlisten aktualisieren\" im Men\u00fc \""+Lang.EDITMENUTITLE+"\" auf!");
 		}
 	}
 	catch (Exception e)
@@ -215,7 +136,9 @@ public static void main(String a) {
 public static void main(String args[]) {
 	StartupDialog sd = new StartupDialog();
 	
-	properties = new AProperties(getFilenameConfig(),AMNAME+" "+AMVERSION+" Konfigurationsdatei");
+	FileUtil.createAMDirectory();
+	
+	properties = new AProperties();
 	
 	AktienAktualisieren.loadPopups();
 

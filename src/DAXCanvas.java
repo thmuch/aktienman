@@ -1,13 +1,13 @@
 /**
  @author Thomas Much
- @version 1998-11-27
+ @version 1999-01-15
 */
 
 import java.awt.*;
 
 
 
-public class DAXCanvas extends Component {
+public final class DAXCanvas extends Component {
 
 private DAXKamera dk;
 

@@ -1,13 +1,13 @@
 /**
  @author Thomas Much
- @version 1998-11-23
+ @version 1999-01-15
 */
 
 import java.awt.*;
 
 
 
-public class StartupDialog extends Frame {
+public final class StartupDialog extends Frame {
 
 
 public StartupDialog() {

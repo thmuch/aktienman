@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-30
+ @version 1999-01-21
 */
 
 import java.awt.*;
@@ -8,7 +8,7 @@ import java.awt.event.*;
 
 
 
-public class UpdateDisplay extends AFrame {
+public final class UpdateDisplay extends AFrame {
 
 public static final int STATUS_LOADING   = 0;
 public static final int STATUS_FINISHED  = 1;
@@ -59,7 +59,7 @@ public void setupElements2() {
 	
 	constrain(panelOben,new Label("Download von \""+archiv+"\":"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 
-	progress = new Label("12345K (100%)");
+	progress = new Label("12345K (100%)  ");
 	constrain(panelOben,progress,1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,0,0);
 
 	Button button = new Button(Lang.CANCEL);
@@ -78,7 +78,7 @@ public void setupElements2() {
 
 
 public synchronized void setProgress(int kbytes, int percent) {
-	progress.setText(new Integer(kbytes).toString() + "K (" + new Integer(percent).toString() + "%)");
+	progress.setText(new Integer(kbytes).toString() + "K (" + new Integer(percent).toString() + "%)  ");
 	progress.repaint();
 }
 

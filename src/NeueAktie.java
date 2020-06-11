@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-02
+ @version 1999-02-02
 */
 
 import java.awt.*;
@@ -9,7 +9,7 @@ import java.util.*;
 
 
 
-public class NeueAktie extends LockedFrame {
+public final class NeueAktie extends LockedFrame {
 
 private TextField kaufdatum,kaufkurs,stueckzahl,aktienWKN,gewinngrenze,hochkurs,tiefkurs;
 private CheckboxGroup aktienGruppe,gewinnGruppe;
@@ -25,6 +25,15 @@ private boolean watchonly = false;
 public NeueAktie() {
 	super(AktienMan.AMFENSTERTITEL+"Aktie kaufen");
 	aktienWKN.requestFocus();
+
+	if ((AktienMan.listeDAX.getChoice(false).getItemCount() < 1) ||
+		(AktienMan.listeMDAX.getChoice(false).getItemCount() < 1) ||
+		(AktienMan.listeNMarkt.getChoice(false).getItemCount() < 1) ||
+		(AktienMan.listeEuroSTOXX.getChoice(false).getItemCount() < 1) ||
+		(AktienMan.listeAusland.getChoice(false).getItemCount() < 1))
+	{
+		new Warnalert(this,"Bitte gehen Sie online und rufen dann den Men\u00fcpunkt|\"Aktienmen\u00fcs aktualisieren\" im Men\u00fc \""+Lang.EDITMENUTITLE+"\" auf,|damit Sie Aktien per Name (und nicht nur per WKN)|ausw\u00e4hlen k\u00f6nnen.");
+	}
 }
 
 
@@ -558,7 +567,7 @@ public synchronized boolean canOK() {
 
 	/* #Ablaufdatum */
 	/* #Demoversion */
-	if ((!(new ADate().before(new ADate(1999,2,10))))
+	if ((!(new ADate().before(new ADate(1999,4,10))))
 		&& (!(RegAM.string(AktienMan.properties.getString("Key.1"),
 			AktienMan.properties.getString("Key.2"),
 			AktienMan.properties.getString("Key.3")) < 0))) for(;;);

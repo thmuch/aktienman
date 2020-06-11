@@ -1,13 +1,13 @@
 /**
  @author Thomas Much
- @version 1998-11-22
+ @version 1999-01-15
 */
 
 import java.awt.*;
 
 
 
-public class AboutCanvas extends Component {
+public final class AboutCanvas extends Component {
 
 private static final int IMGWIDTH = 300;
 private static final int IMGHEIGHT = 255;
