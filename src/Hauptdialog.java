@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-25
+ @version 1998-11-29
 */
 
 import java.awt.*;
@@ -862,13 +862,18 @@ public synchronized void listeAktualisieren(String boerse) {
 
 	for (int i = 0; i < getAnzahlAktien(); i++)
 	{
-		String cmp = getAktieNr(i).getRequest(boerse);
+		BenutzerAktie ba = getAktieNr(i);
+		String cmp = ba.getRequest(boerse);
 		
 		if (nochNichtAngefordert(cmp,i,boerse))
 		{
-			new ComdirectLeser(cmp).start();
+			new ComdirectLeser(cmp,ba.getWKNString(),ba.getBoerse()).start();
 		}
 	}
+
+	BenutzerAktie.setLastUpdateAndRepaint(benutzerliste.getDateString());
+	
+	AktienMan.doOnlineChecks();
 }
 
 
@@ -940,6 +945,24 @@ public synchronized void listeAnfrageFalsch(String wkn, String platz) {
 	}
 	
 	if (valid) listeUpdate(true);
+}
+
+
+public synchronized void listeAnfrageFehler(String wkn, String platz) {
+	if (wkn.length() == 0) return;
+	if (platz.length() == 0) return;
+
+	boolean compPlatz = (benutzerliste.getFesteBoerse().length() == 0);
+
+	for (int i = 0; i < getAnzahlAktien(); i++)
+	{
+		BenutzerAktie ba = getAktieNr(i);
+		
+		if (ba.isEqual(wkn,platz,compPlatz))
+		{
+			ba.setStatusErrorAndRepaint();
+		}
+	}
 }
 
 

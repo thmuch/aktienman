@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-10-27
+ @version 1998-11-29
 */
 
 import java.awt.*;
@@ -12,11 +12,23 @@ import java.util.zip.*;
 
 public class AktienAktualisieren extends AFrame {
 
+public static final int INDEX_DAX       = 0;
+public static final int INDEX_MDAX      = 1;
+public static final int INDEX_NMARKT    = 2;
+public static final int INDEX_EUROSTOXX = 3;
+public static final int INDEX_AUSLAND   = 4;
+
+private static final int STATUS_START    =  0;
+private static final int STATUS_FINISHED = -1;
+private static final int STATUS_ERROR    = -2;
+
 private String[] titel = {"DAX","MDAX","Neuer Markt","EuroSTOXX50","Ausland"};
 private int[] count;
 private Panel panelListe;
 private Button buttonOK;
 private int buttonCount;
+
+private boolean doSave = false;
 
 
 
@@ -46,7 +58,7 @@ public synchronized void setupElements2() {
 	
 	count = new int[5];
 	
-	for (int i=0; i<5; i++) count[i] = 0;
+	for (int i=0; i<5; i++) count[i] = STATUS_START;
 	
 	fillListenPanel(false);
 	
@@ -67,10 +79,10 @@ public synchronized void setupElements2() {
 private void startThreads() {
 	buttonCount = 5;
 	
-	new AktienlistenLeser("DAX",URLs.LISTE_DAX30,"DAX",this,0,true).start();
-	new AktienlistenLeser("Neuer Markt",URLs.LISTE_NMARKT,"NEUER MARKT",this,2,false).start();
-	new AktienlistenLeser("EuroSTOXX50",URLs.LISTE_EURO50,"STOXX",this,3,false).start();
-	new AktienlistenLeser("Ausland",URLs.LISTE_AUSLAND,"",this,4,false).start();
+	new AktienlistenLeser("DAX",URLs.LISTE_DAX30,"DAX",this,INDEX_DAX).start();
+	new AktienlistenLeser("Neuer Markt",URLs.LISTE_NMARKT,"NEUER MARKT",this,INDEX_NMARKT).start();
+	new AktienlistenLeser("EuroSTOXX50",URLs.LISTE_EURO50,"STOXX",this,INDEX_EUROSTOXX).start();
+	new AktienlistenLeser("Ausland",URLs.LISTE_AUSLAND,"",this,INDEX_AUSLAND).start();
 }
 
 
@@ -83,13 +95,17 @@ private synchronized void fillListenPanel(boolean draw) {
 
 		String s;
 		
-		if (count[i] < 0)
+		if (count[i] >= STATUS_START)
+		{
+			s = new Integer(count[i]).toString();
+		}
+		else if (count[i] == STATUS_FINISHED)
 		{
 			s = "Fertig.";
 		}
 		else
 		{
-			s = new Integer(count[i]).toString();
+			s = "<offline>";
 		}
 		
 		constrain(panelListe,new Label(s),1,i,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.EAST,1.0,0.0,0,10,0,0);
@@ -106,13 +122,35 @@ public synchronized void incCount(int index) {
 
 
 public synchronized void finishCounting(int index) {
-	count[index] = -1;
+	count[index] = STATUS_FINISHED;
 	fillListenPanel(true);
+	doSave = true;
 	
 	if (--buttonCount == 0)
 	{
 		savePopups();
 		buttonOK.setEnabled(true);
+	}
+}
+
+
+public synchronized void setError(int index) {
+	count[index] = STATUS_ERROR;
+	fillListenPanel(true);
+	
+	if (--buttonCount == 0)
+	{
+		if (doSave)
+		{
+			savePopups();
+		}
+		
+		buttonOK.setEnabled(true);
+	}
+	
+	if (index == INDEX_DAX)
+	{
+		setError(INDEX_MDAX);
 	}
 }
 

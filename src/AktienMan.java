@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-26
+ @version 1998-12-01
 */
 
 /**
@@ -16,12 +16,17 @@ import java.awt.*;
 public class AktienMan {
 
 public static final String AMNAME         = "AktienMan";
-public static final String AMVERSION      = "0.95";
+public static final String AMVERSION      = "1.00";
 public static final String AMFENSTERTITEL = AMNAME + " - ";
+
+public static final String OS_MAC         = "MACOS";
+public static final String OS_WINDOWS     = "WINOS";
+public static final String OS_LINUX       = "LINUX";
 
 public static final char DEZSEPARATOR     = ',';
 
-public static ADate compDate              = new ADate(1998,11,26); /* Compilierdatum */
+public static ADate compDate              = new ADate(1998,12,01); /* Compilierdatum */
+public static final int RELEASE           = 2;
 public static final int PORTFOLIOVER      = 0;
 
 public static Aktienliste listeDAX        = new Aktienliste();
@@ -63,7 +68,27 @@ public static boolean isLinux() {
 
 
 public static boolean isWindows() {
-	return !(isMacOS() || isLinux());
+	return (System.getProperty("os.name").indexOf("Windows") >= 0);
+}
+
+
+public static String getOSString() {
+	if (isMacOS())
+	{
+		return OS_MAC;
+	}
+	else if (isWindows())
+	{
+		return OS_WINDOWS;
+	}
+	else if (isLinux())
+	{
+		return OS_LINUX;
+	}
+	else
+	{
+		return "";
+	}
 }
 
 
@@ -110,6 +135,11 @@ public static double getDouble(String str) throws NumberFormatException {
 
 public static String getString(double d) {
 	return new Double(d).toString().replace('.',DEZSEPARATOR);
+}
+
+
+public static void doOnlineChecks() {
+	UpdateChecker.check();
 }
 
 

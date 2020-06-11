@@ -1,11 +1,14 @@
 /**
  @author Thomas Much
- @version 1998-10-28
+ @version 1998-11-30
 */
 
 
 
 public class URLs {
+
+public static final String AMUPDATE      = "http://www.aktienman.de/info/update.txt";
+public static final String AMDOWNLOAD    = "http://www.aktienman.de/archive/";
 
 public static final String KAMERA        = "http://www.exchange.de/parkett/parkett.jpg";
 public static final String DAXREALTIME   = "http://www.exchange.de/realtime/dax_d.html";

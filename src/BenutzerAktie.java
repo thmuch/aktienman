@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-20
+ @version 1998-11-29
 */
 
 import java.awt.*;
@@ -34,6 +34,7 @@ private static ADate heute = new ADate();
 
 private transient static long aktsumme = 0L;
 private transient static long kaufsumme = 0L;
+private transient static Label lupdate = null;
 private transient static Color farbeHintergrund;
 
 private transient Color farbeSteuerfrei;
@@ -662,6 +663,13 @@ public void setStatusRequestingAndRepaint() {
 }
 
 
+public void setStatusErrorAndRepaint() {
+	farbeName = Color.red;
+	l1.setForeground(farbeName);
+	l1.repaint();
+}
+
+
 public void clearStatusRequesting() {
 	farbeName = Color.black;
 }
@@ -1162,8 +1170,18 @@ public static void addFooterToPanel(Panel p, int y, Panel pTxt) {
 }
 
 
+public static void setLastUpdateAndRepaint(String aktualisierung) {
+	if (lupdate != null)
+	{
+		lupdate.setText(aktualisierung);
+		lupdate.repaint();
+	}
+}
+
+
 public static int addHeadingsToPanel(Panel p, String aktualisierung) {
-	AFrame.constrain(p,new Label(aktualisierung),0,0,9,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,0,0,2,0);
+	lupdate = new Label(aktualisierung);
+	AFrame.constrain(p,lupdate,0,0,9,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,0,0,2,0);
 
 	AFrame.constrain(p,new Label(" Aktienname"),0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,0,0,HEADERABSTAND,0);
 	AFrame.constrain(p,new Label("  St\u00fcck",Label.RIGHT),1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);

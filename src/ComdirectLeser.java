@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-24
+ @version 1998-11-30
 */
 
 import java.io.*;
@@ -12,13 +12,16 @@ public class ComdirectLeser extends Thread {
 
 private static final String VALUENA = "n/a";
 
-private String request;
+private String request,baWKN,baBoerse;
 
 
 
-public ComdirectLeser(String request) {
+public ComdirectLeser(String request, String baWKN, String baBoerse) {
 	super();
-	this.request = request;
+
+	this.request  = request;
+	this.baWKN    = baWKN;
+	this.baBoerse = baBoerse;
 }
 
 
@@ -284,10 +287,15 @@ public void run() {
 	catch (MalformedURLException e)
 	{
 		System.out.println("Comdirect-URL fehlerhaft.");
+		AktienMan.hauptdialog.listeAnfrageFehler(baWKN,baBoerse);
+	}
+	catch (NullPointerException e)
+	{
+		AktienMan.hauptdialog.listeAnfrageFehler(baWKN,baBoerse);
 	}
 	catch (IOException e)
 	{
-		System.out.println("Fehler beim Einlesen der Comdirect-Daten.");
+		AktienMan.hauptdialog.listeAnfrageFehler(baWKN,baBoerse);
 	}
 }
 

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-15
+ @version 1998-11-27
 */
 
 import java.awt.*;
@@ -21,7 +21,7 @@ public ChartCanvas(ChartViewer chartviewer) {
 
 public void paint(Graphics g)
 {
-	Dimension d = size();
+	Dimension d = getSize();
 	g.clearRect(0,0,d.width,d.height);
 
 	g.drawString(Lang.LOADCHART,20,35);

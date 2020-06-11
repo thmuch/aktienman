@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-10-27
+ @version 1998-11-29
 */
 
 import java.net.*;
@@ -20,20 +20,18 @@ private static final int STATUS_READING  = 2;
 private String request,listenname,ignore;
 private int index;
 private AktienAktualisieren aadialog;
-private boolean mdax;
 private Aktienliste aktienliste;
 
 
 
 public AktienlistenLeser(String listenname, String request, String ignore,
-							AktienAktualisieren aadialog, int index, boolean mdax) {
+							AktienAktualisieren aadialog, int index) {
 	super();
 	this.listenname = listenname;
 	this.request = request;
 	this.ignore = ignore.toUpperCase();
 	this.aadialog = aadialog;
 	this.index = index;
-	this.mdax = mdax;
 }
 
 
@@ -67,32 +65,32 @@ public void run() {
 					
 					switch (index)
 					{
-					case 0:
+					case AktienAktualisieren.INDEX_DAX:
 						AktienMan.listeDAX = aktienliste;
 						break;
 					
-					case 1:
+					case AktienAktualisieren.INDEX_MDAX:
 						AktienMan.listeMDAX = aktienliste;
 						break;
 					
-					case 2:
+					case AktienAktualisieren.INDEX_NMARKT:
 						AktienMan.listeNMarkt = aktienliste;
 						break;
 					
-					case 3:
+					case AktienAktualisieren.INDEX_EUROSTOXX:
 						AktienMan.listeEuroSTOXX = aktienliste;
 						break;
 					
-					case 4:
+					case AktienAktualisieren.INDEX_AUSLAND:
 						AktienMan.listeAusland = aktienliste;
 						break;
 					}
 
 					aadialog.finishCounting(index);
 					
-					if (mdax)
+					if (index == AktienAktualisieren.INDEX_DAX)
 					{
-						new AktienlistenLeser("MDAX",URLs.LISTE_DAX100,"DAX 100",aadialog,1,false).start();
+						new AktienlistenLeser("MDAX",URLs.LISTE_DAX100,"DAX 100",aadialog,AktienAktualisieren.INDEX_MDAX).start();
 					}
 
 					break;
@@ -115,7 +113,7 @@ public void run() {
 						{
 							int wkn = Integer.parseInt(wknstr);
 							
-							if (index == 1)
+							if (index == AktienAktualisieren.INDEX_MDAX)
 							{
 								if (AktienMan.listeDAX.isMember(wkn)) continue;
 							}
@@ -136,8 +134,14 @@ public void run() {
 	{
 		System.out.println("Aktienlisten-URL fehlerhaft.");
 	}
-	catch (IOException e) {}
+	catch (NullPointerException e)
+	{
+		aadialog.setError(index);
+	}
+	catch (IOException e)
+	{
+		aadialog.setError(index);
+	}
 }
-
 
 }

@@ -1,4 +1,7 @@
-// 1998-09-15 tm
+/**
+ @author Thomas Much
+ @version 1998-11-29
+*/
 
 
 
@@ -32,7 +35,11 @@ public boolean hasInternetTrade() {
 
 
 public long getMaklerCourtage(long wert) {
-	return (wert*8L + Waehrungen.PRECISION*50L) / (Waehrungen.PRECISION*100L);
+	long courtage = (wert*8L + Waehrungen.PRECISION*50L) / (Waehrungen.PRECISION*100L);
+
+	long minimum = (Waehrungen.PRECISION * 3L) / 2L;
+	
+	return (courtage <= minimum) ? minimum : courtage;
 }
 
 
