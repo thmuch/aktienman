@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-20
+ @version 1999-06-27
 */
 
 
@@ -25,9 +25,9 @@ public boolean hasType24() {
 
 public void displayChart(String wkn, String boerse, int type, boolean isFonds, boolean firstCall) {
 
-	if (type == ChartViewer.TYPE_36)
+	if (type == URLs.CHART_36)
 	{
-		type = ChartViewer.TYPE_24;
+		type = URLs.CHART_24;
 	}
 
 	new DeubaChartLeser(wkn,boerse,isFonds,type,getNextID(firstCall)).start();

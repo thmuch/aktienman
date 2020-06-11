@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-20
+ @version 1999-06-27
 */
 
 import java.awt.*;
@@ -17,7 +17,7 @@ private byte[] chartData;
 
 public IntradayChartViewer(String wknboerse, BenutzerAktie ba) {
 
-	super(null,"Intraday "+ba.getName(true),wknboerse,TYPE_NONE,"gif","GIFf",670,285,ChartQuellen.CHARTQUELLE_NONE,ba.isFonds(),true);
+	super(null,"Intraday "+ba.getName(true),wknboerse,URLs.CHART_NONE,"gif","GIFf",670,285,ChartQuellen.CHARTQUELLE_NONE,ba.isFonds(),true);
 }
 
 

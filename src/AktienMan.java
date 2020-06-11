@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-22
+ @version 1999-06-30
 */
 
 /**
@@ -16,11 +16,11 @@ import java.awt.*;
 public final class AktienMan {
 
 public static final String AMNAME         = "AktienMan";
-public static final String AMVERSION      = "1.40";
+public static final String AMVERSION      = "1.41";
 public static final String AMFENSTERTITEL = AMNAME + " - ";
 
-public static ADate compDate              = new ADate(1999,6,22); /* Compilierdatum */
-public static final int RELEASE           = 13; /* 1.40 22.06.1999 */
+public static ADate compDate              = new ADate(1999,6,30); /* Compilierdatum */
+public static final int RELEASE           = 14; /* 1.41 30.06.1999 */
 public static final boolean DEBUG         = false; /**/
 
 public static Aktienliste listeDAX        = new Aktienliste();

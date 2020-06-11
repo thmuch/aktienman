@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-20
+ @version 1999-06-27
 */
 
 import java.awt.*;
@@ -29,7 +29,7 @@ private void setupMenu() {
 	MenuItem mi = new MenuItem("Intraday");
 	mi.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			AktienMan.hauptdialog.listeSelektierteAktieChart(ChartViewer.TYPE_INTRA);
+			AktienMan.hauptdialog.listeSelektierteAktieChart(URLs.CHART_INTRA);
 		}
 	});
 	add(mi);
@@ -37,7 +37,7 @@ private void setupMenu() {
 	mi = new MenuItem("3 Monate");
 	mi.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			AktienMan.hauptdialog.listeSelektierteAktieChart(ChartViewer.TYPE_3);
+			AktienMan.hauptdialog.listeSelektierteAktieChart(URLs.CHART_3);
 		}
 	});
 	add(mi);
@@ -45,7 +45,7 @@ private void setupMenu() {
 	mi = new MenuItem("6 Monate");
 	mi.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			AktienMan.hauptdialog.listeSelektierteAktieChart(ChartViewer.TYPE_6);
+			AktienMan.hauptdialog.listeSelektierteAktieChart(URLs.CHART_6);
 		}
 	});
 	add(mi);
@@ -53,7 +53,7 @@ private void setupMenu() {
 	mi = new MenuItem("1 Jahr");
 	mi.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			AktienMan.hauptdialog.listeSelektierteAktieChart(ChartViewer.TYPE_12);
+			AktienMan.hauptdialog.listeSelektierteAktieChart(URLs.CHART_12);
 		}
 	});
 	add(mi);
@@ -61,7 +61,7 @@ private void setupMenu() {
 	item24 = new MenuItem("2 Jahre");
 	item24.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			AktienMan.hauptdialog.listeSelektierteAktieChart(ChartViewer.TYPE_24);
+			AktienMan.hauptdialog.listeSelektierteAktieChart(URLs.CHART_24);
 		}
 	});
 	add(item24);
@@ -69,7 +69,7 @@ private void setupMenu() {
 	item36 = new MenuItem("3 Jahre");
 	item36.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			AktienMan.hauptdialog.listeSelektierteAktieChart(ChartViewer.TYPE_36);
+			AktienMan.hauptdialog.listeSelektierteAktieChart(URLs.CHART_36);
 		}
 	});
 	add(item36);

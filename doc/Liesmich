@@ -1,4 +1,4 @@
-AktienMan 1.40-beta (1999-06-22)
+AktienMan 1.41-beta (1999-06-30)
 Copyright (c)1998,99 by Thomas Much (thomas@aktienman.de)
 
 
@@ -60,7 +60,7 @@ todo
 // neue Comdirect-Kurse
 // Kurse+Charts auch von bbbank.de, http://www.consors.de, http://www.fimatex.de
 // Kurs- und Chartklassen bei Bedarf von aktienman.de laden
-Version 1.41 (.06.99)
+Version 1.42 (.07.99)
 // RELEASE erhöhen, DEBUG entfernen
 // Aktienlisten etc. in XML speichern (Strings als UTF8)
 // Kopieren+Verschieben zwischen Portfolios
@@ -70,11 +70,36 @@ Version 1.41 (.06.99)
 // Charts optional (?) preloaden und auf Platte speichern
 // wenn ein Chart nicht geladen werden konnte, auf letzten verfügbaren (intern merken!) umschalten
 // Splashscreen für alle Systeme
-// Parkett-DAX?
 // SMAX von yahoo.de (evtl. auch andere Listen)
-// DAX-Wert von finanzen.yahoo.de im Hauptfenster anzeigen (? - evtl. Indizes im separaten Fenster)
+// Kurse auch von ZDFMSNBC holen
+// Absturz, wenn Maxkursdialog vor Ende geschlossen wird ...
+// WKN-Listen bei der Comdirect erkennen und Wert mit der passenden WKN auswählen (Achtung, wenn WKN fehlt)
 // akt. Kurs eingebbar
+// Indizes speichern, Werte beim Start anzeigen
 //
+Version 1.41 (30.06.99)
+- wenn "Konfiguration - Indizes regelmäßig aktualisieren" eingeschaltet ist, werden die Indizes ab dem
+  ersten Aktualisieren alle 55s automatisch neu geladen
+- die Indizes werden bei Aktualisieren der Liste mit aktualisiert; wenn die Liste beim Programmstart
+  automatisch aktualisiert wird, werden auch die Indizes aktualisiert
+- unterhalb der Aktualisieren-Buttons werden nun drei Indizes angezeigt (DAX, Neuer Markt, Dow Industrials),
+  die von der BBBank eingelesen werden; auf-/absteigende Pfeile gibt es ab +/- 0,1% Differenz zum Vortag,
+  Pfeile nach oben/unten ab +/- 1,0%; ab +/- 2,0% werden die Differenzwerte zusätzlich grün bzw. rot
+  dargestellt
+- Kurswerte, die nicht ermittelt werden können (z.B. Eröffnungskurs), werden jetzt immer mit "n/a" angegeben
+- die Maximalkurse werden nun auch mit den normalen Kurslesern ermittelt; dadurch muß pro Kursquelle
+  nur noch ein Kursleser gepflegt und gewartet werden
+- die Buttons "Aktualisieren FSE" und "Aktualisieren ETR" wurden durch ein Popup-Menü ersetzt,
+  mit dem alle Aktien an allen deutschen Börsen aktualisiert werden können; im "Aktualisieren"-Menü
+  ist nun ein entsprechendes Untermenü vorhanden
+- die Einträge des "Aktualisieren"-Menüs werden nun passend dis- und enabled
+- Workaround für einige Comdirect-Kurse, damit die Workarounds funktionieren ...
+- Workaround für die WKNs 710000 (DCX), 750000 (TKA), 519000 (BMW), 695200 (PRS), 850000 (GMC),
+  920566 (LYLK), 920578 (LYLX) und 849084 (Eurovesta) eingebaut
+- Kurse und Charts der Deutschen Bank werden wieder geladen
+- Chartverwaltung intern optimiert
+- [Win] die Chartfenster werden nun breiter und höher geöffnet (Workaround für Windows-Bug)
+- [Win] das Umschalten der Charts über die Karteireiter funktioniert wieder (Workaround)
 Version 1.40 (22.06.99)
 - kleine Korrektur der Deuba-Kurs-URL
 - auch Comdirect-Intraday-Charts werden als Linienchart angezeigt

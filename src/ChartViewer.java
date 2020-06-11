@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-21
+ @version 1999-06-27
 */
 
 import java.awt.*;
@@ -12,22 +12,13 @@ import java.awt.event.*;
 
 public abstract class ChartViewer extends ImageFrame implements ImageObserver,MouseListener {
 
-public static final int TYPE_INTRA = 0;
-public static final int TYPE_3     = 1;
-public static final int TYPE_6     = 2;
-public static final int TYPE_12    = 3;
-public static final int TYPE_24    = 4;
-public static final int TYPE_36    = 5;
-
-protected static final int TYPE_NONE  = -1;
-protected static final int TYPE_COUNT =  6;
-
 private static final int STATUS_ERROR    = -1;
 private static final int STATUS_EMPTY    =  0;
 private static final int STATUS_LOADING  =  1;
 private static final int STATUS_FINISHED =  2;
 
-protected static final int WINFIX = 20;
+protected static final int WINFIX_X =  8;
+protected static final int WINFIX_Y = 46;
 
 private Image chartImage = null;
 
@@ -35,8 +26,6 @@ private ChartLoader chartloader = null;
 
 private boolean fondsonly;
 
-private int initWidth;
-private int initHeight;
 private int nextID;
 private int type;
 
@@ -51,9 +40,13 @@ public ChartViewer(Image chartImage, String titel, String wknboerse, int type, S
 								int initWidth, int initHeight, int nextID, boolean fondsonly, boolean canScale) {
 
 	super(AktienMan.AMFENSTERTITEL+titel,"Chart",ext,ftype);
+	
+	if (SysUtil.isWindows())
+	{
+		initWidth  += WINFIX_X;
+		initHeight += WINFIX_Y;
+	}
 
-	this.initWidth = initWidth;
-	this.initHeight = initHeight;
 	this.wknboerse = wknboerse;
 	this.nextID = nextID;
 	this.fondsonly = fondsonly;

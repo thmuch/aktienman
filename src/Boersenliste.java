@@ -1,12 +1,17 @@
 /**
  @author Thomas Much
- @version 1999-01-15
+ @version 1999-06-28
 */
+
+import java.awt.*;
+
+
 
 
 public final class Boersenliste extends Aktienliste {
 
 private static final int STANDARDBOERSE = 3;
+
 
 
 
@@ -24,9 +29,11 @@ public synchronized void setupList() {
 }
 
 
+
 public synchronized Boersenplatz getAt(int index) {
 	return (Boersenplatz)elementAt(index);
 }
+
 
 
 public synchronized Aktie getAktie(int index) {
@@ -34,7 +41,9 @@ public synchronized Aktie getAktie(int index) {
 }
 
 
+
 public synchronized int getBoersenIndex(String kurz) {
+
 	for (int i=0; i < size(); i++)
 	{
 		if (getAt(i).getKurz().equalsIgnoreCase(kurz)) return i;
@@ -44,8 +53,20 @@ public synchronized int getBoersenIndex(String kurz) {
 }
 
 
+
 public synchronized int getStandardBoerse() {
 	return AktienMan.properties.getInt("Konfig.StdBoerse",STANDARDBOERSE);
+}
+
+
+
+public synchronized Choice getChoiceNoFonds() {
+
+	Choice c = super.getChoice(true);
+	
+	c.remove(size() - 1);
+	
+	return c;
 }
 
 }

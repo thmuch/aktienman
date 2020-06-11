@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-20
+ @version 1999-06-29
 */
 
 import java.awt.*;
@@ -11,7 +11,8 @@ import com.apple.mrj.*;
 
 
 
-public final class Hauptdialog extends AFrame implements ComponentListener,MRJAboutHandler {
+public final class Hauptdialog extends AFrame implements ComponentListener,
+															MRJAboutHandler,KursReceiver {
 
 private static final String FENSTERTITEL = AktienMan.AMNAME+" "+AktienMan.AMVERSION;
 
@@ -26,15 +27,16 @@ private boolean abenabled = false;
 private BenutzerListe benutzerliste;
 private Button buttonVerkaufen,buttonAendern;
 private Button buttonSpeichern,buttonMaxkurs,buttonInfo;
-private Button buttonAktFSE,buttonAktXetra,buttonAktualisieren;
+private Button buttonAktualisieren;
 private ScrollPane pane;
-private Panel panelText,panelGewinn;
+private Panel panelText,panelGewinn,panelIndex;
 private Listenbereich panelListe;
 private PopupMenu aktienpopup;
 private MenuItem menuSave,menuVerkaufen,menuAendern,menuLoeschen,menuInfo,menuMaxkurs;
-private MenuItem popVerkaufen,popMaxkurs,popAktualisieren,pofoRename,pofoDelete;
+private MenuItem popVerkaufen,popMaxkurs,popAktualisieren,pofoRename,pofoDelete,menuAkt;
+private Menu menuAktAlle;
 private ChartMenu menuChart,popChart;
-private Choice chErloes,buttonChart,lwaehrung;
+private Choice chErloes,buttonChart,lwaehrung,aktChoice;
 private int popX,popY;
 private BALabel popParent;
 private ProgressCanvas progressCanvas;
@@ -159,26 +161,28 @@ public void setupElements() {
 	Panel panelULinks = new Panel(gridbag);
 	Panel panelUMitte = new Panel(gridbag);
 
+	panelIndex = new Panel(gridbag);
 	panelListe = new Listenbereich(gridbag);
 	panelText = new Panel(gridbag);
 	panelGewinn = new Panel(gridbag);
 	
-	buttonAktualisieren = new Button(" Aktualisieren! ");
-	buttonAktFSE = new Button(" Akt. FSE ");
-	buttonAktXetra = new Button(" Akt. Xetra ");
+	IndexCanvas daxCanvas = new IndexCanvas("DAX","DAX.ETR");
+	IndexCanvas nmCanvas = new IndexCanvas("Neuer Markt","NMDK.ETR");
+	IndexCanvas dowCanvas = new IndexCanvas("Dow Indust.","INDU.IND");
+
+	constrain(panelIndex,daxCanvas,0,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,0,0,0);
+	constrain(panelIndex,nmCanvas,1,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,10,0,0);
+	constrain(panelIndex,dowCanvas,2,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.EAST,1.0,0.0,0,10,0,0);
+	
+	IndexQuelle.addCanvas(daxCanvas);
+	IndexQuelle.addCanvas(nmCanvas);
+	IndexQuelle.addCanvas(dowCanvas);
+
+	IndexQuelle.setPanel(panelIndex);
+	IndexQuelle.loadValues();
+	
+	buttonAktualisieren = new Button(" Aktualisieren ");
 	Button buttonKamera = new Button(" DAX-Kamera ");
-
-	buttonAktFSE.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			listeAktualisieren("FSE");
-		}
-	});
-
-	buttonAktXetra.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			listeAktualisieren("ETR");
-		}
-	});
 
 	buttonAktualisieren.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -192,10 +196,24 @@ public void setupElements() {
 		}
 	});
 	
-	constrain(panelOben,buttonAktualisieren,0,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH,1.0,0.0,0,0,0,10);
-	constrain(panelOben,buttonAktFSE,1,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH,0.7,0.0,0,0,0,10);
-	constrain(panelOben,buttonAktXetra,2,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH,0.7,0.0,0,0,0,10);
-	constrain(panelOben,buttonKamera,3,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH,0.4,0.0,0,5,0,0);
+	aktChoice = AktienMan.boersenliste.getChoiceNoFonds();
+	aktChoice.insert("Alle aktualisieren an:",0);
+	
+	aktChoice.addItemListener(new ItemListener() {
+		public void itemStateChanged(ItemEvent e) {
+			int idx = aktChoice.getSelectedIndex();
+			
+			if (idx != 0)
+			{
+				listeAktualisieren(idx-1);
+				aktChoice.select(0);
+			}
+		}
+	});
+
+	constrain(panelOben,buttonAktualisieren,0,0,2,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH,1.0,0.0,0,0,0,10);
+	constrain(panelOben,aktChoice,2,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH,1.0,0.0,0,0,0,10);
+	constrain(panelOben,buttonKamera,3,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH,0.7,0.0,0,10,0,0);
 
 	constrain(panelULinks,new Label("W\u00e4hrung:"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	lwaehrung = AktienMan.waehrungen.getChoice(true);
@@ -245,23 +263,23 @@ public void setupElements() {
 			switch(idx)
 			{
 			case 1:
-				listeSelektierteAktieChart(ChartViewer.TYPE_INTRA);
+				listeSelektierteAktieChart(URLs.CHART_INTRA);
 				break;
 
 			case 2:
-				listeSelektierteAktieChart(ChartViewer.TYPE_3);
+				listeSelektierteAktieChart(URLs.CHART_3);
 				break;
 
 			case 3:
-				listeSelektierteAktieChart(ChartViewer.TYPE_6);
+				listeSelektierteAktieChart(URLs.CHART_6);
 				break;
 
 			case 4:
-				listeSelektierteAktieChart(ChartViewer.TYPE_12);
+				listeSelektierteAktieChart(URLs.CHART_12);
 				break;
 
 			case 5:
-				listeSelektierteAktieChart(ChartQuellen.getChartQuelle().hasType24() ? ChartViewer.TYPE_24 : ChartViewer.TYPE_36);
+				listeSelektierteAktieChart(ChartQuellen.getChartQuelle().hasType24() ? URLs.CHART_24 : URLs.CHART_36);
 				break;
 
 			case 6:
@@ -312,17 +330,18 @@ public void setupElements() {
 	hAdjust.setUnitIncrement(16);
 	
 	constrain(this,panelOben,0,0,3,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,10,10,5,10);
-	constrain(this,pane,0,1,3,1,GridBagConstraints.BOTH,GridBagConstraints.CENTER,1.0,1.0,5,10,5,10);
+	constrain(this,panelIndex,0,1,3,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,5,10,5,10);
+	constrain(this,pane,0,2,3,1,GridBagConstraints.BOTH,GridBagConstraints.CENTER,1.0,1.0,5,10,5,10);
 
-	constrain(this,panelText,0,2,3,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,5,10,0,10);
+	constrain(this,panelText,0,3,3,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,5,10,0,10);
 	
 	progressCanvas = new ProgressCanvas();
-	constrain(this,progressCanvas,0,3,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,5,10);
+	constrain(this,progressCanvas,0,4,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,5,10);
 	
-	constrain(this,panelGewinn,1,3,2,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.EAST,1.0,0.0,0,10,5,10);
+	constrain(this,panelGewinn,1,4,2,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.EAST,1.0,0.0,0,10,5,10);
 
-	constrain(this,panelULinks,0,4,1,1,GridBagConstraints.NONE,GridBagConstraints.SOUTHWEST,0.0,0.0,5,10,15,5);
-	constrain(this,panelUMitte,1,4,2,1,GridBagConstraints.NONE,GridBagConstraints.SOUTH,0.0,0.0,5,5,15,10);
+	constrain(this,panelULinks,0,5,1,1,GridBagConstraints.NONE,GridBagConstraints.SOUTHWEST,0.0,0.0,5,10,15,5);
+	constrain(this,panelUMitte,1,5,2,1,GridBagConstraints.NONE,GridBagConstraints.SOUTH,0.0,0.0,5,5,15,10);
 
 	aktienpopup = new PopupMenu();
 
@@ -437,31 +456,25 @@ public void setupElements() {
 	});
 	amMenu.add(mi);
 	
-	mi = new MenuItem("An der jeweiligen B\u00f6rse",new MenuShortcut(KeyEvent.VK_A));
-	mi.addActionListener(new ActionListener() {
+	menuAkt = new MenuItem("An der jeweiligen B\u00f6rse",new MenuShortcut(KeyEvent.VK_A));
+	menuAkt.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			listeAktualisieren();
 		}
 	});
-	aktMenu.add(mi);
+	aktMenu.add(menuAkt);
 
 	aktMenu.addSeparator();
 	
-	mi = new MenuItem("Alle Aktien an FSE");
-	mi.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			listeAktualisieren("FSE");
-		}
-	});
-	aktMenu.add(mi);
-
-	mi = new MenuItem("Alle Aktien an Xetra");
-	mi.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			listeAktualisieren("ETR");
-		}
-	});
-	aktMenu.add(mi);
+	menuAktAlle = new Menu("Alle Aktien an");
+	for (int i = 0; i < AktienMan.boersenliste.size() - 1; i++)
+	{
+		Boersenplatz bp = AktienMan.boersenliste.getAt(i);
+		mi = new MenuItem(bp.toString());
+		mi.addActionListener(new BoersenListener(i));
+		menuAktAlle.add(mi);
+	}
+	aktMenu.add(menuAktAlle);
 	
 	aktMenu.addSeparator();
 	
@@ -863,14 +876,16 @@ private void checkAktienButtons(BenutzerAktie ba) {
 private void checkLockButtons() {
 	if (isLocked(false))
 	{
-		buttonAktFSE.setEnabled(false);
-		buttonAktXetra.setEnabled(false);
+		menuAkt.setEnabled(false);
+		menuAktAlle.setEnabled(false);
+		aktChoice.setEnabled(false);
 		buttonAktualisieren.setEnabled(false);
 	}
 	else
 	{
-		buttonAktFSE.setEnabled(true);
-		buttonAktXetra.setEnabled(true);
+		menuAkt.setEnabled(true);
+		menuAktAlle.setEnabled(true);
+		aktChoice.setEnabled(true);
 		buttonAktualisieren.setEnabled(true);
 	}
 }
@@ -927,15 +942,26 @@ private void checkListButtons() {
 }
 
 
+
 public synchronized void callKamera() {
+
 	if (AktienMan.daxKamera == null) AktienMan.daxKamera = new DAXKamera();
 	if (AktienMan.daxKamera != null) AktienMan.daxKamera.showKamera();
 }
 
 
+
 public synchronized void listeAktualisieren() {
 	listeAktualisieren("");
 }
+
+
+
+public synchronized void listeAktualisieren(int boersenindex) {
+
+	listeAktualisieren(AktienMan.boersenliste.getAt(boersenindex).getKurz());
+}
+
 
 
 private boolean nochNichtAngefordert(String cmp, int bis, String boerse) {
@@ -948,9 +974,14 @@ private boolean nochNichtAngefordert(String cmp, int bis, String boerse) {
 }
 
 
+
 public synchronized void listeAktualisieren(String boerse) {
+
 	if (!KursDemon.canCallKursDemon(boerse)) listeAktualisierenAusfuehren(boerse);
+	
+	IndexQuelle.call();
 }
+
 
 
 public synchronized void listeAktualisierenAusfuehren(String boerse) {

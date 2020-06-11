@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-20
+ @version 1999-06-27
 */
 
 import java.net.*;
@@ -45,24 +45,32 @@ public void run() {
 		in = new BufferedReader(new InputStreamReader(url.openStream()));
 
 		String s;
+
+		String str_charts    = AktienMan.url.getString(URLs.STR_DEUBA_CHARTS);
+		String str_charthref = AktienMan.url.getString(URLs.STR_DEUBA_CHARTHREF);
 		
 		while ((s = in.readLine()) != null)
 		{
-			int i = s.indexOf(".html?");
-			
-			if (i > 0)
+			if (s.indexOf(str_charts) > 0)
 			{
-				int i2 = s.indexOf("\"",i);
-
-				String s1 = AktienMan.url.get(URLs.URL_CHARTDEUBA);
-				String s2 = s.substring(i,i2);
+				int i = s.indexOf(str_charthref);
 				
-				chartviewer.setDeubaStrings(s1,s2);
+				if (i > 0)
+				{
+					int i2 = s.indexOf("\"", i + str_charthref.length());
+					
+					if (i2 > i)
+					{
+						String rel = s.substring(i + str_charthref.length(), i2);
+						
+						chartviewer.setDeubaRelURL(rel);
+						
+						new DeubaChartLoader(chartviewer,AktienMan.url.getDeubaChartURL(rel,type),type).start();
 
-				new DeubaChartLoader(chartviewer,s1+chartviewer.getTypeDeubaString(type)+s2,type).start();
-
-				valid = true;
-				break;
+						valid = true;
+						break;
+					}
+				}
 			}
 		}
 	}

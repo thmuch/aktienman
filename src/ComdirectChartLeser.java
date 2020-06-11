@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-21
+ @version 1999-06-27
 */
 
 import java.net.*;
@@ -64,9 +64,9 @@ public void run() {
 						
 						chartviewer.setComdirectRelURL(rel);
 						
-						int charttype = ((isFonds) || (type == ChartViewer.TYPE_INTRA)) ? URLs.CHART_LINIE : URLs.CHART_STANDARD;
+						int charttype = ((isFonds) || (type == URLs.CHART_INTRA)) ? URLs.CHART_LINIE : URLs.CHART_STANDARD;
 						
-						new ComdirectChartLoader(chartviewer,AktienMan.url.getComdirectChartURL(rel,chartviewer.getTypeComdirectString(type),charttype),type).start();
+						new ComdirectChartLoader(chartviewer,AktienMan.url.getComdirectChartURL(rel,type,charttype),type).start();
 
 						valid = true;
 						break;

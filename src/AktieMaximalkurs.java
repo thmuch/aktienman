@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-13
+ @version 1999-06-28
 */
 
 import java.awt.*;
@@ -8,13 +8,15 @@ import java.awt.event.*;
 
 
 
-public final class AktieMaximalkurs extends AFrame {
+
+public final class AktieMaximalkurs extends AFrame implements KursReceiver {
 
 private long[] kurse,volumen;
 private int[] kwaehrung;
-private String[] kursdatum;
+private String[] kdatum;
 private Panel panelKurse;
 private BenutzerAktie ba;
+
 
 
 
@@ -35,12 +37,15 @@ public AktieMaximalkurs(BenutzerAktie ba) {
 }
 
 
+
 public void setupElements() {
 	setLayout(gridbag);
 }
 
 
+
 public void display() {}
+
 
 
 public synchronized void setupElements2() {
@@ -49,14 +54,14 @@ public synchronized void setupElements2() {
 	kurse = new long[AktienMan.boersenliste.size()];
 	volumen = new long[AktienMan.boersenliste.size()];
 	kwaehrung = new int[AktienMan.boersenliste.size()];
-	kursdatum = new String[AktienMan.boersenliste.size()];
+	kdatum = new String[AktienMan.boersenliste.size()];
 	
 	for (int i = 0; i < AktienMan.boersenliste.size(); i++)
 	{
 		kurse[i] = BenutzerAktie.VALUE_MISSING;
 		volumen[i] = 0L;
 		kwaehrung[i] = Waehrungen.NONE;
-		kursdatum[i] = "";
+		kdatum[i] = "";
 	}
 	
 	fillKursPanel(false);
@@ -74,6 +79,7 @@ public synchronized void setupElements2() {
 }
 
 
+
 private void startThreads() {
 	KursQuelle quelle = KursQuellen.getKursQuelle();
 
@@ -81,10 +87,14 @@ private void startThreads() {
 	{
 		if (!AktienMan.boersenliste.getAt(i).isFondsOnly())
 		{
-			quelle.sendSingleMaxkursRequest(this,i,ba.getWKNString()+"."+AktienMan.boersenliste.getAt(i).getKurz());
+			String wkn   = ba.getWKNString();
+			String platz = AktienMan.boersenliste.getAt(i).getKurz();
+
+			quelle.sendSingleMaxkursRequest(this,wkn+"."+platz,wkn,platz);
 		}
 	}
 }
+
 
 
 private synchronized void fillKursPanel(boolean draw) {
@@ -147,7 +157,7 @@ private synchronized void fillKursPanel(boolean draw) {
 			}
 			constrain(panelKurse,l,2,ypos,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,10,0,0);
 
-			constrain(panelKurse,new Label(kursdatum[i]),3,ypos,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,0,0);
+			constrain(panelKurse,new Label(kdatum[i]),3,ypos,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,0,0);
 
 			constrain(panelKurse,new Label(svol,Label.RIGHT),4,ypos,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.EAST,1.0,0.0,0,10,0,0);
 			
@@ -164,7 +174,9 @@ private synchronized void fillKursPanel(boolean draw) {
 }
 
 
-public synchronized void setKurs(int index, long kurs, int nextID) {
+
+private synchronized void setKurs(int index, long kurs, int nextID) {
+
 	if (AktienMan.DEBUG)
 	{
 		System.out.println("Fehler beim Einlesen der Maximalkurse  -> "+nextID);
@@ -176,24 +188,70 @@ public synchronized void setKurs(int index, long kurs, int nextID) {
 	}
 	else
 	{
-		KursQuellen.getKursQuelle(nextID).sendSingleMaxkursRequest(this,index,ba.getWKNString()+"."+AktienMan.boersenliste.getAt(index).getKurz(),false);
+		String wkn   = ba.getWKNString();
+		String platz = AktienMan.boersenliste.getAt(index).getKurz();
+
+		KursQuellen.getKursQuelle(nextID).sendSingleMaxkursRequest(this,wkn+"."+platz,wkn,platz,false);
 	}
 }
 
 
-public synchronized void setKurs(int index, long kurs) {
+private synchronized void setKurs(int index, long kurs) {
 	setKurs(index,kurs,"",Waehrungen.NONE,0L);
 }
 
 
-public synchronized void setKurs(int index, long kurs, String datum, int waehrung, long hvolumen) {
+
+private synchronized void setKurs(int index, long kurs, String datum, int waehrung, long hvolumen) {
 	kurse[index] = kurs;
 	kwaehrung[index] = waehrung;
 	volumen[index] = hvolumen;
 
-	if (datum.length() > 0) kursdatum[index] = "("+datum+")";
+	if (datum.length() > 0) kdatum[index] = "("+datum+")";
 	
 	fillKursPanel(true);
+}
+
+
+
+private int getIndex(String platz) {
+
+	return AktienMan.boersenliste.getBoersenIndex(platz);
+}
+
+
+
+public synchronized void listeNeuerAktienkurs(String wkn, String kurz, String platz,
+												String name, long kurs, String kursdatum,
+												long vortageskurs, long eroeffnungskurs,
+												long hoechstkurs, long tiefstkurs,
+												long handelsvolumen, int waehrung,
+												boolean sofortZeichnen) {
+
+	setKurs(getIndex(platz),kurs,kursdatum,waehrung,handelsvolumen);
+}
+
+
+
+public synchronized void listeAktienkursNA(String wkn, String kurz, String platz, String name,
+											boolean sofortZeichnen) {
+
+	setKurs(getIndex(platz),BenutzerAktie.VALUE_NA);
+}
+
+
+
+public synchronized void listeAnfrageFalsch(String wkn, String platz, boolean sofortZeichnen) {
+
+	setKurs(getIndex(platz),BenutzerAktie.VALUE_ERROR);
+}
+
+
+
+public synchronized void listeAnfrageFehler(String request, String wkn, String platz,
+												boolean sofortZeichnen, int nextID) {
+
+	setKurs(getIndex(platz),BenutzerAktie.VALUE_ERROR,nextID);
 }
 
 }

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-19
+ @version 1999-06-30
 */
 
 import java.io.*;
@@ -8,28 +8,34 @@ import java.net.*;
 
 
 
+
 public class DeutscheBankLeser extends Thread {
 
+private KursReceiver receiver;
 private String request,baWKN,baBoerse;
 private boolean sofortZeichnen;
 private int nextID;
 
 
 
-public DeutscheBankLeser(String request, String baWKN, String baBoerse, int nextID) {
-	this(request,baWKN,baBoerse,false,nextID);
+
+public DeutscheBankLeser(KursReceiver receiver, String request, String baWKN, String baBoerse, int nextID) {
+	this(receiver,request,baWKN,baBoerse,false,nextID);
 }
 
 
-public DeutscheBankLeser(String request, String baWKN, String baBoerse, boolean sofortZeichnen, int nextID) {
+
+public DeutscheBankLeser(KursReceiver receiver, String request, String baWKN, String baBoerse, boolean sofortZeichnen, int nextID) {
 	super();
 
+	this.receiver = receiver;
 	this.request = request;
 	this.baWKN = baWKN;
 	this.baBoerse = baBoerse;
 	this.sofortZeichnen = sofortZeichnen;
 	this.nextID = nextID;
 }
+
 
 
 public void run() {
@@ -47,13 +53,19 @@ public void run() {
 		URL url = new URL(AktienMan.url.getDeubaKursURL(spwkn,spboerse));
 		
 		in = new BufferedReader(new InputStreamReader(url.openStream()));
+
+		String str_fehler = AktienMan.url.getString(URLs.STR_DEUBA_KURSFEHLER);
+		String str_titel  = AktienMan.url.getString(URLs.STR_DEUBA_KURSTITEL);
+		String str_ende   = AktienMan.url.getString(URLs.STR_DEUBA_KURSENDE);
+		String str_zeile  = AktienMan.url.getString(URLs.STR_DEUBA_KURSZEILE);
+		String str_symbol = AktienMan.url.getString(URLs.STR_DEUBA_KURSSYMBOL);
 		
 		String s, lastline = "";
 		String name = null, platz = null, wkn = null, kursdatum = "", kurz = "";
 		long kurs = BenutzerAktie.VALUE_MISSING;
-		long hoechstkurs = BenutzerAktie.VALUE_MISSING;
-		long tiefstkurs = BenutzerAktie.VALUE_MISSING;
-		long vortageskurs = BenutzerAktie.VALUE_MISSING;
+		long hoechstkurs = BenutzerAktie.VALUE_NA;
+		long tiefstkurs = BenutzerAktie.VALUE_NA;
+		long vortageskurs = BenutzerAktie.VALUE_NA;
 		long handelsvolumen = 0L;
 		int i,i2,i3, status = 0;
 		boolean found = false;
@@ -62,23 +74,23 @@ public void run() {
 		{
 			if (status == 0)
 			{
-				i = s.indexOf(" keine Ergebnisse ");
+				i = s.indexOf(str_fehler);
 				
 				if (i > 0)
 				{
-					AktienMan.hauptdialog.listeAnfrageFalsch(baWKN,baBoerse,sofortZeichnen);
+					receiver.listeAnfrageFalsch(baWKN,baBoerse,sofortZeichnen);
 					found = true;
 					break;
 				}
 
-				i = s.indexOf(".html?show=");
+				i = s.indexOf(str_titel);
 				
 				if (i > 0)
 				{
-					i2 = s.indexOf("&showi=",i);
+					i2 = s.indexOf(str_symbol,i);
 					i3 = s.indexOf(".",i2);
 
-					kurz = s.substring(i2+7,i3).trim();
+					kurz = s.substring(i2+str_symbol.length(),i3).trim();
 
 					i2 = s.indexOf("\"",i3);
 					
@@ -91,9 +103,9 @@ public void run() {
 
 					wkn = null;
 					kurs = BenutzerAktie.VALUE_MISSING;
-					hoechstkurs = BenutzerAktie.VALUE_MISSING;
-					tiefstkurs = BenutzerAktie.VALUE_MISSING;
-					vortageskurs = BenutzerAktie.VALUE_MISSING;
+					hoechstkurs = BenutzerAktie.VALUE_NA;
+					tiefstkurs = BenutzerAktie.VALUE_NA;
+					vortageskurs = BenutzerAktie.VALUE_NA;
 					handelsvolumen = 0L;
 					kursdatum = "";
 
@@ -102,7 +114,7 @@ public void run() {
 			}
 			else
 			{
-				if (s.indexOf("</TR>") >= 0)
+				if (s.indexOf(str_ende) >= 0)
 				{
 					i2 = lastline.indexOf(">");
 					i3 = lastline.indexOf("<",i2+1);
@@ -115,7 +127,7 @@ public void run() {
 						{
 							int kurswaehrung = Waehrungen.getOnlineWaehrung();
 							
-							AktienMan.hauptdialog.listeNeuerAktienkurs(wkn,kurz,platz,name,kurs,kursdatum,
+							receiver.listeNeuerAktienkurs(wkn,kurz,platz,name,kurs,kursdatum,
 																		vortageskurs,BenutzerAktie.VALUE_NA,
 																		hoechstkurs,tiefstkurs,handelsvolumen,
 																		kurswaehrung,sofortZeichnen);
@@ -123,7 +135,7 @@ public void run() {
 						}
 						else
 						{
-							AktienMan.hauptdialog.listeAktienkursNA(wkn,kurz,platz,name,sofortZeichnen);
+							receiver.listeAktienkursNA(wkn,kurz,platz,name,sofortZeichnen);
 							found = true;
 						}
 					}
@@ -132,7 +144,7 @@ public void run() {
 				}
 				else
 				{
-					i = s.indexOf("<TD");
+					i = s.indexOf(str_zeile);
 
 					if (i >= 0)
 					{
@@ -178,7 +190,7 @@ public void run() {
 								}
 								catch (NumberFormatException e)
 								{
-									vortageskurs = BenutzerAktie.VALUE_MISSING;
+									vortageskurs = BenutzerAktie.VALUE_NA;
 								}
 							}
 						}
@@ -222,7 +234,7 @@ public void run() {
 								}
 								catch (NumberFormatException e)
 								{
-									hoechstkurs = BenutzerAktie.VALUE_MISSING;
+									hoechstkurs = BenutzerAktie.VALUE_NA;
 								}
 							}
 
@@ -238,7 +250,7 @@ public void run() {
 								}
 								catch (NumberFormatException e)
 								{
-									tiefstkurs = BenutzerAktie.VALUE_MISSING;
+									tiefstkurs = BenutzerAktie.VALUE_NA;
 								}
 							}
 						}
@@ -265,21 +277,21 @@ public void run() {
 		
 		if (!found)
 		{
-			AktienMan.hauptdialog.listeAnfrageFehler(request,baWKN,baBoerse,sofortZeichnen,nextID);
+			receiver.listeAnfrageFehler(request,baWKN,baBoerse,sofortZeichnen,nextID);
 		}
 	}
 	catch (MalformedURLException e)
 	{
 		System.out.println("DeutscheBank-URL fehlerhaft.");
-		AktienMan.hauptdialog.listeAnfrageFehler(request,baWKN,baBoerse,sofortZeichnen,nextID);
+		receiver.listeAnfrageFehler(request,baWKN,baBoerse,sofortZeichnen,nextID);
 	}
 	catch (NullPointerException e)
 	{
-		AktienMan.hauptdialog.listeAnfrageFehler(request,baWKN,baBoerse,sofortZeichnen,nextID);
+		receiver.listeAnfrageFehler(request,baWKN,baBoerse,sofortZeichnen,nextID);
 	}
 	catch (IOException e)
 	{
-		AktienMan.hauptdialog.listeAnfrageFehler(request,baWKN,baBoerse,sofortZeichnen,nextID);
+		receiver.listeAnfrageFehler(request,baWKN,baBoerse,sofortZeichnen,nextID);
 	}
 	finally
 	{
