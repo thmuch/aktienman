@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-03-02
+ @version 1999-03-15
 */
 
 /**
@@ -16,13 +16,11 @@ import java.awt.*;
 public final class AktienMan {
 
 public static final String AMNAME         = "AktienMan";
-public static final String AMVERSION      = "1.23 (Euro MP)";
+public static final String AMVERSION      = "1.24 (Euro MP)";
 public static final String AMFENSTERTITEL = AMNAME + " - ";
 
-public static final char DEZSEPARATOR     = ',';
-
-public static ADate compDate              = new ADate(1999,3,2); /* Compilierdatum */
-public static final int RELEASE           = 8; /* 1.23 02.03.99 */
+public static ADate compDate              = new ADate(1999,3,15); /* Compilierdatum */
+public static final int RELEASE           = 9; /* 1.24 15.03.99 */
 public static final int PORTFOLIOVER      = 0;
 
 public static Aktienliste listeDAX        = new Aktienliste();
@@ -56,39 +54,8 @@ public static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize()
 
 
 
-public static double getDouble(String str) throws NumberFormatException {
-	return Double.valueOf(str.trim().replace(DEZSEPARATOR,'.')).doubleValue();
-}
-
-
-public static String getString(double d) {
-	return new Double(d).toString().replace('.',DEZSEPARATOR);
-}
-
-
 public static void doOnlineChecks() {
 	UpdateChecker.check();
-}
-
-
-public static String get00String(long l) {
-	String s = getString(Waehrungen.longToDouble(l));
-	int i = s.indexOf(DEZSEPARATOR);
-	
-	if (i < 0)
-	{
-		s = s + DEZSEPARATOR + "00";
-	}
-	else if (i == s.length()-1)
-	{
-		s = s + "00";
-	}
-	else if (i == s.length()-2)
-	{
-		s = s + "0";
-	}
-	
-	return s;
 }
 
 
@@ -97,7 +64,7 @@ private static void registerCheck() {}
 
 private static void main(int a) throws Exception {
 	ADate heute = new ADate();
-	ADate morgen = new ADate(1999,5,8); /* #Ablaufdatum */
+	ADate morgen = new ADate(1999,6,8); /* #Ablaufdatum */
 
 	/* #Demoversion */
 	if ((heute.before(compDate) || heute.after(morgen)) && (!hauptdialog.main())) throw new Exception();

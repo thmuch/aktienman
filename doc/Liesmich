@@ -1,7 +1,7 @@
-AktienMan 1.23-beta (1999-03-02)
+AktienMan 1.24-beta (1999-03-15)
 Copyright (c)1998 by Thomas Much (thomas@aktienman.de)
 
->>>>> BETAVERSION, LÄUFT AM 8.5.1999 AB <<<<<
+>>>>> BETAVERSION, LÄUFT AM 8.6.1999 AB <<<<<
 
 
 History
@@ -14,12 +14,12 @@ Win-Bugs
 // Chartfenster werden minimal zu klein geöffnet
 // unter Win98 fehlt der erste Redraw, wenn .lst nicht vorhanden ist (?)
 Linux-Bugs
-// alle Dialoge (bis auf DAX-Kamera) werden direkt nach dem Öffnen wieder geschlossen
+// 
 todo
+// InterRenta -> gehen Kurse von Deutscher Bank?
 // Konfigurierbarkeit der Farben
 // Test auf Online-Verbindung
 // Mehrfachselektion mit <Shift>
-// Ausdruck über mehrere Seiten
 // Spaltenreihenfolge bel. festlegbar
 // Aktie splitten
 // Backup der Listendaten
@@ -28,8 +28,6 @@ todo
 // Konfig-Dialog zur Auswahl, welche Spalten angezeigt werden
 // Börsen konfigurierbar machen
 // HTML-Export mit Farben
-// Kurse auch von yahoo holen
-// Kurse auch von teledata direkt holen (+ Anfragen zusammenfassen)
 // DAX-Kamera optional von yahoo
 // Dialog, um zu Aktien die WKN abzufragen (und umgekehrt)
 // Börsenplätze NAS (NASDAQ) und NYS (Wallstreet)
@@ -45,24 +43,47 @@ todo
 // Maximalkurs: Button "Aktualisieren"
 // bei "Aktie kaufen" und "ändern" Währung anzeigen
 // Speicherung von x Börsentagen incl. Mini-Chart (gleitender Durchschnitt)
+// Kontextpopup: "Duplizieren, Kopieren nach, Verschieben nach" vor Löschen
 // Konfiguration: Allgemein, Anzeige, Spezial (Browser etc.)
 // S-DAX-Popup (im Sommer)
 // FSE-Abschaffung vorbereiten
 // separate Quelle für Charts: Comdirect, Deutsche Bank (incl. Intraday!)
-// Yahoo-Kursleser
+// separate Quelle für Fonds: derzeit nur Comdirect
 // KursQuelle incl. Abfrage der verfügbaren Börsenplätze
 // Online-Währung -> KursQuelle
 // PoFo-Umschalten beim allerersten Start nicht möglich (wenn AktienMan.lst fehlt) (?)
-// Win: passendes Programmicon
-// bei jedem Aktualisieren Thread starten, der aktuelle Umtauschkurse ermittelt
-Version 1.24 (.03.99)
-// Aktien sofort nach Kauf bei Kaufwert-Summe berücksichtigen
-// Austausch der lst-Dateien noch möglich?
-// beim Kaufen optional Gebühren errechnen
+// Aktienlisten etc. in XML speichern
+// Suche nach WKN (via Comdirect) -> Liste der Ergebnisse anzeigen
+// Realtime-Kurse von Comdirect
 // Anzeige unwichtiger Spalten ausschaltbar
 // Voreinstellungen: CardLayout
 // öS
 // nach HTML-Export Browser (derzeit nur Netscape) nachstarten (nur Mac, ab MRJ 2.1)
+// beim Kaufen optional Gebühren errechnen
+// Aktien sofort nach Kauf bei Kaufwert-Summe berücksichtigen
+// Popuplisten: Choice mit fester Pixelrückgabe überschreiben
+// bei jedem Aktualisieren Thread starten, der aktuelle Umtauschkurse ermittelt
+// Yahoo-Kursleser
+Version 1.24 (15.03.99)
+- offenbar können bei der Kursquelle "Deutsche Bank" keine Fonds mehr aktualisiert werden;
+  AktienMan holt daher ab sofort alle DFK-Anfragen von der Comdirect
+- Mac: MRJ SDK 2.1 wird verwendet
+- Mac: Speicherbedarf um 1 MB verringert
+- Win: Icon-Datei liegt bei (muß man aber selbst zuweisen)
+- am.gif heißt nun AktienMan.gif
+- die einzelnen Zahlen einer Datumsangabe können bei der Eingabe nicht mehr nur mit einem
+  Punkt getrennt werden, sondern auch per Komma, Schrägstrich, Minus- und Leerzeichen
+- wird bei einer Datumseingabe die Jahreszahl weggelassen, wird automatisch das aktuelle
+  Jahr ergänzt
+- AktienMan sollte 0,001 (und geringer) nicht mehr als 0 interpretieren (z.B. beim Kaufkurs)
+- sollte es noch irgendwer schaffen, beim Kaufkurs 0 einzugeben, gibt AktienMan bei %absolut
+  nun "n/a" aus (und stürzt nicht mehr ab)
+- bei den Intraday-Charts werden rechts keine Pixel mehr abgeschnitten
+- wenn beim Beobachten einer Aktie der zu übernehmende Kaufkurs nicht vorhanden war, bleibt
+  der Kaufkurs nun auf "aktualisieren", anstelle den Wert -0,01 anzunehmen
+- bei einem (noch) nicht vorhandenen Kaufkurs wird das entsprechende Feld bei "Aktie ändern"
+  leergelassen
+- die Demoversion läuft bis zum 8.6.99
 Version 1.23 (02.03.99)
 - unter jedem Portfolio, in der Summenzeile und beim HTML-Export wird nun die Gesamtperformance
   des Portfolios angegeben

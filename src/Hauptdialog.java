@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-02-23
+ @version 1999-03-14
 */
 
 import java.awt.*;
@@ -815,7 +815,7 @@ private void checkAktienButtons(BenutzerAktie ba) {
 		menuLoeschen.setEnabled(true);
 		menuInfo.setEnabled(true);
 
-		if (ba.isBoerseFondsOnly())
+		if (ba.isFonds())
 		{
 			buttonMaxkurs.setEnabled(false);
 			menuMaxkurs.setEnabled(false);
@@ -942,7 +942,7 @@ public synchronized void listeAktualisierenAusfuehren(String boerse) {
 
 	/* #Ablaufdatum */
 	/* #Demoversion */
-	if ((new ADate().after(new ADate(1999,5,9))) && (!main())) System.exit(0);
+	if ((new ADate().after(new ADate(1999,6,9))) && (!main())) System.exit(0);
 	
 	benutzerliste.setDate(boerse);
 	
@@ -953,12 +953,13 @@ public synchronized void listeAktualisierenAusfuehren(String boerse) {
 
 	/* #Ablaufdatum */
 	/* #Demoversion */
-	if ((new ADate().after(new ADate(1999,5,10)))
+	if ((new ADate().after(new ADate(1999,6,10)))
 		&& (RegAM.string(AktienMan.properties.getString("Key.1"),
 			AktienMan.properties.getString("Key.2"),
 			AktienMan.properties.getString("Key.3")) >= 0)) return;
 
 	KursQuelle quelle = KursQuellen.getKursQuelle();
+	KursQuelle fonds = KursQuellen.getFondsQuelle();
 	
 	for (int i = 0; i < getAnzahlAktien(); i++)
 	{
@@ -967,11 +968,19 @@ public synchronized void listeAktualisierenAusfuehren(String boerse) {
 		
 		if (nochNichtAngefordert(cmp,i,boerse))
 		{
-			quelle.sendRequest(cmp,ba.getWKNString(),ba.getBoerse());
+			if (ba.isFonds())
+			{
+				fonds.sendRequest(cmp,ba.getWKNString(),ba.getBoerse());
+			}
+			else
+			{
+				quelle.sendRequest(cmp,ba.getWKNString(),ba.getBoerse());
+			}
 		}
 	}
 	
 	quelle.flush();
+	fonds.flush();
 
 	BenutzerAktie.setLastUpdateAndRepaint(benutzerliste.getDateString());
 	
@@ -990,9 +999,17 @@ private synchronized void listeSelektierteAktieAktualisieren() {
 
 			/* #Ablaufdatum */
 			/* #Demoversion */
-			if ((new ADate().after(new ADate(1999,5,9))) && (!main())) return;
+			if ((new ADate().after(new ADate(1999,6,9))) && (!main())) return;
 
-			KursQuellen.getKursQuelle().sendSingleRequest(ba.getRequest(""),ba.getWKNString(),ba.getBoerse());
+			if (ba.isFonds())
+			{
+				KursQuellen.getFondsQuelle().sendSingleRequest(ba.getRequest(""),ba.getWKNString(),ba.getBoerse());
+			}
+			else
+			{
+				KursQuellen.getKursQuelle().sendSingleRequest(ba.getRequest(""),ba.getWKNString(),ba.getBoerse());
+			}
+			
 			break;
 		}
 	}
@@ -1192,7 +1209,7 @@ private synchronized void aktienPopup(BenutzerAktie ba, BALabel bal, int mX, int
 		popChart.setEnabled(false);
 	}
 	
-	if (ba.isBoerseFondsOnly())
+	if (ba.isFonds())
 	{
 		popMaxkurs.setEnabled(false);
 	}

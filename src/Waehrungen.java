@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-15
+ @version 1999-03-13
 */
 
 
@@ -43,8 +43,8 @@ public synchronized Aktie getAktie(int index) {
 }
 
 
-public static long doubleToLong(String s) {
-	return doubleToLong(AktienMan.getDouble(s));
+public static long doubleToLong(String s) throws NumberFormatException {
+	return doubleToLong(NumUtil.getDouble(s));
 }
 
 
@@ -108,7 +108,7 @@ public static String getKuerzel(int waehrung) {
 
 
 public static String getString(long wert, int waehrung) {
-	return AktienMan.get00String(wert) + " " + getKuerzel(waehrung);
+	return NumUtil.get00String(wert) + " " + getKuerzel(waehrung);
 }
 
 

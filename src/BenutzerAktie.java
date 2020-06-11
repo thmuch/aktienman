@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-02-24
+ @version 1999-03-15
 */
 
 import java.awt.*;
@@ -188,7 +188,7 @@ private void setColors() {
 
 
 public synchronized String getProzentString() {
-	return (prozgrenze == 0L) ? "" : AktienMan.get00String(prozgrenze);
+	return (prozgrenze == 0L) ? "" : NumUtil.get00String(prozgrenze);
 }
 
 
@@ -211,7 +211,7 @@ public synchronized long getHochkurs() {
 
 
 public synchronized String getHochkursString() {
-	return (getHochkurs() == 0L) ? "" : AktienMan.get00String(getHochkurs());
+	return (getHochkurs() == 0L) ? "" : NumUtil.get00String(getHochkurs());
 }
 
 
@@ -221,7 +221,7 @@ public synchronized long getTiefkurs() {
 
 
 public synchronized String getTiefkursString() {
-	return (getTiefkurs() == 0L) ? "" : AktienMan.get00String(getTiefkurs());
+	return (getTiefkurs() == 0L) ? "" : NumUtil.get00String(getTiefkurs());
 }
 
 
@@ -240,7 +240,7 @@ public synchronized boolean isBoerseFixed() {
 }
 
 
-public synchronized boolean isBoerseFondsOnly() {
+public synchronized boolean isFonds() {
 	return boersenplatz.isFondsOnly();
 }
 
@@ -506,7 +506,7 @@ public synchronized String getRawVerkaufsKursString() {
 	}
 	else
 	{
-		return AktienMan.get00String(Waehrungen.exchange(getKurs(),getKurswaehrung(),Waehrungen.getVerkaufsWaehrung()));
+		return NumUtil.get00String(Waehrungen.exchange(getKurs(),getKurswaehrung(),Waehrungen.getVerkaufsWaehrung()));
 	}
 }
 
@@ -650,7 +650,7 @@ public synchronized void setValues(String name, long kurs, String kursdatum,
 	this.tiefstkurs = tiefstkurs;
 	this.handelsvolumen = handelsvolumen;
 	
-	if ((kaufkurs == VALUE_MISSING) && nurBeobachten())
+	if ((kaufkurs == VALUE_MISSING) && nurBeobachten() && (kurs > VALUE_MISSING))
 	{
 		kaufkurs = kurs;
 		kaufdatum = new ADate();
@@ -929,15 +929,23 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 
 		if (aktKurs > 0L)
 		{
-			pabs = (aktKurs * 10000L) / Waehrungen.exchange(getKaufkurs(),getKaufwaehrung(),Waehrungen.getListenWaehrung()) - 10000L;
-			
-			long kabs = pabs;
-			if (kabs > 0L) kabs += 5L;
-			else if (kabs < 0L) kabs -= 5L;
-			kabs /= 10L;
-			sk = new Double((double)kabs/10.0).toString();
+			try
+			{
+				pabs = (aktKurs * 10000L) / Waehrungen.exchange(getKaufkurs(),getKaufwaehrung(),Waehrungen.getListenWaehrung()) - 10000L;
+				
+				long kabs = pabs;
+				if (kabs > 0L) kabs += 5L;
+				else if (kabs < 0L) kabs -= 5L;
+				kabs /= 10L;
+				sk = new Double((double)kabs/10.0).toString();
 
-			if (pabs > 0L) sk = "+" + sk;
+				if (pabs > 0L) sk = "+" + sk;
+			}
+			catch (ArithmeticException e)
+			{
+				pabs = 0L;
+				sk = STR_NA;
+			}
 		}
 		else
 		{
@@ -1456,15 +1464,23 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 
 	if (aktKurs > 0L)
 	{
-		pabs = (aktKurs * 10000L) / Waehrungen.exchange(getKaufkurs(),getKaufwaehrung(),Waehrungen.getListenWaehrung()) - 10000L;
-		
-		long kabs = pabs;
-		if (kabs > 0L) kabs += 5L;
-		else if (kabs < 0L) kabs -= 5L;
-		kabs /= 10L;
-		sk = new Double((double)kabs/10.0).toString();
+		try
+		{
+			pabs = (aktKurs * 10000L) / Waehrungen.exchange(getKaufkurs(),getKaufwaehrung(),Waehrungen.getListenWaehrung()) - 10000L;
+			
+			long kabs = pabs;
+			if (kabs > 0L) kabs += 5L;
+			else if (kabs < 0L) kabs -= 5L;
+			kabs /= 10L;
+			sk = new Double((double)kabs/10.0).toString();
 
-		if (pabs > 0L) sk = "+" + sk;
+			if (pabs > 0L) sk = "+" + sk;
+		}
+		catch (ArithmeticException e)
+		{
+			pabs = 0L;
+			sk = STR_NA;
+		}
 	}
 	else
 	{

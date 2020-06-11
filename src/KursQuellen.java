@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-29
+ @version 1999-03-14
 */
 
 import java.util.*;
@@ -13,6 +13,7 @@ public final class KursQuellen extends Vector {
 public static final int QUELLE_NONE         = -1;
 public static final int QUELLE_COMDIRECT    =  0;
 public static final int QUELLE_DEUTSCHEBANK =  1;
+//public static final int QUELLE_YAHOO_DE     =  2;
 
 private static final int STANDARDQUELLE = QUELLE_COMDIRECT;
 
@@ -31,7 +32,6 @@ public KursQuellen() {
 public synchronized void setupList() {
 	add(new ComdirectQuelle());
 	add(new DeutscheBankQuelle());
-	//add(new TeledataQuelle());
 	//add(new YahooDeQuelle());
 }
 
@@ -65,6 +65,11 @@ public synchronized static KursQuelle getKursQuelle(int index) {
 
 public synchronized static KursQuelle getKursQuelle() {
 	return getKursQuelle(getKursQuelleIndex());
+}
+
+
+public synchronized static KursQuelle getFondsQuelle() {
+	return getKursQuelle(QUELLE_COMDIRECT);
 }
 
 

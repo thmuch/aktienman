@@ -32,7 +32,7 @@ public void setupElements2() {
 	
 	constrain(panelOben,new Label("neu:"),2,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,15,0,0);
 
-	neuerErloes = new TextField(AktienMan.get00String(erloes),8);
+	neuerErloes = new TextField(NumUtil.get00String(erloes),8);
 	constrain(panelOben,neuerErloes,3,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 
 	constrain(panelOben,new Label(Waehrungen.getKuerzel(waehrung)),4,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);

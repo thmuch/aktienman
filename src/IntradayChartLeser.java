@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-20
+ @version 1999-03-14
 */
 
 import java.net.*;
@@ -31,7 +31,7 @@ public void run() {
 	
 	String wkn = ba.getWKNString();
 
-	chartviewer = new ChartViewer(null,"Intraday "+ba.getName(true),"",620,285,ChartViewer.TYPE_INTRADAY);
+	chartviewer = new ChartViewer(null,"Intraday "+ba.getName(true),"",670,285,ChartViewer.TYPE_INTRADAY);
 	
 	try
 	{

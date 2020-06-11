@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-02-23
+ @version 1999-03-15
 */
 
 
@@ -28,6 +28,7 @@ public static final String LISTE_NMARKT       = "neuer-markt_export.html";
 public static final String LISTE_EURO50       = "euro50_export.html";
 public static final String LISTE_AUSLAND      = "ausland_export.html";
 
-// http://www.oanda.com/converter/classic?lang=de&value=1&date=18.09.1998&date_fmt=normal&exch2=DEM&expr2=XEU&margin_fixed=0
+// http://www.oanda.com/converter/classic?lang=de&value=1&date=15.03.1999&date_fmt=normal&exch2=USD&expr2=EUR&margin_fixed=0
+// http://www.oanda.com/converter/classic?lang=de&value=1&date=15.03.1999&date_fmt=normal&exch2=EUR&expr2=USD&margin_fixed=0
 
 }

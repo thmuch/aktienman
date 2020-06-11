@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-15
+ @version 1999-03-12
 */
 
 import java.util.*;
@@ -199,7 +199,7 @@ public static int getDays(int year, int month) {
 
 
 public static ADate parse(String s) throws Exception {
-	StringTokenizer st = new StringTokenizer(s.trim(),".");
+	StringTokenizer st = new StringTokenizer(s.trim(),".,/- ");
 	
 	if (st.hasMoreTokens())
 	{
@@ -208,37 +208,36 @@ public static ADate parse(String s) throws Exception {
 		if (st.hasMoreTokens())
 		{
 			String str_monat = st.nextToken().trim();
+			String str_jahr;
 
 			if (st.hasMoreTokens())
 			{
-				String str_jahr = st.nextToken().trim();
+				str_jahr = st.nextToken().trim();
 				
 				if (st.hasMoreTokens())
 				{
 					throw new Exception();
 				}
+			}
+			else
+			{
+				str_jahr = new Integer(new ADate().getYear()).toString();
+			}
+			
+			int jahr  = Integer.parseInt(str_jahr);
+			int monat = Integer.parseInt(str_monat);
+			int tag   = Integer.parseInt(str_tag);
+			
+			if ((((jahr>=0) && (jahr<=99)) || ((jahr>=1900) && (jahr<=2199)))
+				&& (monat>=1) && (monat<=12) && (tag>=1))
+			{
+				if (tag<=getDays(jahr,monat))
+				{
+					return new ADate(jahr,monat,tag);
+				}
 				else
 				{
-					int jahr  = Integer.parseInt(str_jahr);
-					int monat = Integer.parseInt(str_monat);
-					int tag   = Integer.parseInt(str_tag);
-					
-					if ((((jahr>=0) && (jahr<=99)) || ((jahr>=1900) && (jahr<=2199)))
-						&& (monat>=1) && (monat<=12) && (tag>=1))
-					{
-						if (tag<=getDays(jahr,monat))
-						{
-							return new ADate(jahr,monat,tag);
-						}
-						else
-						{
-							throw new Exception();
-						}
-					}
-					else
-					{
-						throw new Exception();
-					}
+					throw new Exception();
 				}
 			}
 			else

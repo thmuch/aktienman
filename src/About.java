@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-02-17
+ @version 1999-03-12
 */
 
 import java.awt.*;
@@ -12,7 +12,7 @@ public final class About extends AFrame {
 
 public static Image aboutImage;
 
-private static final String AMABOUT = "am.gif";
+private static final String AMABOUT = AktienMan.AMNAME + ".gif";
 
 
 

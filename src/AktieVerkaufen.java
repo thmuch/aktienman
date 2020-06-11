@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-15
+ @version 1999-03-13
 */
 
 import java.awt.*;
@@ -210,7 +210,7 @@ private void checkBankGebuehren() {
 
 
 private void checkVerkaufskurs() {
-	double vkurs;
+	long vkurs;
 	
 	String vstr = verkaufskurs.getText();
 
@@ -218,7 +218,7 @@ private void checkVerkaufskurs() {
 	{
 		try
 		{
-			vkurs = AktienMan.getDouble(vstr);
+			vkurs = Waehrungen.doubleToLong(vstr);
 		}
 		catch (NumberFormatException e)
 		{
@@ -226,13 +226,13 @@ private void checkVerkaufskurs() {
 			return;
 		}
 		
-		if (vkurs < 0.0)
+		if (vkurs < 0L)
 		{
 			verkaufskurs.setText("");
 			return;
 		}
 		
-		if (vkurs >= 1000000.00)
+		if (vkurs >= (1000000L * Waehrungen.PRECISION))
 		{
 			verkaufskurs.setText("999999.99");
 			return;
@@ -343,10 +343,10 @@ public synchronized void executeOK() {
 
 
 public synchronized boolean canOK() {
-	double db;
+	long db;
 	try
 	{
-		db = AktienMan.getDouble(verkaufskurs.getText());
+		db = Waehrungen.doubleToLong(verkaufskurs.getText());
 	}
 	catch (NumberFormatException e)
 	{
@@ -354,7 +354,7 @@ public synchronized boolean canOK() {
 		return false;
 	}
 	
-	if (db <= 0.0)
+	if (db <= 0L)
 	{
 		new Warnalert(this,"Bitte geben Sie einen g\u00fcltigen Verkaufskurs ein.");
 		return false;
@@ -366,7 +366,7 @@ public synchronized boolean canOK() {
 	{
 		try
 		{
-			db = AktienMan.getDouble(s);
+			db = Waehrungen.doubleToLong(s);
 		}
 		catch (NumberFormatException e)
 		{
@@ -374,7 +374,7 @@ public synchronized boolean canOK() {
 			return false;
 		}
 		
-		if (db < 0.0)
+		if (db < 0L)
 		{
 			new Warnalert(this,"Bitte geben Sie g\u00fcltige Geb\u00fchren ein.");
 			return false;

@@ -1,4 +1,4 @@
-AktienMan Euro MP 1.22
+AktienMan Euro MP 1.23
 Copyright ©1998,99 Thomas Much
 Ein Programm von AktienMan&Friends (<http://www.aktienman.de>).
 
@@ -31,6 +31,10 @@ AktienMan kennt nun drei unabhängige Währungen, die bei Bedarf automatisch inein
 - die Listenwährung bestimmt, in welcher Währung die Aktien in der Liste des Hauptdialogs angezeigt werden; unten links im Hauptdialog kann man die Listenwährung umschalten.
 
 Versionsübersicht
+1999-03-02
+- Bei jedem Portfolio sowie beim HTML-Export wird nun die Gesamtperformance des Portfolios ausgegeben. 
+- Die 6/12/24-Monats-Charts können nun wieder geladen werden (eine Anpassung war nötig, da sich die WWW-Adresse der Charts geändert hatte). 
+- Der HTML-Export wurde optimiert.
 1999-02-22
 - AktienMan besitzt intern nun Standard-Aktienlisten (AktienMan.pop), die verwendet werden, wenn der Benutzer die Aktienmenüs bisher noch nicht aktualisiert hat
 - Mindest-Maklercourtage bei "Aktie verkaufen" auf 0,75 EUR korrigiert

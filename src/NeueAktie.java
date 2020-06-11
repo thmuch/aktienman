@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-02-02
+ @version 1999-03-13
 */
 
 import java.awt.*;
@@ -436,10 +436,10 @@ public synchronized boolean canOK() {
 	s = kaufkurs.getText().trim();
 	if ((!watchonly) || (s.length() > 0))
 	{
-		double db;
+		long db;
 		try
 		{
-			db = AktienMan.getDouble(s);
+			db = Waehrungen.doubleToLong(s);
 		}
 		catch (NumberFormatException e)
 		{
@@ -447,7 +447,7 @@ public synchronized boolean canOK() {
 			return false;
 		}
 		
-		if (db <= 0.0)
+		if (db <= 0L)
 		{
 			new Warnalert(this,"Bitte geben Sie einen g\u00fcltigen Kaufkurs ein.");
 			return false;
@@ -499,10 +499,10 @@ public synchronized boolean canOK() {
 	s = gewinngrenze.getText().trim();
 	if (s.length() > 0)
 	{
-		double db;
+		long db;
 		try
 		{
-			db = AktienMan.getDouble(s);
+			db = Waehrungen.doubleToLong(s);
 		}
 		catch (NumberFormatException e)
 		{
@@ -510,20 +510,20 @@ public synchronized boolean canOK() {
 			return false;
 		}
 
-		if (db <= 0.0)
+		if (db <= 0L)
 		{
 			new Warnalert(this,"Bitte geben Sie eine g\u00fcltige Gewinngrenze ein oder lassen Sie das Feld leer.");
 			return false;
 		}
 	}
 
-	double tk = 0.0;
+	long tk = 0L;
 	s = tiefkurs.getText().trim();
 	if (s.length() > 0)
 	{
 		try
 		{
-			tk = AktienMan.getDouble(s);
+			tk = Waehrungen.doubleToLong(s);
 		}
 		catch (NumberFormatException e)
 		{
@@ -531,7 +531,7 @@ public synchronized boolean canOK() {
 			return false;
 		}
 
-		if (tk <= 0.0)
+		if (tk <= 0L)
 		{
 			new Warnalert(this,"Bitte geben Sie einen g\u00fcltigen Tiefkurs ein oder lassen Sie das Feld leer.");
 			return false;
@@ -541,10 +541,10 @@ public synchronized boolean canOK() {
 	s = hochkurs.getText().trim();
 	if (s.length() > 0)
 	{
-		double db;
+		long db;
 		try
 		{
-			db = AktienMan.getDouble(s);
+			db = Waehrungen.doubleToLong(s);
 		}
 		catch (NumberFormatException e)
 		{
@@ -552,13 +552,13 @@ public synchronized boolean canOK() {
 			return false;
 		}
 
-		if (db <= 0.0)
+		if (db <= 0L)
 		{
 			new Warnalert(this,"Bitte geben Sie einen g\u00fcltigen Hochkurs ein oder lassen Sie das Feld leer.");
 			return false;
 		}
 		
-		if ((tk > 0.0) && (db <= tk))
+		if ((tk > 0L) && (db <= tk))
 		{
 			new Warnalert(this,"Der Hochkurs mu\u00df h\u00f6her als der Tiefkurs liegen.");
 			return false;
@@ -567,7 +567,7 @@ public synchronized boolean canOK() {
 
 	/* #Ablaufdatum */
 	/* #Demoversion */
-	if ((!(new ADate().before(new ADate(1999,5,10))))
+	if ((!(new ADate().before(new ADate(1999,6,10))))
 		&& (!(RegAM.string(AktienMan.properties.getString("Key.1"),
 			AktienMan.properties.getString("Key.2"),
 			AktienMan.properties.getString("Key.3")) < 0))) for(;;);
