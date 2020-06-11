@@ -1,4 +1,7 @@
-// 1998-08-21 tm
+/**
+ @author Thomas Much
+ @version 1998-11-13
+*/
 
 import java.util.*;
 import java.io.*;
@@ -71,11 +74,20 @@ public void setInt(String key, int value) {
 
 
 public boolean getBoolean(String key) {
+	return getBoolean(key,false);
+}
+
+
+public boolean getBoolean(String key, boolean defval) {
 	String s = getProperty(key,"");
 
 	if (s == null)
 	{
-		return false;
+		return defval;
+	}
+	else if (s.length() == 0)
+	{
+		return defval;
 	}
 	else
 	{

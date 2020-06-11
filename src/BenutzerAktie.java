@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-05
+ @version 1998-11-14
 */
 
 import java.awt.*;
@@ -17,6 +17,8 @@ static final long serialVersionUID = 1997061300002L;
 public static final long VALUE_MISSING =  0L;
 public static final long VALUE_ERROR   = -1L;
 public static final long VALUE_NA      = -2L;
+
+public static final int HTMLCOLS = 12;
 
 private static final String STR_MISSING = "<aktualisieren>";
 private static final String STR_ERROR   = "<Fehler>";
@@ -49,13 +51,14 @@ private long kurs = VALUE_MISSING;
 private int waehrung = Waehrungen.DEM;
 private boolean nurdiese = false;
 private boolean usegrenze = true;
+private boolean watchonly = false;
 
 
 
 public BenutzerAktie(String name, String wkn, Boersenplatz platz, boolean nurdiese,
 						ADate kaufdatum, long kaufkurs, long stueckzahl,
 						long hochkurs, long tiefkurs, long grenze, int waehrung,
-						boolean usegrenze) {
+						boolean usegrenze, boolean watchonly) {
 	this.name = name;
 	this.wkn = wkn;
 	this.kaufdatum = kaufdatum;
@@ -66,6 +69,7 @@ public BenutzerAktie(String name, String wkn, Boersenplatz platz, boolean nurdie
 	this.waehrung = waehrung;
 	this.nurdiese = nurdiese;
 	this.usegrenze = usegrenze;
+	this.watchonly = watchonly;
 	prozgrenze = grenze;
 	boersenplatz = platz;
 
@@ -78,6 +82,8 @@ public BenutzerAktie(String name, String wkn, Boersenplatz platz, boolean nurdie
 
 private void setupValues() {
 	gewinngrenze = (prozgrenze == 0L) ? 0L : (getKaufkurs()*(Waehrungen.PRECISION*100L+prozgrenze))/(Waehrungen.PRECISION*100L);
+	
+	if (kaufdatum == null) kaufdatum = new ADate();
 
 	int jahr = kaufdatum.getYear();
 	int monat = kaufdatum.getMonth() + 6;
@@ -106,14 +112,14 @@ private void setupValues() {
 
 
 private void setColors() {
-	farbeSteuerfrei = Color.yellow.darker();
+	farbeSteuerfrei = Color.yellow.darker().darker();
 	farbeSelected = Color.lightGray;
 	clearStatusRequesting();
 }
 
 
 public String getProzentString() {
-	return  (prozgrenze == 0L) ? "" : AktienMan.get00String(prozgrenze);
+	return (prozgrenze == 0L) ? "" : AktienMan.get00String(prozgrenze);
 }
 
 
@@ -123,7 +129,7 @@ public long getHochkurs() {
 
 
 public String getHochkursString() {
-	return  (getHochkurs() == 0L) ? "" : AktienMan.get00String(getHochkurs());
+	return (getHochkurs() == 0L) ? "" : AktienMan.get00String(getHochkurs());
 }
 
 
@@ -133,12 +139,12 @@ public long getTiefkurs() {
 
 
 public String getTiefkursString() {
-	return  (getTiefkurs() == 0L) ? "" : AktienMan.get00String(getTiefkurs());
+	return (getTiefkurs() == 0L) ? "" : AktienMan.get00String(getTiefkurs());
 }
 
 
 public ADate getKaufdatum() {
-	return kaufdatum;
+	return (kaufdatum == null) ? new ADate() : kaufdatum;
 }
 
 
@@ -159,6 +165,11 @@ public boolean isBoerseFondsOnly() {
 
 public boolean doUseGrenze() {
 	return usegrenze;
+}
+
+
+public boolean nurBeobachten() {
+	return watchonly;
 }
 
 
@@ -359,9 +370,7 @@ public synchronized String getRawKursString() {
 }
 
 
-public synchronized String getKursString() {
-	long k = getKurs();
-	
+private String kurs2String(long k) {
 	if (k == VALUE_MISSING)
 	{
 		return STR_MISSING;
@@ -381,6 +390,11 @@ public synchronized String getKursString() {
 }
 
 
+public synchronized String getKursString() {
+	return kurs2String(getKurs());
+}
+
+
 public synchronized long getWert() {
 	if (getKurs() < 0L)
 	{
@@ -388,13 +402,25 @@ public synchronized long getWert() {
 	}
 	else
 	{
-		return getKurs() * getStueckzahl();
+		if (nurBeobachten())
+		{
+			return getKurs();
+		}
+		else
+		{
+			return getKurs() * getStueckzahl();
+		}
 	}
 }
 
 
 public long getKaufkurs() {
 	return kaufkurs;
+}
+
+
+public String getKaufkursString() {
+	return kurs2String(getKaufkurs());
 }
 
 
@@ -471,10 +497,17 @@ public synchronized void setValues(String name, long kurs, String kursdatum, int
 		}
 	}
 
-	// kurswaehrung beachten!	
+	// kurswaehrung beachten!
 	this.kurs = kurs;
 
 	this.kursdatum = kursdatum;
+	
+	if ((kaufkurs == VALUE_MISSING) && nurBeobachten())
+	{
+		kaufkurs = kurs;
+		kaufdatum = new ADate();
+		setupValues();
+	}
 	
 	clearStatusRequesting();
 }
@@ -483,7 +516,7 @@ public synchronized void setValues(String name, long kurs, String kursdatum, int
 public synchronized void changeValues(String newName, String newWKN, Boersenplatz newBp,
 								boolean newNurDiese, ADate newDate, long newKaufkurs,
 								long newAnz, long newHoch, long newTief, long newGrenze,
-								boolean newUseGrenze) {
+								boolean newUseGrenze, boolean newWatchonly) {
 
 	boolean reset = ((!newWKN.equalsIgnoreCase(getWKNString())) || (!newBp.getKurz().equalsIgnoreCase(getBoerse())));
 	
@@ -498,6 +531,7 @@ public synchronized void changeValues(String newName, String newWKN, Boersenplat
 	tiefkurs = newTief;
 	prozgrenze = newGrenze;
 	usegrenze = newUseGrenze;
+	watchonly = newWatchonly;
 
 	setupValues();
 	
@@ -509,8 +543,10 @@ public synchronized void changeValues(String newName, String newWKN, Boersenplat
 }
 
 
-public void setStatusRequesting() {
+public void setStatusRequestingAndRepaint() {
 	farbeName = Color.blue;
+	l1.setForeground(farbeName);
+	l1.repaint();
 }
 
 
@@ -586,6 +622,394 @@ public synchronized void Toggle() {
 private void readObject(ObjectInputStream in) throws IOException,ClassNotFoundException {
 	in.defaultReadObject();
 	this.setColors();
+}
+
+
+private static String fixHTMLSpaces(String s) {
+	int i = s.indexOf(" ");
+	
+	while (i >= 0)
+	{
+		s = s.substring(0,i) + "&nbsp;" + s.substring(i+1);
+		i = s.indexOf(" ");
+	}
+
+	return s;
+}
+
+
+private static String text2HTML(String s) {
+	int i = 0;
+	
+	while (i < s.length())
+	{
+		char c = s.charAt(i);
+		
+		if (c == '<')
+		{
+			s = s.substring(0,i) + "&lt;" + s.substring(i+1);
+			i += 4;
+		}
+		else if (c == '>')
+		{
+			s = s.substring(0,i) + "&gt;" + s.substring(i+1);
+			i += 4;
+		}
+		else if (c == '&')
+		{
+			s = s.substring(0,i) + "&amp;" + s.substring(i+1);
+			i += 5;
+		}
+		else if (c == '\u00e4')
+		{
+			s = s.substring(0,i) + "&auml;" + s.substring(i+1);
+			i += 6;
+		}
+		else if (c == '\u00f6')
+		{
+			s = s.substring(0,i) + "&ouml;" + s.substring(i+1);
+			i += 6;
+		}
+		else if (c == '\u00fc')
+		{
+			s = s.substring(0,i) + "&uuml;" + s.substring(i+1);
+			i += 6;
+		}
+		else if (c == '\u00c4')
+		{
+			s = s.substring(0,i) + "&Auml;" + s.substring(i+1);
+			i += 6;
+		}
+		else if (c == '\u00d6')
+		{
+			s = s.substring(0,i) + "&Ouml;" + s.substring(i+1);
+			i += 6;
+		}
+		else if (c == '\u00dc')
+		{
+			s = s.substring(0,i) + "&Uuml;" + s.substring(i+1);
+			i += 6;
+		}
+		else if (c == '\u00df')
+		{
+			s = s.substring(0,i) + "&szlig;" + s.substring(i+1);
+			i += 7;
+		}
+		else
+		{
+			i++;
+		}
+	}
+
+	return s;
+}
+
+
+public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean nameSteuerfrei) {
+	long   aktKurs      = getKurs();
+	long   tageLaufzeit = heute.getSerialDate() - getKaufdatum().getSerialDate();
+	long   diff         = 0L;
+	String kursString   = getKursString();
+	String s,sk;
+	long   pabs;
+
+	try
+	{
+		out.write("<TR>");
+		out.newLine();
+
+		out.write("  <TD ALIGN=LEFT>");
+		out.write(text2HTML(getName(namenKurz)));
+		out.write("</TD>");
+		out.newLine();
+
+		out.write("  <TD ALIGN=RIGHT>");
+		if (!nurBeobachten()) out.write(text2HTML(getStueckzahlString()));
+		out.write("</TD>");
+		out.newLine();
+		
+		out.write("  <TD ALIGN=RIGHT>");
+		s = getKaufkursString();
+		if (nurBeobachten() && (getKaufkurs() > 0L))
+		{
+			s = "(" + s + ")";
+		}
+		out.write(fixHTMLSpaces(text2HTML(s)));
+		out.write("</TD>");
+		out.newLine();
+		if ((aktKurs > 0L) && (!nurBeobachten()))
+		{
+			diff = getKaufkurs() * getStueckzahl();
+			kaufsumme += diff;
+		}
+
+		out.write("  <TD ALIGN=RIGHT>");
+		out.write(fixHTMLSpaces(text2HTML(kursString)));
+		out.write("</TD>");
+		out.newLine();
+
+		if (kursdatum != null)
+		{
+			s = kursdatum;
+		}
+		else
+		{
+			s = "";
+		}
+		out.write("  <TD ALIGN=CENTER>");
+		out.write(text2HTML(s));
+		out.write("</TD>");
+		out.newLine();
+
+		if (nurBeobachten())
+		{
+			sk = "";
+		}
+		else if (aktKurs > 0L)
+		{
+			pabs = getWert();
+			sk = Waehrungen.getString(pabs,Waehrungen.DEM);
+			
+			aktsumme += pabs;
+			diff = pabs - diff;
+		}
+		else
+		{
+			sk = kursString;
+		}
+		out.write("  <TD ALIGN=RIGHT>");
+		out.write(fixHTMLSpaces(text2HTML(sk)));
+		out.write("</TD>");
+		out.newLine();
+
+		if (aktKurs > 0L)
+		{
+			if (nurBeobachten())
+			{
+				sk = "(" + Waehrungen.getString(aktKurs-getKaufkurs(),Waehrungen.DEM) + ")";
+			}
+			else
+			{
+				sk = Waehrungen.getString(diff,Waehrungen.DEM);
+			}
+		}
+		else
+		{
+			sk = kursString;
+		}
+		out.write("  <TD ALIGN=RIGHT>");
+		out.write(fixHTMLSpaces(text2HTML(sk)));
+		out.write("</TD>");
+		out.newLine();
+
+		out.write("  <TD ALIGN=RIGHT>");
+		if (nameSteuerfrei && istSteuerfrei() && (!nurBeobachten()))
+		{
+			out.write("steuerfrei");
+		}
+		else
+		{
+			out.write(text2HTML(getLaufzeitMonateString()));
+		}
+		out.write("</TD>");
+		out.newLine();
+
+		if (aktKurs > 0L)
+		{
+			pabs = (aktKurs * 10000L) / getKaufkurs() - 10000L;
+			
+			long kabs = pabs;
+			if (kabs > 0L) kabs += 5L;
+			else if (kabs < 0L) kabs -= 5L;
+			kabs /= 10L;
+			sk = new Double((double)kabs/10.0).toString();
+
+			if (pabs > 0L) sk = "+" + sk;
+		}
+		else
+		{
+			pabs = 0L;
+			sk = kursString;
+		}
+		out.write("  <TD ALIGN=RIGHT>");
+		out.write(text2HTML(sk));
+		out.write("</TD>");
+		out.newLine();
+
+		if (tageLaufzeit >= 360L)
+		{
+			if (aktKurs > 0L)
+			{
+				pabs = (pabs * 360L) / tageLaufzeit;
+				if (pabs > 0L) pabs += 5L;
+				else if (pabs < 0L) pabs -= 5L;
+				pabs /= 10L;
+				sk = new Double((double)pabs/10.0).toString();
+
+				if (pabs > 0L) sk = "+" + sk;
+			}
+			else
+			{
+				pabs = 0L;
+				sk = kursString;
+			}
+		}
+		out.write("  <TD ALIGN=RIGHT>");
+		out.write(text2HTML(sk));
+		out.write("</TD>");
+		out.newLine();
+
+		out.write("  <TD ALIGN=RIGHT>");
+		out.write(text2HTML(getKaufdatum().toString()));
+		out.write("</TD>");
+		out.newLine();
+
+		out.write("  <TD ALIGN=CENTER>");
+		out.write(text2HTML(getWKNString())+"<BR>"+text2HTML(getBoerse()));
+		out.write("</TD>");
+		out.newLine();
+
+		out.write("</TR>");
+		out.newLine();
+		out.newLine();
+	}
+	catch (IOException e) {}
+}
+
+
+public static void saveHeaderHTML(BufferedWriter out, String aktualisierung) {
+	try
+	{
+		out.write("<TR>");
+		out.newLine();
+
+		out.write("  <TD COLSPAN="+HTMLCOLS+">");
+		out.write(text2HTML(aktualisierung));
+		out.write("</TD>");
+		out.newLine();
+
+		out.write("</TR>");
+		out.newLine();
+		out.newLine();
+
+		out.write("<TR>");
+		out.newLine();
+
+		out.write("  <TH ALIGN=LEFT>");
+		out.write("Aktienname");
+		out.write("</TH>");
+		out.newLine();
+
+		out.write("  <TH ALIGN=CENTER>");
+		out.write("St&uuml;ck");
+		out.write("</TH>");
+		out.newLine();
+
+		out.write("  <TH ALIGN=CENTER>");
+		out.write("Kaufkurs");
+		out.write("</TH>");
+		out.newLine();
+
+		out.write("  <TH ALIGN=CENTER COLSPAN=2>");
+		out.write("akt. Kurs");
+		out.write("</TH>");
+		out.newLine();
+
+		out.write("  <TH ALIGN=CENTER>");
+		out.write("akt. Wert");
+		out.write("</TH>");
+		out.newLine();
+
+		out.write("  <TH ALIGN=CENTER>");
+		out.write("Differenz");
+		out.write("</TH>");
+		out.newLine();
+
+		out.write("  <TH ALIGN=CENTER>");
+		out.write("Laufzeit");
+		out.write("</TH>");
+		out.newLine();
+
+		out.write("  <TH ALIGN=CENTER>");
+		out.write("%<BR>absolut");
+		out.write("</TH>");
+		out.newLine();
+
+		out.write("  <TH ALIGN=CENTER>");
+		out.write("%<BR>Jahr");
+		out.write("</TH>");
+		out.newLine();
+
+		out.write("  <TH ALIGN=CENTER>");
+		out.write("Kaufdatum");
+		out.write("</TH>");
+		out.newLine();
+
+		out.write("  <TH ALIGN=CENTER>");
+		out.write("WKN<BR>B&ouml;rse");
+		out.write("</TH>");
+		out.newLine();
+
+		out.write("</TR>");
+		out.newLine();
+		out.newLine();
+	}
+	catch (IOException e) {}
+
+	heute = new ADate();
+	kaufsumme = 0L;
+	aktsumme = 0L;
+}
+
+
+public static void saveFooterHTML(BufferedWriter out) {
+	try
+	{
+		out.write("<TR>");
+		out.newLine();
+
+		out.write("  <TD COLSPAN=2 ALIGN=RIGHT>Summe Kaufwert:</TD>");
+		out.newLine();
+		
+		out.write("  <TD ALIGN=RIGHT>");
+		out.write(fixHTMLSpaces(text2HTML(Waehrungen.getString(kaufsumme,Waehrungen.DEM))));
+		out.write("</TD>");
+		out.newLine();
+
+		out.write("  <TD COLSPAN=2 ALIGN=RIGHT>Summe aktuell:</TD>");
+		out.newLine();
+
+		out.write("  <TD ALIGN=RIGHT>");
+		out.write(fixHTMLSpaces(text2HTML(Waehrungen.getString(aktsumme,Waehrungen.DEM))));
+		out.write("</TD>");
+		out.newLine();
+
+		out.write("  <TD COLSPAN="+(HTMLCOLS-6)+"></TD>");
+		out.newLine();
+
+		out.write("</TR>");
+		out.newLine();
+		out.newLine();
+		
+		out.write("<TR>");
+		out.newLine();
+
+		out.write("  <TD COLSPAN=6 ALIGN=RIGHT>Differenz zum Kaufwert:</TD>");
+		out.newLine();
+
+		out.write("  <TD ALIGN=RIGHT>");
+		out.write(fixHTMLSpaces(text2HTML(Waehrungen.getString(aktsumme-kaufsumme,Waehrungen.DEM))));
+		out.write("</TD>");
+		out.newLine();
+
+		out.write("  <TD COLSPAN="+(HTMLCOLS-7)+"></TD>");
+		out.newLine();
+
+		out.write("</TR>");
+		out.newLine();
+		out.newLine();
+	}
+	catch (IOException e) {}
 }
 
 
@@ -704,7 +1128,7 @@ private String getLaufzeitMonateString() {
 }
 
 
-public synchronized void addToPanel(Panel p, int y, boolean namenKurz) {
+public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean nameSteuerfrei) {
 	long   aktKurs = getKurs();
 	long   tageLaufzeit = heute.getSerialDate() - getKaufdatum().getSerialDate();
 	long   diff = 0L;
@@ -723,13 +1147,21 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz) {
 	
 	/* (1) StŸckzahl: */
 
-	l3 = new BALabel("  " +getStueckzahlString(),row);
+	if (nurBeobachten())
+	{
+		s = "";
+	}
+	else
+	{
+		s = getStueckzahlString();
+	}
+	l3 = new BALabel("  " + s,row);
 	AFrame.constrain(p,l3,1,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
 
 	/* (2) Kaufkurs: */
 
-	l8 = new BALabel("  "+Waehrungen.getString(getKaufkurs(),Waehrungen.DEM),row);
-	if (aktKurs > 0L)
+	l8 = new BALabel("  "+getKaufkursString(),row);
+	if ((aktKurs > 0L) && (!nurBeobachten()))
 	{
 		diff = getKaufkurs() * getStueckzahl();
 		kaufsumme += diff;
@@ -773,7 +1205,11 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz) {
 	
 	/* (5) akt. Wert: */
 
-	if (aktKurs > 0L)
+	if (nurBeobachten())
+	{
+		sk = "";
+	}
+	else if (aktKurs > 0L)
 	{
 		pabs = getWert();
 		sk = Waehrungen.getString(pabs,Waehrungen.DEM);
@@ -792,14 +1228,25 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz) {
 
 	if (aktKurs > 0L)
 	{
-		sk = Waehrungen.getString(diff,Waehrungen.DEM);
+		if (nurBeobachten())
+		{
+			sk = Waehrungen.getString(aktKurs-getKaufkurs(),Waehrungen.DEM);
+		}
+		else
+		{
+			sk = Waehrungen.getString(diff,Waehrungen.DEM);
+		}
 	}
 	else
 	{
 		sk = kursString;
 	}
 	l12 = new BALabel("  "+sk,row);
-	if (diff > 0L)
+	if (nurBeobachten())
+	{
+		l12.setForeground(Color.gray);
+	}
+	else if (diff > 0L)
 	{
 		l12.setForeground(Color.green.darker());
 	}
@@ -811,8 +1258,17 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz) {
 	
 	/* (7) Laufzeit: */
 
-	l5 = new BALabel("  "+getLaufzeitMonateString(),row);
-	if (istSteuerfrei()) l5.setForeground(farbeSteuerfrei);
+	boolean frei = istSteuerfrei() && (!nurBeobachten());
+	if (nameSteuerfrei && frei)
+	{
+		l5 = new BALabel("  steuerfrei",row);
+		l5.setForeground(farbeSteuerfrei);
+	}
+	else
+	{
+		l5 = new BALabel("  "+getLaufzeitMonateString(),row);
+		if (frei) l5.setForeground(farbeSteuerfrei);
+	}
 	AFrame.constrain(p,l5,7,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
 	
 	/* (8) % absolut: */
@@ -890,6 +1346,10 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz) {
 	/* (10) Kaufdatum: */
 	
 	l9 = new BALabel("  "+getKaufdatum().toString()+" ",row);
+	if (nurBeobachten())
+	{
+		l9.setForeground(Color.gray);
+	}
 	AFrame.constrain(p,l9,10,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
 	
 	/* (11) WKN.Bšrse: */

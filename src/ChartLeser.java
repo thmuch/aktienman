@@ -1,12 +1,11 @@
 /**
  @author Thomas Much
- @version 1998-10-30
+ @version 1998-11-16
 */
 
 import java.net.*;
 import java.awt.*;
 import java.io.*;
-import java.awt.*;
 
 
 
@@ -14,6 +13,7 @@ public class ChartLeser extends Thread {
 
 private String request;
 private String monate;
+private ChartViewer chartviewer;
 
 
 
@@ -25,6 +25,8 @@ public ChartLeser(String request, String monate) {
 
 
 public void run() {
+	chartviewer = new ChartViewer(null,"Chart "+request,monate,400,330,ChartViewer.TYPE_COMDIRECT);
+
 	try
 	{
 		URL url = new URL(URLs.TELEDATA+request);
@@ -44,10 +46,15 @@ public void run() {
 					int i2 = s.indexOf("COMDIRECTGIF");
 					int i3 = s.indexOf(';',i2);
 					int i4 = s.indexOf('"',i3);
-
-					readImage(s.substring(i,i2) + "COMDIRECT" + monate + "GIF&" + s.substring(i3+1,i4));
-
+					
+					String s1 = s.substring(i,i2) + "COMDIRECT";
+					String s2 = "GIF&" + s.substring(i3+1,i4);
+					
 					in.close();
+
+					chartviewer.setComdirectStrings(s1,s2);
+
+					new ChartLoader(chartviewer,s1+monate+s2).start();
 					return;
 				}
 			}
@@ -62,32 +69,6 @@ public void run() {
 		System.out.println("Teledata-URL fehlerhaft.");
 	}
 	catch (IOException e) {}
-}
-
-
-private void readImage(String filename) {
-	try
-	{
-		URL url = new URL(filename);
-		URLConnection curl = url.openConnection();
-		curl.setUseCaches(false);
-		
-		byte[] daten = new byte[curl.getContentLength()];
-		
-		DataInputStream in = new DataInputStream(curl.getInputStream());
-		
-		in.readFully(daten);
-
-		in.close();
-
-		new ChartViewer(AktienMan.hauptdialog.getToolkit().createImage(daten),"Chart "+request,0);
-	}
-	catch (MalformedURLException e)
-	{
-		System.out.println("URL des Charts fehlerhaft.");
-	}
-	catch (IOException e) {}
-	catch (NegativeArraySizeException e) {}
 }
 
 }

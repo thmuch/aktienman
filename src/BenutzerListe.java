@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-01
+ @version 1998-11-13
 */
 
 import java.util.*;
@@ -121,7 +121,12 @@ public synchronized void sortByName(boolean kurz) {
 
 
 public static boolean useShortNames() {
-	return AktienMan.properties.getBoolean("Konfig.Aktiennamen.kuerzen");
+	return AktienMan.properties.getBoolean("Konfig.Aktiennamen.kuerzen",true);
+}
+
+
+public static boolean useSteuerfrei() {
+	return AktienMan.properties.getBoolean("Konfig.Steuerfrei",true);
 }
 
 

@@ -1,4 +1,4 @@
-AktienMan 0.91 Preview-Version
+AktienMan 0.92 Preview-Version
 Copyright ©1998 Thomas Much
 Ein Programm von AktienMan&Friends (<http://www.aktienman.de>).
 
@@ -25,6 +25,15 @@ Rechtliches
 AktienMan kann auf einem beliebigen Rechner/Betriebssystem eingesetzt werden. Es muß lediglich gewährleistet sein, daß AktienMan nur vom registrierten Benutzer zum Einsatz kommt. Jeder registrierte Benutzer kann für jeweils DM 50,-- (inkl. Mwst.) weitere Schlüssel von AktienMan&Friends bestellen.
 
 Versionsübersicht
+Version 0.92 (16.11.98)
+- Button "Beobachten" im Dialog "Neue Aktie"; dabei braucht außer der Aktie bzw. WKN
+  nichts eingegeben werden; damit kann man Aktienkurse überwachen, ohne daß solche
+  Werte bei den Summen auftauchen
+- "Liste exportieren" speichert das Portfolio als HTML-Tabelle ab
+- bei den 6/12/24-Monats-Charts kann zwischen den Charts durch Anklicken der
+  entsprechenden Monatszahl umgeschaltet werden
+- im Dialog "Konfiguration" kann eingestellt werden, ob bei steuerfreien Aktien wie
+  bisher die Laufzeit oder stattdessen der Text "steuerfrei" ausgegeben wird
 Version 0.91 (05.11.98)
 - Mac: Menüleiste überarbeitet
 - Mac: Redrawprobleme mit MRJ 2.1 EA3 beseitigt

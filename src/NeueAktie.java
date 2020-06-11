@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-02
+ @version 1998-11-15
 */
 
 import java.awt.*;
@@ -17,12 +17,14 @@ private Checkbox daxCheckbox,mdaxCheckbox,nmarktCheckbox;
 private Checkbox stoxxCheckbox,auslandCheckbox,wknCheckbox;
 private Checkbox boerseNurDiese,gewinnAbs,gewinnProz;
 private Choice plaetze,aktienDAX,aktienMDAX,aktienNMarkt,aktienSTOXX,aktienAusland,waehrung;
-private Button buttonOK;
+private Button buttonOK,buttonBeobachten;
+private boolean watchonly = false;
 
 
 
 public NeueAktie() {
 	super(AktienMan.AMFENSTERTITEL+"Neue Aktie...");
+	aktienWKN.requestFocus();
 }
 
 
@@ -179,13 +181,19 @@ public void setupElements() {
 	constrain(panelRest,verlustPanel,1,5,1,2,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 
 	buttonOK = new Button("  Kaufen  ");
-	Button buttonBeobachten = new Button(" Beobachten ");
+	buttonBeobachten = new Button(" Beobachten ");
 	Button buttonAbbruch = new Button(Lang.CANCEL);
 	
-	buttonBeobachten.setEnabled(false); /**/
+	buttonBeobachten.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			watchonly = true;
+			doOK();
+		}
+	});
 
 	buttonOK.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
+			watchonly = false;
 			doOK();
 		}
 	});
@@ -232,10 +240,11 @@ public void setupElements() {
 
 
 public synchronized void executeOK() {
-	long anzAktien = 0, kaufKurs = 0L, hochKurs = 0L, tiefKurs = 0L, gewinnGrenze = 0L;
-	ADate kaufDatum = null;
-	String name = "", wkn = "";
-
+	long anzAktien = 1L, kaufKurs = 0L, hochKurs = 0L, tiefKurs = 0L, gewinnGrenze = 0L;
+	ADate kaufDatum = new ADate();
+	String s, name = "", wkn = "";
+	
+	buttonBeobachten.setEnabled(false);
 	buttonOK.setEnabled(false);
 
 	Boersenplatz bp = AktienMan.boersenliste.getAt(plaetze.getSelectedIndex());
@@ -279,26 +288,50 @@ public synchronized void executeOK() {
 	}
 	else if (cb == wknCheckbox)
 	{
-		wkn = aktienWKN.getText().toUpperCase();
+		wkn = aktienWKN.getText().trim().toUpperCase();
 	}
 
-	try
+	s = stueckzahl.getText().trim();
+	if ((s.length() == 0) && watchonly)
 	{
-		anzAktien = Long.parseLong(stueckzahl.getText());
+		anzAktien = 1L;
 	}
-	catch (NumberFormatException e) {}
+	else
+	{
+		try
+		{
+			anzAktien = Long.parseLong(s);
+		}
+		catch (NumberFormatException e) {}
+	}
 
-	try
+	s = kaufkurs.getText().trim();
+	if ((s.length() == 0) && watchonly)
 	{
-		kaufKurs = Waehrungen.doubleToLong(kaufkurs.getText());
+		kaufKurs = BenutzerAktie.VALUE_MISSING;
 	}
-	catch (NumberFormatException e) {}
+	else
+	{
+		try
+		{
+			kaufKurs = Waehrungen.doubleToLong(s);
+		}
+		catch (NumberFormatException e) {}
+	}
 	
-	try
+	s = kaufdatum.getText().trim();
+	if ((s.length() == 0) && watchonly)
 	{
-		kaufDatum = ADate.parse(kaufdatum.getText());
+		kaufDatum = new ADate();
 	}
-	catch (Exception e) {}
+	else
+	{
+		try
+		{
+			kaufDatum = ADate.parse(s);
+		}
+		catch (Exception e) {}
+	}
 
 	try
 	{
@@ -317,10 +350,11 @@ public synchronized void executeOK() {
 		gewinnGrenze = Waehrungen.doubleToLong(gewinngrenze.getText());
 	}
 	catch (NumberFormatException e) {}
-
+	
 	BenutzerAktie ba = new BenutzerAktie(name,wkn,bp,boerseNurDiese.getState(),kaufDatum,
 											kaufKurs,anzAktien,hochKurs,tiefKurs,gewinnGrenze,
-											waehrung.getSelectedIndex(),gewinnProz.getState());
+											waehrung.getSelectedIndex(),gewinnProz.getState(),
+											watchonly);
 
 	AktienMan.hauptdialog.listeNeueAktie(ba);
 }
@@ -331,7 +365,7 @@ public synchronized boolean canOK() {
 	
 	if (wknCheckbox.getState())
 	{
-		s = aktienWKN.getText();
+		s = aktienWKN.getText().trim();
 		
 		if (s.length() == 0)
 		{
@@ -379,62 +413,74 @@ public synchronized boolean canOK() {
 			return false;
 		}
 	}
-	
-	double db;
-	try
-	{
-		db = AktienMan.getDouble(kaufkurs.getText());
-	}
-	catch (NumberFormatException e)
-	{
-		new Warnalert(this,"Bitte geben Sie beim Kaufkurs eine g\u00fcltige Zahl ein.");
-		return false;
-	}
-	
-	if (db <= 0.0)
-	{
-		new Warnalert(this,"Bitte geben Sie einen g\u00fcltigen Kaufkurs ein.");
-		return false;
-	}
-	
-	int i;
-	try
-	{
-		i = Integer.parseInt(stueckzahl.getText());
-	}
-	catch (NumberFormatException e)
-	{
-		new Warnalert(this,"Bitte geben Sie bei der St\u00fcckzahl eine g\u00fcltige Zahl ein.");
-		return false;
-	}
 
-	if (i <= 0)
+	s = kaufkurs.getText().trim();
+	if ((!watchonly) || (s.length() > 0))
 	{
-		new Warnalert(this,"Bitte geben Sie eine g\u00fcltige St\u00fcckzahl ein.");
-		return false;
-	}
-	
-	ADate d;
-	try
-	{
-		d = ADate.parse(kaufdatum.getText());
-		
-		if (d.after(new ADate()))
+		double db;
+		try
 		{
-			new Warnalert(this,"Ein Kaufdatum in der Zukunft ist nicht erlaubt.");
+			db = AktienMan.getDouble(s);
+		}
+		catch (NumberFormatException e)
+		{
+			new Warnalert(this,"Bitte geben Sie beim Kaufkurs eine g\u00fcltige Zahl ein.");
+			return false;
+		}
+		
+		if (db <= 0.0)
+		{
+			new Warnalert(this,"Bitte geben Sie einen g\u00fcltigen Kaufkurs ein.");
 			return false;
 		}
 	}
-	catch (Exception e)
+	
+	s = stueckzahl.getText().trim();
+	if ((!watchonly) || (s.length() > 0))
 	{
-		new Warnalert(this,"Bitte geben Sie ein g\u00fcltiges Kaufdatum ein.");
-		return false;
+		int i;
+		try
+		{
+			i = Integer.parseInt(s);
+		}
+		catch (NumberFormatException e)
+		{
+			new Warnalert(this,"Bitte geben Sie bei der St\u00fcckzahl eine g\u00fcltige Zahl ein.");
+			return false;
+		}
+
+		if (i <= 0)
+		{
+			new Warnalert(this,"Bitte geben Sie eine g\u00fcltige St\u00fcckzahl ein.");
+			return false;
+		}
+	}
+	
+	s = kaufdatum.getText().trim();
+	if ((!watchonly) || (s.length() > 0))
+	{
+		ADate d;
+		try
+		{
+			d = ADate.parse(s);
+			
+			if (d.after(new ADate()))
+			{
+				new Warnalert(this,"Ein Kaufdatum in der Zukunft ist nicht erlaubt.");
+				return false;
+			}
+		}
+		catch (Exception e)
+		{
+			new Warnalert(this,"Bitte geben Sie ein g\u00fcltiges Kaufdatum ein.");
+			return false;
+		}
 	}
 
-	s = gewinngrenze.getText();
-	
+	s = gewinngrenze.getText().trim();
 	if (s.length() > 0)
 	{
+		double db;
 		try
 		{
 			db = AktienMan.getDouble(s);
@@ -453,8 +499,7 @@ public synchronized boolean canOK() {
 	}
 
 	double tk = 0.0;
-	s = tiefkurs.getText();
-	
+	s = tiefkurs.getText().trim();
 	if (s.length() > 0)
 	{
 		try
@@ -474,10 +519,10 @@ public synchronized boolean canOK() {
 		}
 	}
 
-	s = hochkurs.getText();
-	
+	s = hochkurs.getText().trim();
 	if (s.length() > 0)
 	{
+		double db;
 		try
 		{
 			db = AktienMan.getDouble(s);

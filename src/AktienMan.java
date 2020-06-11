@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-05
+ @version 1998-11-16
 */
 
 /**
@@ -16,12 +16,12 @@ import java.awt.*;
 public class AktienMan {
 
 public static final String AMNAME         = "AktienMan";
-public static final String AMVERSION      = "0.91-pre";
+public static final String AMVERSION      = "0.92-pre";
 public static final String AMFENSTERTITEL = AMNAME + " - ";
 
 public static final char DEZSEPARATOR     = ',';
 
-public static ADate compDate              = new ADate(1998,11,5); /* Compilierdatum */
+public static ADate compDate              = new ADate(1998,11,16); /* Compilierdatum */
 public static final int PORTFOLIOVER      = 0;
 
 public static Aktienliste listeDAX        = new Aktienliste();
@@ -105,7 +105,7 @@ public static String getFilenamePopups() {
 
 
 public static double getDouble(String str) throws NumberFormatException {
-	return Double.valueOf(str.replace(DEZSEPARATOR,'.')).doubleValue();
+	return Double.valueOf(str.trim().replace(DEZSEPARATOR,'.')).doubleValue();
 }
 
 
@@ -189,7 +189,7 @@ public static void main(String args[]) {
 		System.out.println("Bitte besorgen Sie sich eine neue Demoversion,");
 		System.out.println("die Sie dann auch registrieren k\u00f6nnen!");
 
-		new Warnalert(null,"Diese AktienMan-Preview-Version ist abgelaufen.| |Bitte besorgen Sie sich eine neue Demoversion,|die Sie dann auch registrieren k\u00f6nnen!");
+		new Warnalert(null,"Diese AktienMan-Preview-Version ist abgelaufen.| |Bitte besorgen Sie sich eine neue Demoversion,|die Sie dann auch registrieren k\u00f6nnen!",true);
 	}
 }
 

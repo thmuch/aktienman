@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-01
+ @version 1998-11-13
 */
 
 import java.awt.*;
@@ -12,13 +12,20 @@ import java.util.*;
 public class Warnalert extends AFrame {
 
 private AFrame parent;
+private boolean quit;
 
 
 
 public Warnalert(AFrame parent, String text) {
+	this(parent,text,false);
+}
+
+
+public Warnalert(AFrame parent, String text, boolean quit) {
 	super(AktienMan.AMNAME);
 
 	this.parent = parent;
+	this.quit = quit;
 
 	if (parent != null)
 	{	
@@ -79,5 +86,10 @@ public void setupSize() {
 
 
 public void display() {}
+
+
+public void closed() {
+	if (quit) System.exit(0);
+}
 
 }

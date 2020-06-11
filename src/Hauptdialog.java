@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-05
+ @version 1998-11-14
 */
 
 import java.awt.*;
@@ -204,7 +204,7 @@ public void setupElements() {
 	constrain(panelOben,buttonKamera,4,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,15,0,0);
 
 	buttonDrucken = new Button(" Liste drucken... ");
-	buttonSpeichern = new Button(" Liste speichern... ");
+	buttonSpeichern = new Button(" Liste exportieren... ");
 
 	buttonDrucken.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -303,6 +303,12 @@ public void setupElements() {
 	
 	pane = new ScrollPane(ScrollPane.SCROLLBARS_ALWAYS);
 	pane.add(panelListe);
+	
+	Adjustable vAdjust = pane.getVAdjustable();
+	vAdjust.setUnitIncrement(8);
+
+	Adjustable hAdjust = pane.getHAdjustable();
+	hAdjust.setUnitIncrement(16);
 	
 	constrain(this,panelOben,0,0,3,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,10,10,5,10);
 	constrain(this,pane,0,1,3,1,GridBagConstraints.BOTH,GridBagConstraints.CENTER,1.0,1.0,5,10,5,10);
@@ -434,7 +440,7 @@ public void setupElements() {
 
 	fileMenu.addSeparator();
 
-	fileSave = new MenuItem("Sichern unter...",new MenuShortcut(KeyEvent.VK_S));
+	fileSave = new MenuItem("Liste exportieren...",new MenuShortcut(KeyEvent.VK_E));
 	fileSave.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			listeSpeichern();
@@ -478,7 +484,7 @@ public void setupElements() {
 	});
 	amMenu.add(mi);
 
-	if (!MRJApplicationUtils.isMRJToolkitAvailable())
+	if (!AktienMan.isMacOS())
 	{
 		amMenu.addSeparator();
 
@@ -674,7 +680,7 @@ private void enableAktienButtons(BenutzerAktie ba) {
 private void checkAktienButtons(BenutzerAktie ba) {
 	if (abenabled)
 	{
-		if ((ba.getStueckzahl() > 0L) && (ba.getKurs() > 0L))
+		if ((ba.getStueckzahl() > 0L) && (ba.getKurs() > 0L) && (!ba.nurBeobachten()))
 		{
 			buttonVerkaufen.setEnabled(true);
 			buttonSplitten.setEnabled(false); /**/
@@ -749,9 +755,9 @@ private void checkListButtons() {
 		if (benutzerliste.size() > 0)
 		{
 			buttonDrucken.setEnabled(false/*true*/);
-			buttonSpeichern.setEnabled(false/*true*/);
+			buttonSpeichern.setEnabled(true);
 
-			fileSave.setEnabled(false/*true*/);
+			fileSave.setEnabled(true);
 			filePrint.setEnabled(false/*true*/);
 		}
 		else
@@ -798,9 +804,9 @@ public synchronized void listeAktualisieren(String boerse) {
 	
 	for (int i = 0; i < benutzerliste.size(); i++)
 	{
-		benutzerliste.getAt(i).setStatusRequesting();
+		benutzerliste.getAt(i).setStatusRequestingAndRepaint();
 	}
-	listeUpdate(false);
+/*	listeUpdate(false); */
 
 	if (new ADate().after(new ADate(1998,12,2))) return;
 
@@ -957,7 +963,7 @@ public synchronized void listeSelect(BALabel bal, int row, int mX, int mY,
 
 
 private synchronized void aktienPopup(BenutzerAktie ba, BALabel bal, int mX, int mY) {
-	if ((ba.getStueckzahl() > 0L) && (ba.getKurs() > 0L))
+	if ((ba.getStueckzahl() > 0L) && (ba.getKurs() > 0L) && (!ba.nurBeobachten()))
 	{
 		menuVerkaufen.setEnabled(true);
 		menuSplitten.setEnabled(false); /**/
@@ -1028,6 +1034,7 @@ public synchronized void listeUpdate(boolean save) {
 	if (benutzerliste.size() > 0)
 	{
 		boolean kurz = BenutzerListe.useShortNames();
+		boolean steuerfrei = BenutzerListe.useSteuerfrei();
 
 		benutzerliste.sortByName(kurz);
 		
@@ -1035,7 +1042,7 @@ public synchronized void listeUpdate(boolean save) {
 		
 		for (i = 0; i < benutzerliste.size(); i++)
 		{
-			benutzerliste.getAt(i).addToPanel(panelListe,i+yoffs,kurz);
+			benutzerliste.getAt(i).addToPanel(panelListe,i+yoffs,kurz,steuerfrei);
 		}
 		
 		BenutzerAktie.addFooterToPanel(panelListe,i+yoffs,panelText);
@@ -1230,8 +1237,9 @@ public synchronized void listeAusdrucken() {
 public synchronized void listeSpeichern() {
 	if (isLocked(true)) return;
 
-	FileDialog fd = new FileDialog(this,AktienMan.AMFENSTERTITEL+"Liste sichern als...",FileDialog.SAVE);
-	
+	FileDialog fd = new FileDialog(this,AktienMan.AMFENSTERTITEL+"HTML-Datei exportieren...",FileDialog.SAVE);
+
+	fd.setFile("Meine Aktien.html");
 	fd.show();
 	
 	String pfad = fd.getDirectory();
@@ -1241,15 +1249,78 @@ public synchronized void listeSpeichern() {
 	{
 		BufferedWriter out = null;
 		
+		MRJFileUtils.setDefaultFileType(new MRJOSType("????"));
+		MRJFileUtils.setDefaultFileCreator(new MRJOSType("????"));
+
+		boolean kurz = BenutzerListe.useShortNames();
+		boolean steuerfrei = BenutzerListe.useSteuerfrei();
+		
+		String filename = pfad+datei;
+		
+		if (filename.endsWith("."))
+		{
+			filename = filename + "html";
+		}
+		else
+		{
+			String fu = filename.toUpperCase();
+			
+			if ((!fu.endsWith(".HTM")) && (!fu.endsWith(".HTML")))
+			{
+				filename = filename + ".html";
+			}
+		}
+
+		File f = new File(filename);
+		
+		if (f.exists())
+		{
+			File backup = new File(filename + ".bak");
+			
+			if (backup.exists()) backup.delete();
+			
+			f.renameTo(backup);
+			
+			f = new File(filename);
+		}
+		
 		try
 		{
-			out = new BufferedWriter(new FileWriter(pfad+datei));
+			out = new BufferedWriter(new FileWriter(f));
 			
-			out.write("Das Speichern funktioniert noch nicht...");
+			out.write("<HTML>");
 			out.newLine();
+			out.write("<HEAD>");
+			out.newLine();
+			out.write("<TITLE>");
+			out.write(AktienMan.AMNAME); /* Name reg. Benutzer */
+			out.write("</TITLE>");
+			out.newLine();
+			out.write("</HEAD>");
+			out.newLine();
+			out.write("<BODY>");
+			out.newLine();
+			out.newLine();
+			out.write("<TABLE BORDER>");
+			out.newLine();
+			out.newLine();
+			
+			BenutzerAktie.saveHeaderHTML(out,benutzerliste.getDateString());
 
-			/* speichern */
+			for (int i = 0; i < benutzerliste.size(); i++)
+			{
+				benutzerliste.getAt(i).saveHTML(out,kurz,steuerfrei);
+			}
 
+			BenutzerAktie.saveFooterHTML(out);
+
+			out.write("</TABLE>");
+			out.newLine();
+			out.newLine();
+			out.write("</BODY>");
+			out.newLine();
+			out.write("</HTML>");
+			out.newLine();
 		}
 		catch (IOException e) {}
 		finally
@@ -1260,6 +1331,13 @@ public synchronized void listeSpeichern() {
 			}
 			catch (IOException e) {}
 		}
+		
+		try
+		{
+			MRJFileUtils.setFileTypeAndCreator(f,new MRJOSType("TEXT"),new MRJOSType("MOSS"));
+			/* IE+CAB berücksichtigen */
+		}
+		catch (Exception e) {}
 	}
 }
 

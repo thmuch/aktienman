@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-10-30
+ @version 1998-11-16
 */
 
 import java.net.*;
@@ -14,6 +14,7 @@ public class IntradayChartLeser extends Thread {
 
 private String boerse;
 private BenutzerAktie ba;
+private ChartViewer chartviewer;
 
 
 
@@ -26,6 +27,8 @@ public IntradayChartLeser(String boerse, BenutzerAktie ba) {
 
 public void run() {
 	String wkn = ba.getWKNString();
+
+	chartviewer = new ChartViewer(null,"Intraday "+ba.getName(true),"",620,285,ChartViewer.TYPE_INTRADAY);
 	
 	try
 	{
@@ -83,7 +86,7 @@ private void readImage(String kuerzel) {
 
 		in.close();
 
-		new ChartViewer(AktienMan.hauptdialog.getToolkit().createImage(daten),"Intraday "+ba.getName(true),620);
+		chartviewer.setImage(AktienMan.hauptdialog.getToolkit().createImage(daten));
 	}
 	catch (MalformedURLException e)
 	{

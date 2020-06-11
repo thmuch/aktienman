@@ -1,11 +1,11 @@
-AktienMan 0.91-beta (1998-11-05)
+AktienMan 0.92-beta (1998-11-16)
 Copyright (c)1998 by Thomas Much (thomas@aktienman.de)
 
 >>>>> BETAVERSION, LÄUFT AM 30.11.1998 AB <<<<<
 
 
 Systemanforderungen:
-- Mac: Apple MRJ 2.0, MacOS 8.x
+- Mac: Apple MRJ 2.x, MacOS 8.x
 - Win: Win 95/98/NT, IE4 (bzw. JVIEW.EXE von 1997 oder neuer)
 
 Dateien:
@@ -35,16 +35,12 @@ todo
 // Konfigurierbarkeit der Farben
 // Test auf Online-Verbindung
 // Kurse merken, daraus Höchstkurs ermitteln
-// HTML-Export
-// "Liste speichern"
 // Mehrfachselektion mit <Shift>
 // auch EUR für Werte, Umrechnung der Summenwerte in DM oder EUR
 // Ausdruck über mehrere Seiten
 // Registrierung, Demoversion
 // Spaltenreihenfolge bel. festlegbar
 // Aktie splitten
-// "Beobachten": Kaufkurs/Stückzahl zum Beobachten von Aktien auch leerlassen können (autom. Init.)
-// beim Kaufen optional Gebühren errechnen
 // Info-Dialog (auch bei Doppelklick)
 // ComdirectLeser: Fehler an Liste melden
 // DAX-Kamera: "Derzeit keine Online-Verbindung" nicht immer korrekt?!?
@@ -55,18 +51,49 @@ todo
 // Checkbox für Online-Euro-Kurse
 // Differenz zum Vortageskurs (von comdirect)
 // Konfig-Dialog zur Auswahl, welche Spalten angezeigt werden
+// Börsen konfigurierbar machen
+// HTML-Export mit Farben
 Version 1.0:
 // Tool "Obfuscator": Variablennamen aus Klassen entfernen
 // Linux: Archiv, Skript
 // Mac: neue Icons von Sven
-// optisches Feedback während des Ladens eines Charts
+// mehrere Portfolios verwalten
 // About-Dialog fertigstellen
 // Registrierung, Demoversion
-// Neue Aktie: "Beobachten"
-// HTML-Export
-// innerhalb des Chart-Image zwischen 6/12/24 umschalten
-// Layout an EA3 anpassen (Abstände größer)
+// beim Kaufen optional Gebühren errechnen
 // MRJToolkit auf Windows testen/anpassen
+// Layout an EA3 anpassen (Abstände größer)
+// aktuelle Nachrichten auf www.aktienman.de abfragen+anzeigen
+Version 0.92 (16.11.98)
+- die Chart-Fenster werden gleich mit der richtigen Größe geöffnet
+- Ladetexte bei Charts und der DAX-Kamera geändert
+- Umschalten zwischen den Charts erfolgt jetzt schon beim Runterdrücken der
+  Maustaste (nicht erst beim Loslassen)
+- innerhalb der Comdirect-Charts kann mit den 6/12/24-Titeln umgeschaltet werden;
+  dabei werden nur die Charts neu geladen, die noch nicht im Speicher sind
+- "Neue Aktie - Beobachten"; beim Beobachten sind die Felder Kaufkurs, Kaufdatum
+  und Stückzahl optional; in der Liste erscheint bei beobachteten Aktien keine
+  Stückzahl und kein aktueller Wert, Kaufkurs, Differenz und Kaufdatum werden
+  grau dargestellt; wenn der Kaufkurs offen gelassen wurde, werden dieser und das
+  Kaufdatum beim ersten Aktualisieren automatisch gesetzt; beobachtete Aktien
+  können natürlich nicht verkauft werden
+- HTML-Export und "Daten ändern" daran angepaßt
+- bei "Daten ändern" steht die Eingabemarke zu Beginn nun auf dem Kaufkurs-Feld
+- bei "Neue Aktie" steht der Eingabecursor nun zu Beginn auf dem WKN-Feld
+- im Konfigurationsdialog kann nun eingestellt werden, daß bei steuerfreien Aktien
+  nicht mehr die Laufzeit, sondern einfach nur "steuerfrei" ausgegeben wird
+- bei Steuerfreiheit wird ein dunkleres Gelb verwendet
+- bei Neuinstallationen ist die Verwendung kurzer Aktiennamen nun default
+- beim Laden eines Charts wird jetzt sofort ein kleines Fenster geöffnet
+- wenn ein Chart vollständig geladen ist, wird das Fenster getoppt
+- abgelaufene Demoversionen beenden sich nun beim Schließen des Alerts korrekt
+- der Dateiname beim Export ist mit "Meine Aktien.html" vorbelegt
+- "Liste speichern" heißt jetzt "Liste exportieren" (Shortcut Cmd+E)
+- "Liste speichern" funktioniert nun (es wird eine HTML-Tabelle erzeugt)
+- auf dem Mac wird diese Tabelle (derzeit) als Netscape-Dokument erzeugt
+- die Pfeile der Slider scrollen nun in größeren Schritten
+- Comdirect-Gebühren korrigiert
+- das Blauzeichnen der Aktiennamen beim Aktualisieren erfolgt nun schneller
 Version 0.91 (05.11.98)
 - Redrawprobleme unter MRJ 2.1 EA3 beseitigt
 - "Über AktienMan" hat nun keinen Shortcut mehr
