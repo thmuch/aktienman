@@ -942,7 +942,7 @@ public synchronized void listeAktualisierenAusfuehren(String boerse) {
 
 	/* #Ablaufdatum */
 	/* #Demoversion */
-	if ((new ADate().after(new ADate(1999,4,9))) && (!main())) System.exit(0);
+	if ((new ADate().after(new ADate(1999,5,9))) && (!main())) System.exit(0);
 	
 	benutzerliste.setDate(boerse);
 	
@@ -953,7 +953,7 @@ public synchronized void listeAktualisierenAusfuehren(String boerse) {
 
 	/* #Ablaufdatum */
 	/* #Demoversion */
-	if ((new ADate().after(new ADate(1999,4,10)))
+	if ((new ADate().after(new ADate(1999,5,10)))
 		&& (RegAM.string(AktienMan.properties.getString("Key.1"),
 			AktienMan.properties.getString("Key.2"),
 			AktienMan.properties.getString("Key.3")) >= 0)) return;
@@ -990,7 +990,7 @@ private synchronized void listeSelektierteAktieAktualisieren() {
 
 			/* #Ablaufdatum */
 			/* #Demoversion */
-			if ((new ADate().after(new ADate(1999,4,9))) && (!main())) return;
+			if ((new ADate().after(new ADate(1999,5,9))) && (!main())) return;
 
 			KursQuellen.getKursQuelle().sendSingleRequest(ba.getRequest(""),ba.getWKNString(),ba.getBoerse());
 			break;

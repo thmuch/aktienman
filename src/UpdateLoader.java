@@ -1,11 +1,12 @@
 /**
  @author Thomas Much
- @version 1999-01-15
+ @version 1999-02-09
 */
 
 import java.net.*;
 import java.awt.*;
 import java.io.*;
+import com.apple.mrj.*;
 
 
 
@@ -114,6 +115,9 @@ private boolean save(byte[] daten) {
 	DataOutputStream out = null;
 	boolean valid = false;
 
+	MRJFileUtils.setDefaultFileType(new MRJOSType("????"));
+	MRJFileUtils.setDefaultFileCreator(new MRJOSType("????"));
+
 	File f = new File(filename);
 	
 	if (f.exists())
@@ -123,11 +127,13 @@ private boolean save(byte[] daten) {
 		if (backup.exists()) backup.delete();
 		
 		f.renameTo(backup);
+	
+		f = new File(filename);
 	}
 	
 	try
 	{
-		out = new DataOutputStream(new FileOutputStream(filename));
+		out = new DataOutputStream(new FileOutputStream(f));
 
 		out.write(daten,0,daten.length);
 		out.flush();
@@ -147,6 +153,15 @@ private boolean save(byte[] daten) {
 		
 			out = null;
 		}
+	}
+
+	if (filename.endsWith(".sit"))
+	{
+		try
+		{
+			MRJFileUtils.setFileTypeAndCreator(f,new MRJOSType("SIT5"),new MRJOSType("SIT!"));
+		}
+		catch (Exception e) {}
 	}
 	
 	return valid;

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-21
+ @version 1999-02-11
 */
 
 import java.awt.*;
@@ -60,7 +60,7 @@ public void setupElements2() {
 	constrain(panelOben,new Label("Download von \""+archiv+"\":"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 
 	progress = new Label("12345K (100%)  ");
-	constrain(panelOben,progress,1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,0,0);
+	constrain(panelOben,progress,1,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,10,0,0);
 
 	Button button = new Button(Lang.CANCEL);
 

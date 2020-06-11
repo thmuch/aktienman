@@ -1,7 +1,7 @@
-AktienMan 1.20-beta (1999-02-08)
+AktienMan 1.21-beta (1999-02-12)
 Copyright (c)1998 by Thomas Much (thomas@aktienman.de)
 
->>>>> BETAVERSION, LÄUFT AM 8.4.1999 AB <<<<<
+>>>>> BETAVERSION, LÄUFT AM 8.5.1999 AB <<<<<
 
 
 History
@@ -38,7 +38,6 @@ todo
 // Linux: Archiv, Skript
 // Layout an EA3 anpassen (Abstände größer)
 // Layout von "Neue Aktie" verbessern
-// beim Kaufen optional Gebühren errechnen
 // € statt EUR anzeigen (oder Zeichen[kette] einstellbar machen)
 // Verfall der Listendaten (bei Demoversion)
 // Spalte für +/-% zum Vortag (direkt von Comdirect übernehmen)
@@ -53,9 +52,19 @@ todo
 // Yahoo-Kursleser
 // KursQuelle incl. Abfrage der verfügbaren Börsenplätze
 // Online-Währung -> KursQuelle
-// Anzeige unwichtiger Spalten ausschaltbar
 // PoFo-Umschalten beim allerersten Start nicht möglich (wenn AktienMan.lst fehlt) (?)
 // neues Logo + Icon (?)
+// bei jedem Aktualisieren Thread starten, der aktuelle Umtauschkurse ermittelt
+// beim Kaufen optional Gebühren errechnen
+// Anzeige unwichtiger Spalten ausschaltbar
+// Voreinstellungen: CardLayout
+Version 1.21 (12.02.99)
+- nächster Versuch: die Prozentangabe beim Update-Download wird unter Windows nun hoffentlich
+  wirklich nicht mehr abgeschnitten
+- bei einer Laufzeit von 12 Monaten wurde nur "11" angezeigt; gefixed
+- Aktien, die ohne Kaufkursangabe mit Kaufwährung DEM beobachtet werden sollten, bekamen als
+  Kaufkurs beim ersten Aktualisieren den halben aktuellen Kurs zugewiesen; gefixed
+- Mac-Update-Archive bekommen nun den passenden StuffIt5-Typ und -Creator
 Version 1.20 (08.02.99)
 - die Demoversion läuft bis zum 8.4.99
 - die Demoversion kann nur das Standard-Portfolio anzeigen/bearbeiten

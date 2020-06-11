@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-02-08
+ @version 1999-02-11
 */
 
 
@@ -23,7 +23,7 @@ public static final String CHARTERROR  = "Chart konnte nicht geladen werden.";
 public static final String EDITMENUTITLE = "Bearbeiten";
 
 /* #Ablaufdatum */
-public static final String DEMOVERSION = "DEMO-VERSION, L\u00c4UFT AM 8.4.1999 AB!";
+public static final String DEMOVERSION = "DEMO-VERSION, L\u00c4UFT AM 8.5.1999 AB!";
 
 
 

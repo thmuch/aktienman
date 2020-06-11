@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-30
+ @version 1999-02-10
 */
 
 import java.awt.*;
@@ -654,6 +654,9 @@ public synchronized void setValues(String name, long kurs, String kursdatum,
 	{
 		kaufkurs = kurs;
 		kaufdatum = new ADate();
+		
+		waehrung = kurswaehrung;
+		
 		setupValues();
 	}
 
@@ -1210,21 +1213,30 @@ private synchronized String getLaufzeitMonateString() {
 
 	int monate = 0;
 	int tage = 0;
-
+	
 	if (kaufjahr < jahr)
 	{
-		if (jahr-kaufjahr > 1) monate += (jahr-kaufjahr-1)*12;
+		if (jahr-kaufjahr > 1)
+		{
+			monate += (jahr-kaufjahr-1)*12;
+		}
 		
 		monate += (monat-1) + (ADate.DECEMBER-kaufmonat);
 	}
 	else
 	{
-		if (monat-kaufmonat > 1) monate += (monat-kaufmonat-1);
+		if (monat-kaufmonat > 1)
+		{
+			monate += (monat-kaufmonat-1);
+		}
 	}
 	
 	if (tag >= kauftag)
 	{
-		if (kaufmonat != monat) monate++;
+		if ((kaufmonat != monat) || (jahr > kaufjahr))
+		{
+			monate++;
+		}
 
 		tage += (tag-kauftag);
 	}

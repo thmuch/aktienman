@@ -1,4 +1,4 @@
-AktienMan Euro MP 1.20
+AktienMan Euro MP 1.21
 Copyright ©1998,99 Thomas Much
 Ein Programm von AktienMan&Friends (<http://www.aktienman.de>).
 
@@ -14,7 +14,7 @@ Normalerweise wird MRJ 2.0 bei der Installation von MacOS 8.1 bzw. 8.5 automatis
 Die eigentliche Installation von AktienMan ist denkbar einfach: Sie haben das AktienMan-Archiv bereits heruntergeladen und mit StuffIt ausgepackt. Das war es auch schon, eine weitere Installation ist nicht notwendig! Klicken Sie einfach doppelt auf das Programmsymbol "AktienMan". AktienMan wird geladen, und nach wenigen Sekunden - abhängig von der Geschwindigkeit des Rechners - erscheint das Hauptfenster. Wer mit dem Aktienhandel bereits vertraut ist, sollte AktienMan weitestgehend intuitiv bedienen können. Und ansonsten erhält man nach der Registrierung natürlich ein gedrucktes Handbuch.
 
 Einschränkungen der Demo-Version
-Die wesentlichste Einschränkung der Demo-Version ist, daß sie nach dem 8.4.99 ihren Dienst verweigert. Sie können dann entweder eine aktuelle Demoversion herunterladen (müssen dann aber alle Aktiendaten neu eingeben), oder aber sie lassen sich registrieren.
+Die wesentlichste Einschränkung der Demo-Version ist, daß sie nach dem 8.5.99 ihren Dienst verweigert. Sie können dann entweder eine aktuelle Demoversion herunterladen (müssen dann aber alle Aktiendaten neu eingeben), oder aber sie lassen sich registrieren.
 In der Demo-Version können außerdem maximal drei Aktien in einem einzigen Portfolio verwaltet werden.
 
 Bestellung der Vollversion
@@ -31,8 +31,16 @@ AktienMan kennt nun drei unabhängige Währungen, die bei Bedarf automatisch inein
 - die Listenwährung bestimmt, in welcher Währung die Aktien in der Liste des Hauptdialogs angezeigt werden; unten links im Hauptdialog kann man die Listenwährung umschalten.
 
 Versionsübersicht
+1999-02-12
+- Fehler in der Laufzeitberechnung behoben (bei einer Laufzeit von 12 Monaten wurde nur "11" angezeigt)
+- Fehler beim Aktien-Beobachten behoben (bei Kaufwährung DEM und fehlender Kaufkursangabe war der automatisch zugewiesene Kaufkurs halbiert)
 1999-02-08
-- 
+- im "Portfolio"-Menü können beliebig viele Aktienlisten verwaltet werden
+- im "Voreinstellungen"-Dialog (vormals "Konfiguration") kann die Online-Kursquelle für Aktien- und Maximalkurse gewählt werden; verfügbar sind derzeit "Comdirect" und "Deutsche Bank"; tritt bei der gewählten Quelle ein Fehler auf, schaltet AktienMan automatisch auf die andere Quelle um
+- im "Voreinstellungen"-Dialog kann eine automatische Kursaktualisierung eingestellt werden
+- das Neuzeichnen der Liste beim Aktualisieren der Kurse geschieht nun deutlich ruhiger
+- beim Feld "%Jahr" wird bei einer Laufzeit unter einem Jahr nun "<1 J." ausgegeben
+- und wie immer: weitere Korrekturen und Optimierungen
 1999-01-05
 - AktienMan ist nun komplett Euro-fähig
 - im Maximalkurs-Dialog wird auch das Handelsvolumen angezeigt
