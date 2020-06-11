@@ -1,12 +1,10 @@
 /**
  @author Thomas Much
- @version 1999-01-15
+ @version 1999-02-17
 */
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
-import java.util.*;
 
 
 
@@ -14,10 +12,7 @@ public final class About extends AFrame {
 
 public static Image aboutImage;
 
-private static final String pathsep = System.getProperty("path.separator");
-private static final String filesep = System.getProperty("file.separator");
 private static final String AMABOUT = "am.gif";
-private static String lastFindPath = "";
 
 
 
@@ -28,7 +23,7 @@ public About() {
 
 public void setupFrame() {
 	setResizable(false);
-	aboutImage = getToolkit().getImage(findLocalFile(AMABOUT));
+	aboutImage = getToolkit().getImage(FileUtil.findLocalFile(AMABOUT));
 }
 
 
@@ -74,40 +69,6 @@ public void setupElements() {
 
 public void closed() {
 	AktienMan.about = null;
-}
-
-
-public static String findLocalFile(String filename) {
-	if (lastFindPath.length() > 0)
-	{
-		File f = new File(lastFindPath+filename);
-		
-		if (f.exists())
-		{
-			return lastFindPath+filename;
-		}
-	}
-	
-	StringTokenizer st = new StringTokenizer(System.getProperty("java.class.path"),pathsep);
-	
-	while (st.hasMoreTokens()) {
-		String s = st.nextToken();
-		
-		if ((!s.endsWith(".zip")) && (!s.endsWith(".jar")))
-		{
-			if (!s.endsWith(filesep)) s+=filesep;
-			
-			File f = new File(s+filename);
-			
-			if (f.length() > 0L)
-			{
-				lastFindPath = s;				
-				return lastFindPath+filename;
-			}
-		}
-	}
-
-	return filename;
 }
 
 }

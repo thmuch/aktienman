@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-03
+ @version 1999-02-20
 */
 
 
@@ -37,8 +37,8 @@ public boolean hasInternetTrade() {
 public long getMaklerCourtage(long wert) {
 	long courtage = (wert*8L + Waehrungen.PRECISION*50L) / (Waehrungen.PRECISION*100L);
 
-	long minimum = Waehrungen.exchange((Waehrungen.PRECISION * 3L) / 2L,Waehrungen.DEM,Waehrungen.getVerkaufsWaehrung());
-	
+	long minimum = Waehrungen.exchange((Waehrungen.PRECISION * 150L) / (Waehrungen.PRECISION*2L),Waehrungen.EUR,Waehrungen.getVerkaufsWaehrung());
+
 	return (courtage <= minimum) ? minimum : courtage;
 }
 

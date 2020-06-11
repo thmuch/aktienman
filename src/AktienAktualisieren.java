@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-21
+ @version 1999-02-17
 */
 
 import java.awt.*;
@@ -200,7 +200,17 @@ public synchronized static void loadPopups() {
 
 	try
 	{
-		FileInputStream fis = new FileInputStream(FileUtil.getPopupFile());
+		FileInputStream fis;
+		
+		try
+		{
+			fis = new FileInputStream(FileUtil.getPopupFile());
+		}
+		catch (IOException e)
+		{
+			fis = new FileInputStream(FileUtil.findLocalFile(AktienMan.AMNAME + FileUtil.EXT_POPUP));
+		}
+		
 		GZIPInputStream gzis = new GZIPInputStream(fis);
 		in = new ObjectInputStream(fis);
 		AktienMan.listeDAX = (Aktienliste)in.readObject();

@@ -1,4 +1,4 @@
-AktienMan 1.21-beta (1999-02-12)
+AktienMan 1.22-beta (1999-02-22)
 Copyright (c)1998 by Thomas Much (thomas@aktienman.de)
 
 >>>>> BETAVERSION, LÄUFT AM 8.5.1999 AB <<<<<
@@ -53,11 +53,18 @@ todo
 // KursQuelle incl. Abfrage der verfügbaren Börsenplätze
 // Online-Währung -> KursQuelle
 // PoFo-Umschalten beim allerersten Start nicht möglich (wenn AktienMan.lst fehlt) (?)
-// neues Logo + Icon (?)
+// Win: passendes Programmicon
 // bei jedem Aktualisieren Thread starten, der aktuelle Umtauschkurse ermittelt
+Version 1.23 (.03.99)
 // beim Kaufen optional Gebühren errechnen
 // Anzeige unwichtiger Spalten ausschaltbar
 // Voreinstellungen: CardLayout
+// öS
+- nach HTML-Export Browser (derzeit nur Netscape) nachstarten (nur Mac, ab MRJ 2.1)
+Version 1.22 (22.02.99)
+- wenn AktienMan.pop nicht existiert, werden die Popups beim Mac intern aus der Programmdatei
+  geladen; unter Windows wird versucht, AktienMan.pop aus dem Programmverzeichnis zu laden
+- minimale Maklercourtage auf 0,75 EUR geändert
 Version 1.21 (12.02.99)
 - nächster Versuch: die Prozentangabe beim Update-Download wird unter Windows nun hoffentlich
   wirklich nicht mehr abgeschnitten

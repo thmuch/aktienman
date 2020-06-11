@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-02-06
+ @version 1999-02-20
 */
 
 import java.awt.*;
@@ -1632,15 +1632,29 @@ public synchronized void listeSpeichern() {
 		
 /*		if (SysUtil.isMacOS())
 		{
+			double mrjver;
+			
 			try
 			{
-				File cw = MRJFileUtils.findApplication(new MRJOSType("MOSS"));
-
-				String params[] = { cw.toString(), f.toString() };
-
-				Runtime.getRuntime().exec(params);
+				mrjver = Double.valueOf(System.getProperty("mrj.version")).doubleValue();
 			}
-			catch (Exception e) {}
+			catch (NumberFormatException e)
+			{
+				mrjver = 0.0;
+			}
+			
+			if (mrjver >= 2.1)
+			{
+				try
+				{
+					File cw = MRJFileUtils.findApplication(new MRJOSType("MOSS"));
+
+					String params[] = { cw.toString(), f.toString() };
+
+					Runtime.getRuntime().exec(params);
+				}
+				catch (Exception e) {}
+			}
 		} */
 	}
 }

@@ -1,4 +1,4 @@
-AktienMan Euro MP 1.21
+AktienMan Euro MP 1.22
 Copyright ©1998,99 Thomas Much
 Ein Programm von AktienMan&Friends (<http://www.aktienman.de>).
 
@@ -31,6 +31,8 @@ AktienMan kennt nun drei unabhängige Währungen, die bei Bedarf automatisch inein
 - die Listenwährung bestimmt, in welcher Währung die Aktien in der Liste des Hauptdialogs angezeigt werden; unten links im Hauptdialog kann man die Listenwährung umschalten.
 
 Versionsübersicht
+1999-02-22
+- 
 1999-02-12
 - Fehler in der Laufzeitberechnung behoben (bei einer Laufzeit von 12 Monaten wurde nur "11" angezeigt)
 - Fehler beim Aktien-Beobachten behoben (bei Kaufwährung DEM und fehlender Kaufkursangabe war der automatisch zugewiesene Kaufkurs halbiert)
