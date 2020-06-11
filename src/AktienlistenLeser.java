@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-05-06
+ @version 1999-05-23
 */
 
 import java.net.*;
@@ -41,7 +41,7 @@ public void run() {
 
 	try
 	{
-		URL url = new URL(URLs.POPUPLISTEN+request);
+		URL url = new URL(AktienMan.url.get(URLs.URL_POPUPLISTEN) + request);
 		
 		in = new BufferedReader(new InputStreamReader(url.openStream()));
 
@@ -97,7 +97,7 @@ public void run() {
 					
 					if (index == AktienAktualisieren.INDEX_DAX)
 					{
-						new AktienlistenLeser("MDAX",URLs.LISTE_DAX100,"DAX 100",aadialog,AktienAktualisieren.INDEX_MDAX).start();
+						new AktienlistenLeser("MDAX",AktienMan.url.get(URLs.LISTE_DAX100),"DAX 100",aadialog,AktienAktualisieren.INDEX_MDAX).start();
 					}
 
 					break;

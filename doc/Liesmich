@@ -1,4 +1,4 @@
-AktienMan 1.30-beta (1999-05-07)
+AktienMan 1.31-beta (1999-05-24)
 Copyright (c)1998,99 by Thomas Much (thomas@aktienman.de)
 
 
@@ -67,10 +67,20 @@ todo
 // Liste/Portfolio mit Verkäufen
 // DAX-Kamera optional im Hauptfenster darstellen
 // Aktien verwalten, die keine WKN haben, d.h. deren Kurs manuell eingetragen werden muß
-// Aktienlisten etc. in XML speichern (Strings als UTF8)
 // Backupfunktion für Listen
 // neue Charts von Comdirect
-// Kurse auch von bbbank.de
+// Kurse auch von bbbank.de, http://www.consors.de, http://www.fimatex.de
+// Kurs- und Chartklassen bei Bedarf von aktienman.de laden
+Version 1.32 (.05.99)
+// RELEASE erhöhen, DEBUG entfernen
+// DeuBa-Charts
+// neue Comdirect-Charts
+// Aktienlisten etc. in XML speichern (Strings als UTF8)
+// Kopieren+Verschieben zwischen Portfolios
+// Prozentualer Anteil der einzelnen Aktien am Gesamtportfolio
+Version 1.31 (24.05.99)
+- Comdirect-Charts und -Kurse gehen wieder
+- neuer Update-Mechanismus (URL-Objekt)
 Version 1.30 (07.05.99)
 - Win etc: pop und gif in jar enthalten, Konsole wird nicht mehr geöffnet
 - da das Windows-Java offenbar Probleme mit dem Skalieren von Bildern hat, kann die

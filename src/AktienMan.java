@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-05-07
+ @version 1999-05-24
 */
 
 /**
@@ -16,11 +16,11 @@ import java.awt.*;
 public final class AktienMan {
 
 public static final String AMNAME         = "AktienMan";
-public static final String AMVERSION      = "1.30";
+public static final String AMVERSION      = "1.31";
 public static final String AMFENSTERTITEL = AMNAME + " - ";
 
-public static ADate compDate              = new ADate(1999,5,7); /* Compilierdatum */
-public static final int RELEASE           = 11; /* 1.30 07.05.1999 */
+public static ADate compDate              = new ADate(1999,5,24); /* Compilierdatum */
+public static final int RELEASE           = 12; /* 1.31 24.05.1999 */
 public static final boolean DEBUG         = false; /**/
 
 public static Aktienliste listeDAX        = new Aktienliste();
@@ -52,6 +52,30 @@ public static About about = null;
 public static Hauptdialog hauptdialog = null;
 public static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
+public static URLs url = null;
+
+
+
+
+public static synchronized void checkURLs() {
+	if (url == null)
+	{
+		try
+		{
+			URLClassLoader loader = new URLClassLoader(URLs.URLCLASSURL);
+
+			url = (URLs)loader.loadClass(URLs.URLCLASSNAME,true).newInstance();
+		}
+		catch (Exception e) {}
+		finally
+		{
+			if (url == null)
+			{
+				url = new URLs();
+			}
+		}
+	}
+}
 
 
 public static void doOnlineChecks() {

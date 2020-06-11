@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-05-04
+ @version 1999-05-23
 */
 
 import java.net.*;
@@ -26,12 +26,14 @@ public ComdirectChartLeser(String request, String monate) {
 public void run() {
 	BufferedReader in = null;
 	boolean valid = false;
+	
+	AktienMan.checkURLs();
 
 	chartviewer = new ChartViewer(null,"Chart "+request,monate,400,330,ChartViewer.TYPE_COMDIRECT,false);
 	
 	try
 	{
-		URL url = new URL(URLs.KURSE_COMDIRECT+request);
+		URL url = new URL(AktienMan.url.get(URLs.URL_KURSECOMDIRECT) + request);
 		
 		in = new BufferedReader(new InputStreamReader(url.openStream()));
 
@@ -47,7 +49,7 @@ public void run() {
 			{
 				int i2 = s.indexOf("\"",i);
 
-				String s1 = URLs.CHART_COMDIRECT;
+				String s1 = AktienMan.url.get(URLs.URL_CHARTCOMDIRECT);
 				String s2 = s.substring(i,i2);
 				
 				chartviewer.setComdirectStrings(s1,s2);

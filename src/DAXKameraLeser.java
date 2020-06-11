@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-15
+ @version 1999-05-23
 */
 
 import java.net.*;
@@ -29,6 +29,8 @@ public void stopLoading() {
 
 public void run() {
 	DataInputStream in;
+	
+	AktienMan.checkURLs();
 
 	while (!stopped)
 	{
@@ -38,7 +40,7 @@ public void run() {
 
 		try
 		{
-			URL url = new URL(URLs.KAMERA);
+			URL url = new URL(AktienMan.url.get(URLs.URL_KAMERA));
 			URLConnection curl = url.openConnection();
 			curl.setUseCaches(false);
 			

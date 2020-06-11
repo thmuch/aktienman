@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-03-25
+ @version 1999-05-23
 */
 
 import java.net.*;
@@ -29,13 +29,15 @@ public void run() {
 	BufferedReader in = null;
 	boolean valid = false;
 	
+	AktienMan.checkURLs();
+	
 	String wkn = ba.getWKNString();
 
 	chartviewer = new ChartViewer(null,"Intraday "+ba.getName(true),"",670,285,ChartViewer.TYPE_INTRADAY,true);
 	
 	try
 	{
-		URL url = new URL(URLs.DAXREALTIME);
+		URL url = new URL(AktienMan.url.get(URLs.URL_DAXREALTIME));
 		
 		in = new BufferedReader(new InputStreamReader(url.openStream()));
 
@@ -52,7 +54,7 @@ public void run() {
 					int i2 = s.indexOf(">",s.indexOf(">",i)+1);
 					int i3 = s.indexOf("<",i2);
 					
-					new ChartLoader(chartviewer,URLs.CHART_DAXINTRADAY + s.substring(i2+1,i3).trim() + "." + boerse + ".EUR.gif",true).start();
+					new ChartLoader(chartviewer,AktienMan.url.get(URLs.URL_CHARTINTRADAY) + s.substring(i2+1,i3).trim() + "." + boerse + ".EUR.gif",true).start();
 					valid = true;
 					break;
 				}

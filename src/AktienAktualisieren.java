@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-05-06
+ @version 1999-05-23
 */
 
 import java.awt.*;
@@ -75,7 +75,7 @@ public synchronized void setupElements2() {
 	});
 	buttonOK.setEnabled(false);
 	
-	constrain(this,new Label("Aktienmen\u00fcs aktualiseren:"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,10,10,0,10);
+	constrain(this,new Label("Aktienmen\u00fcs aktualisieren:"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,10,10,0,10);
 	constrain(this,panelListe,0,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,10,10,0,10);
 	constrain(this,buttonOK,0,2,1,1,GridBagConstraints.NONE,GridBagConstraints.SOUTHEAST,0.0,0.0,15,10,10,10);
 }
@@ -84,10 +84,12 @@ public synchronized void setupElements2() {
 private void startThreads() {
 	buttonCount = 5;
 	
-	new AktienlistenLeser("DAX",URLs.LISTE_DAX30,"DAX",this,INDEX_DAX).start();
-	new AktienlistenLeser("Neuer Markt",URLs.LISTE_NMARKT,"NEUER MARKT",this,INDEX_NMARKT).start();
-	new AktienlistenLeser("EuroSTOXX50",URLs.LISTE_EURO50,"STOXX",this,INDEX_EUROSTOXX).start();
-	new AktienlistenLeser("Ausland",URLs.LISTE_AUSLAND,"",this,INDEX_AUSLAND).start();
+	AktienMan.checkURLs();
+	
+	new AktienlistenLeser("DAX",AktienMan.url.get(URLs.LISTE_DAX30),"DAX",this,INDEX_DAX).start();
+	new AktienlistenLeser("Neuer Markt",AktienMan.url.get(URLs.LISTE_NMARKT),"NEUER MARKT",this,INDEX_NMARKT).start();
+	new AktienlistenLeser("EuroSTOXX50",AktienMan.url.get(URLs.LISTE_EURO50),"STOXX",this,INDEX_EUROSTOXX).start();
+	new AktienlistenLeser("Ausland",AktienMan.url.get(URLs.LISTE_AUSLAND),"",this,INDEX_AUSLAND).start();
 }
 
 

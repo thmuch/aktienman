@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-05-04
+ @version 1999-05-23
 */
 
 import java.io.*;
@@ -29,9 +29,11 @@ public ComdirectMaxkursLeser(AktieMaximalkurs parent, int index, String request,
 public void run() {
 	BufferedReader in = null;
 	
+	AktienMan.checkURLs();
+	
 	try
 	{
-		URL url = new URL(URLs.KURSE_COMDIRECT+request);
+		URL url = new URL(AktienMan.url.get(URLs.URL_KURSECOMDIRECT) + request);
 		
 		in = new BufferedReader(new InputStreamReader(url.openStream()));
 		

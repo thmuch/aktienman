@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-15
+ @version 1999-05-23
 */
 
 import java.net.*;
@@ -24,9 +24,11 @@ public void run() {
 	BufferedReader in = null;
 	boolean valid = false;
 	
+	AktienMan.checkURLs();
+	
 	try
 	{
-		URL url = new URL(URLs.AMUPDATE);
+		URL url = new URL(AktienMan.url.get(URLs.URL_AMUPDATE));
 		
 		in = new BufferedReader(new InputStreamReader(url.openStream()));
 		

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-02-09
+ @version 1999-05-23
 */
 
 import java.net.*;
@@ -41,7 +41,7 @@ public void run() {
 	
 	try
 	{
-		URL url = new URL(URLs.AMDOWNLOAD+archiv);
+		URL url = new URL(AktienMan.url.get(URLs.URL_AMDOWNLOAD) + archiv);
 		URLConnection curl = url.openConnection();
 		curl.setUseCaches(false);
 		

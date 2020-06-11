@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-05-04
+ @version 1999-05-23
 */
 
 import java.io.*;
@@ -34,10 +34,12 @@ public DeutscheBankLeser(String request, String baWKN, String baBoerse, boolean 
 
 public void run() {
 	BufferedReader in = null;
+	
+	AktienMan.checkURLs();
 
 	try
 	{
-		URL url = new URL(URLs.KURSE_DEUTSCHEBANK+request);
+		URL url = new URL(AktienMan.url.get(URLs.URL_KURSEDEUBA) + request);
 		
 		in = new BufferedReader(new InputStreamReader(url.openStream()));
 		
