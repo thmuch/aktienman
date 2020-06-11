@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-02-04
+ @version 1999-03-29
 */
 
 import java.util.*;
@@ -162,7 +162,7 @@ public synchronized void sortByName(boolean kurz) {
 
 
 private void writeObject(ObjectOutputStream out) throws IOException {
-	portfoliover = AktienMan.PORTFOLIOVER;
+	portfoliover = 0/*AktienMan.PORTFOLIOVER*/;
 	out.defaultWriteObject();
 }
 
@@ -174,6 +174,11 @@ public synchronized static boolean useShortNames() {
 
 public synchronized static boolean useSteuerfrei() {
 	return AktienMan.properties.getBoolean("Konfig.Steuerfrei",true);
+}
+
+
+public synchronized static boolean calcProzJahr() {
+	return AktienMan.properties.getBoolean("Konfig.ProzJahr",true);
 }
 
 
@@ -212,8 +217,6 @@ public static BenutzerListe restore(String datei) {
 	ObjectInputStream in = null;
 	
 	BenutzerListe benutzerliste = new BenutzerListe();
-	
-	/* nur laden, wenn portfoliover aktuell oder AM registriert ist */
 
 	try
 	{

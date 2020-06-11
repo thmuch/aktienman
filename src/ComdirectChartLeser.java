@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-02-23
+ @version 1999-03-25
 */
 
 import java.net.*;
@@ -27,7 +27,7 @@ public void run() {
 	BufferedReader in = null;
 	boolean valid = false;
 
-	chartviewer = new ChartViewer(null,"Chart "+request,monate,400,330,ChartViewer.TYPE_COMDIRECT);
+	chartviewer = new ChartViewer(null,"Chart "+request,monate,400,330,ChartViewer.TYPE_COMDIRECT,false);
 	
 	try
 	{

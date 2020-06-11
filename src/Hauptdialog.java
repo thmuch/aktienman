@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-03-14
+ @version 1999-03-29
 */
 
 import java.awt.*;
@@ -408,7 +408,7 @@ public void setupElements() {
 	mi.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			/* #Demoversion */
-			if (!main() && (AktienMan.listeDAX.getChoice(false).getItemCount() > 0)
+/*			if (!main() && (AktienMan.listeDAX.getChoice(false).getItemCount() > 0)
 				&& (AktienMan.listeMDAX.getChoice(false).getItemCount() > 0)
 				&& (AktienMan.listeNMarkt.getChoice(false).getItemCount() > 0)
 				&& (AktienMan.listeEuroSTOXX.getChoice(false).getItemCount() > 0)
@@ -417,9 +417,9 @@ public void setupElements() {
 				new Warnalert(AktienMan.hauptdialog,"Die Demoversion kann die Listen nur einmal aktualisieren.");
 			}
 			else
-			{
+			{*/
 				new AktienAktualisieren();
-			}
+//			}
 		}
 	});
 	amMenu.add(mi);
@@ -942,7 +942,7 @@ public synchronized void listeAktualisierenAusfuehren(String boerse) {
 
 	/* #Ablaufdatum */
 	/* #Demoversion */
-	if ((new ADate().after(new ADate(1999,6,9))) && (!main())) System.exit(0);
+//	if ((new ADate().after(new ADate(1999,6,9))) && (!main())) System.exit(0);
 	
 	benutzerliste.setDate(boerse);
 	
@@ -953,10 +953,10 @@ public synchronized void listeAktualisierenAusfuehren(String boerse) {
 
 	/* #Ablaufdatum */
 	/* #Demoversion */
-	if ((new ADate().after(new ADate(1999,6,10)))
+/*	if ((new ADate().after(new ADate(1999,6,10)))
 		&& (RegAM.string(AktienMan.properties.getString("Key.1"),
 			AktienMan.properties.getString("Key.2"),
-			AktienMan.properties.getString("Key.3")) >= 0)) return;
+			AktienMan.properties.getString("Key.3")) >= 0)) return; */
 
 	KursQuelle quelle = KursQuellen.getKursQuelle();
 	KursQuelle fonds = KursQuellen.getFondsQuelle();
@@ -999,7 +999,7 @@ private synchronized void listeSelektierteAktieAktualisieren() {
 
 			/* #Ablaufdatum */
 			/* #Demoversion */
-			if ((new ADate().after(new ADate(1999,6,9))) && (!main())) return;
+//			if ((new ADate().after(new ADate(1999,6,9))) && (!main())) return;
 
 			if (ba.isFonds())
 			{
@@ -1309,6 +1309,7 @@ public synchronized void listeRedraw(boolean to00) {
 	{
 		boolean kurz = BenutzerListe.useShortNames();
 		boolean steuerfrei = BenutzerListe.useSteuerfrei();
+		boolean prozJahr = !BenutzerListe.calcProzJahr();
 
 		benutzerliste.sortByName(kurz);
 		
@@ -1316,7 +1317,7 @@ public synchronized void listeRedraw(boolean to00) {
 		
 		for (i = 0; i < getAnzahlAktien(); i++)
 		{
-			getAktieNr(i).addToPanel(panelListe,i+yoffs,kurz,steuerfrei);
+			getAktieNr(i).addToPanel(panelListe,i+yoffs,kurz,steuerfrei,prozJahr);
 		}
 		
 		BenutzerAktie.addFooterToPanel(panelListe,i+yoffs,panelText);
@@ -1547,6 +1548,7 @@ public synchronized void listeSpeichern() {
 
 		boolean kurz = BenutzerListe.useShortNames();
 		boolean steuerfrei = BenutzerListe.useSteuerfrei();
+		boolean prozJahr = !BenutzerListe.calcProzJahr();
 		
 		String filename = pfad+datei;
 		
@@ -1613,7 +1615,7 @@ public synchronized void listeSpeichern() {
 
 			for (int i = 0; i < getAnzahlAktien(); i++)
 			{
-				getAktieNr(i).saveHTML(out,kurz,steuerfrei);
+				getAktieNr(i).saveHTML(out,kurz,steuerfrei,prozJahr);
 			}
 
 			BenutzerAktie.saveFooterHTML(out);

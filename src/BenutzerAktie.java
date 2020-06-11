@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-03-15
+ @version 1999-03-28
 */
 
 import java.awt.*;
@@ -351,116 +351,8 @@ public synchronized String getName(boolean kurz) {
 	}
 	else
 	{
-		return (kurz) ? getKurzName(name) : name;
+		return (kurz) ? Aktienname.getKurzName(name) : name;
 	}
-}
-
-
-public static String getKurzName(String langname) {
-	String n = langname.trim();
-	
-	String s = n.toUpperCase() + " ";
-	
-	int i = s.indexOf("(");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(" AG ");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(" CO.");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(".CO.");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(" INC.");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(" CORP.");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(" KG");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf("-AG");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(".AG");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(" N.V.");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(" NV ");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(" NV,");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(" S.A.");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(" SA ");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf("-SA ");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(".SAACCIONES");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(" PLC");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(" PCL ");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf("S.P.A.");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(" LTD.");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(" SHS ");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(" ACTIONS ");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(" SHARES ");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(" AGINHABER");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(" AGAKTIEN");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf("NAMENSAKT");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf("NAMENS-AKT");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(" AKTIEN ");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(" MIJ.");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(" HOLDING");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(".HLDG ");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf(" ABAKTIER ");
-	if (i > 0) return getKurzName(n.substring(0,i));
-
-	i = s.indexOf("VORZUGSAKTIEN");
-	if (i > 0) return getKurzName(n.substring(0,i));
-	
-	return n;
 }
 
 
@@ -811,7 +703,7 @@ private void readObject(ObjectInputStream in) throws IOException,ClassNotFoundEx
 }
 
 
-public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean nameSteuerfrei) {
+public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean nameSteuerfrei, boolean calcJahr) {
 	long   aktKurs      = Waehrungen.exchange(getKurs(),getKurswaehrung(),Waehrungen.getListenWaehrung());
 	long   tageLaufzeit = heute.getSerialDate() - getKaufdatum().getSerialDate();
 	long   diff         = 0L;
@@ -957,11 +849,11 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 		out.write("</TD>");
 		out.newLine();
 
-		if (tageLaufzeit >= 360L)
+		if (calcJahr || (tageLaufzeit >= 360L))
 		{
 			if (aktKurs > 0L)
 			{
-				pabs = (pabs * 360L) / tageLaufzeit;
+				pabs = (pabs * 360L) / (tageLaufzeit+1L);
 				if (pabs > 0L) pabs += 5L;
 				else if (pabs < 0L) pabs -= 5L;
 				pabs /= 10L;
@@ -1323,7 +1215,7 @@ private synchronized String getLaufzeitMonateString() {
 }
 
 
-public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean nameSteuerfrei) {
+public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean nameSteuerfrei, boolean calcJahr) {
 	long   aktKurs = Waehrungen.exchange(getKurs(),getKurswaehrung(),Waehrungen.getListenWaehrung());
 	long   tageLaufzeit = heute.getSerialDate() - getKaufdatum().getSerialDate();
 	long   diff = 0L;
@@ -1500,11 +1392,11 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 	
 	/* (9) % Jahr: */
 	
-	if (tageLaufzeit >= 360L)
+	if (calcJahr || (tageLaufzeit >= 360L))
 	{
 		if (aktKurs > 0L)
 		{
-			pabs = (pabs * 360L) / tageLaufzeit;
+			pabs = (pabs * 360L) / (tageLaufzeit+1L);
 			if (pabs > 0L) pabs += 5L;
 			else if (pabs < 0L) pabs -= 5L;
 			pabs /= 10L;

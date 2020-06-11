@@ -37,7 +37,7 @@ public void run() {
 
 	/* #Ablaufdatum */
 	/* #Demoversion */
-	if (!(new ADate().before(new ADate(1999,6,9))) && !AktienMan.hauptdialog.main()) return;
+//	if (!(new ADate().before(new ADate(1999,6,9))) && !AktienMan.hauptdialog.main()) return;
 
 	try
 	{

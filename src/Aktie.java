@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-03
+ @version 1999-03-21
 */
 
 import java.io.*;
@@ -44,7 +44,7 @@ public Object getKey() {
 
 
 public String toString() {
-	return BenutzerAktie.getKurzName(getName());
+	return Aktienname.getKurzName(getName());
 }
 
 }

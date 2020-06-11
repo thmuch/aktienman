@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-03-13
+ @version 1999-03-28
 */
 
 import java.awt.*;
@@ -188,6 +188,8 @@ public void setupElements() {
 	constrain(verlustPanel,new Label(),0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 
 	constrain(panelRest,verlustPanel,1,5,1,2,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+
+	constrain(panelRest,new Label("Angaben in Kaufw\u00e4hrung!",Label.CENTER),0,7,2,1,GridBagConstraints.NONE,GridBagConstraints.NORTH,0.0,0.0,2,0,0,0);
 
 	buttonOK = new Button("  Kaufen  ");
 	buttonBeobachten = new Button(" Beobachten ");
@@ -567,10 +569,10 @@ public synchronized boolean canOK() {
 
 	/* #Ablaufdatum */
 	/* #Demoversion */
-	if ((!(new ADate().before(new ADate(1999,6,10))))
+/*	if ((!(new ADate().before(new ADate(1999,6,10))))
 		&& (!(RegAM.string(AktienMan.properties.getString("Key.1"),
 			AktienMan.properties.getString("Key.2"),
-			AktienMan.properties.getString("Key.3")) < 0))) for(;;);
+			AktienMan.properties.getString("Key.3")) < 0))) for(;;); */
 
 	return true;
 }

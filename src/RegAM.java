@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-15
+ @version 1999-03-28
 */
 
 import java.awt.*;
@@ -68,11 +68,11 @@ public void setupElements() {
 		}
 	});
 
-	Label l = new Label(Lang.DEMOVERSION);
+	Label l = new Label(Lang.DEMOVERSION,Label.CENTER);
 	l.setForeground(Color.red);
-	constrain(panelText,l,0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(panelText,l,0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTH,0.0,0.0,0,0,0,0);
 	
-	TextArea ta = new TextArea("Bitte geben Sie Ihren Namen und Ihre Registriernummer ein, um aus der Demoversion eine Vollversion zu machen, oder starten sie AktienMan als Demoversion.",3,35,TextArea.SCROLLBARS_NONE);
+	TextArea ta = new TextArea("Bitte geben Sie Ihren Namen und Ihre Registriernummer ein, um aus der Demoversion eine Vollversion zu machen, oder starten Sie AktienMan als Demoversion.",3,35,TextArea.SCROLLBARS_NONE);
 	ta.setEditable(false);
 	constrain(panelText,ta,0,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,5,0,0,0);
 	

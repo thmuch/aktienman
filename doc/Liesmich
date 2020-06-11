@@ -1,7 +1,5 @@
-AktienMan 1.24-beta (1999-03-15)
+AktienMan 1.25-beta (1999-03-29)
 Copyright (c)1998 by Thomas Much (thomas@aktienman.de)
-
->>>>> BETAVERSION, LÄUFT AM 8.6.1999 AB <<<<<
 
 
 History
@@ -11,12 +9,12 @@ allg. Bugs
 Mac-Bugs
 //
 Win-Bugs
+// RM-Popups: Bei Klick+Loslassen erscheint Popup 2x
 // Chartfenster werden minimal zu klein geöffnet
 // unter Win98 fehlt der erste Redraw, wenn .lst nicht vorhanden ist (?)
 Linux-Bugs
 // 
 todo
-// InterRenta -> gehen Kurse von Deutscher Bank?
 // Konfigurierbarkeit der Farben
 // Test auf Online-Verbindung
 // Mehrfachselektion mit <Shift>
@@ -52,18 +50,33 @@ todo
 // KursQuelle incl. Abfrage der verfügbaren Börsenplätze
 // Online-Währung -> KursQuelle
 // PoFo-Umschalten beim allerersten Start nicht möglich (wenn AktienMan.lst fehlt) (?)
-// Aktienlisten etc. in XML speichern
 // Suche nach WKN (via Comdirect) -> Liste der Ergebnisse anzeigen
-// Realtime-Kurse von Comdirect
 // Anzeige unwichtiger Spalten ausschaltbar
 // Voreinstellungen: CardLayout
 // öS
+// bei jedem Aktualisieren Thread starten, der aktuelle Umtauschkurse ermittelt
 // nach HTML-Export Browser (derzeit nur Netscape) nachstarten (nur Mac, ab MRJ 2.1)
-// beim Kaufen optional Gebühren errechnen
 // Aktien sofort nach Kauf bei Kaufwert-Summe berücksichtigen
 // Popuplisten: Choice mit fester Pixelrückgabe überschreiben
-// bei jedem Aktualisieren Thread starten, der aktuelle Umtauschkurse ermittelt
+// Realtime-Kurse von Comdirect
+// Aktienlisten etc. in XML speichern (Strings als UTF8)
 // Yahoo-Kursleser
+// beim Kaufen optional Gebühren errechnen
+// Charts auch von der Deuba abrufen
+// Workaround für Münchener Rück (?)
+// auch Maximalskurs per Timer anzeigen
+// Liste/Portfolio mit Verkäufen
+// DAX-Kamera optional im Hauptfenster darstellen
+// neue Charts von Comdirect
+Version 1.25 (29.03.99)
+- DAX-Kamera und Intraday-Charts werden nun an die Fenstergröße angepaßt
+- "Voreinstellungen": Neue Option "%Jahr erst nach 360 Tagen berechnen"
+- bei den Aktiennamen wird nun auch bei GMBH, WERTPAPIER und EFFEKTEN gekürzt
+- bei "Aktie kaufen" und "Aktie ändern" wird nun auf die Währung der Gewinn- und Verlust-
+  grenzen hingewiesen
+- Demoversionen besitzen kein Ablaufdatum mehr, sie sind nur noch durch die Anzahl der
+  Aktien (3) und Portfolios (1) eingeschränkt
+- "Euro MP" bei der Versionsnummer wieder entfernt
 Version 1.24 (15.03.99)
 - offenbar können bei der Kursquelle "Deutsche Bank" keine Fonds mehr aktualisiert werden;
   AktienMan holt daher ab sofort alle DFK-Anfragen von der Comdirect
@@ -524,14 +537,14 @@ Version 0.10 (06.08.98)
 - erste "öffentliche" Betaversion
 
 
-/* #Ablaufdatum */
+/* #Ablaufdatum
 - AktienMan.main(int)
 - Hauptdialog.listeAktualisieren() (2x)
 - Hauptdialog.listeSelektierteAktieAktualisieren()
 - ComdirectLeser.run()
 - DeutscheBankLeser.run()
 - NeueAktie.canOK()
-- Lang
+- Lang */
 
 /* #Demoversion */
 - AktienMan.main(int)

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-02-23
+ @version 1999-03-25
 */
 
 import java.awt.*;
@@ -32,7 +32,7 @@ private int type = TYPE_UNKNOWN;
 
 
 public ChartViewer(Image chartImage, String request, String aktMonate,
-								int initWidth, int initHeight, int type) {
+								int initWidth, int initHeight, int type, boolean canScale) {
 	super(AktienMan.AMFENSTERTITEL+request);
 
 	this.initWidth = initWidth;
@@ -45,6 +45,11 @@ public ChartViewer(Image chartImage, String request, String aktMonate,
 	setImage(chartImage);
 
 	addMouseListener(this);
+	
+	add(BorderLayout.CENTER,new ChartCanvas(this,canScale));
+
+	pack();
+	setupSize();
 
 	setBounds((AktienMan.screenSize.width-initWidth)/2,(AktienMan.screenSize.height-initHeight)/2,initWidth,initHeight);
 	show();
@@ -53,10 +58,7 @@ public ChartViewer(Image chartImage, String request, String aktMonate,
 }
 
 
-public void display() {
-	pack();
-	setupSize();
-}
+public void display() {}
 
 
 private synchronized void setStatus(int status) {
@@ -123,7 +125,6 @@ public void setupFrame() {
 
 public void setupElements() {
 	setLayout(new BorderLayout());
-	add(BorderLayout.CENTER,new ChartCanvas(this));
 }
 
 

@@ -1,4 +1,4 @@
-AktienMan Euro MP 1.23
+AktienMan Euro MP 1.24
 Copyright ©1998,99 Thomas Much
 Ein Programm von AktienMan&Friends (<http://www.aktienman.de>).
 
@@ -14,7 +14,7 @@ Normalerweise wird MRJ 2.0 bei der Installation von MacOS 8.1 bzw. 8.5 automatis
 Die eigentliche Installation von AktienMan ist denkbar einfach: Sie haben das AktienMan-Archiv bereits heruntergeladen und mit StuffIt ausgepackt. Das war es auch schon, eine weitere Installation ist nicht notwendig! Klicken Sie einfach doppelt auf das Programmsymbol "AktienMan". AktienMan wird geladen, und nach wenigen Sekunden - abhängig von der Geschwindigkeit des Rechners - erscheint das Hauptfenster. Wer mit dem Aktienhandel bereits vertraut ist, sollte AktienMan weitestgehend intuitiv bedienen können. Und ansonsten erhält man nach der Registrierung natürlich ein gedrucktes Handbuch.
 
 Einschränkungen der Demo-Version
-Die wesentlichste Einschränkung der Demo-Version ist, daß sie nach dem 8.5.99 ihren Dienst verweigert. Sie können dann entweder eine aktuelle Demoversion herunterladen (müssen dann aber alle Aktiendaten neu eingeben), oder aber sie lassen sich registrieren.
+Die wesentlichste Einschränkung der Demo-Version ist, daß sie nach dem 8.6.99 ihren Dienst verweigert. Sie können dann entweder eine aktuelle Demoversion herunterladen (müssen dann aber alle Aktiendaten neu eingeben), oder aber sie lassen sich registrieren.
 In der Demo-Version können außerdem maximal drei Aktien in einem einzigen Portfolio verwaltet werden.
 
 Bestellung der Vollversion
@@ -31,6 +31,14 @@ AktienMan kennt nun drei unabhängige Währungen, die bei Bedarf automatisch inein
 - die Listenwährung bestimmt, in welcher Währung die Aktien in der Liste des Hauptdialogs angezeigt werden; unten links im Hauptdialog kann man die Listenwährung umschalten.
 
 Versionsübersicht
+1999-03-15
+- Das Aktualisieren der Fonds funktioniert wieder.
+- Die Intraday-Chart-Grafiken werden bei der Anzeige rechts nicht mehr abgeschnitten.
+- Bei Datumseingaben wird das aktuelle Jahr ergänzt, wenn es nicht mit eingegeben wurde.
+- Datumseingaben können auch mit einem Komma, Schrägstrich, Minus- oder Leerzeichen getrennt werden (und nicht mehr nur mit einem Punkt).
+- Fehleingaben beim Kauf einer Aktie werden verhindert.
+- Der Speicherbedarf wurde um 1MB verringert.
+- sonstige kleinere Korrekturen und Verbesserungen
 1999-03-02
 - Bei jedem Portfolio sowie beim HTML-Export wird nun die Gesamtperformance des Portfolios ausgegeben. 
 - Die 6/12/24-Monats-Charts können nun wieder geladen werden (eine Anpassung war nötig, da sich die WWW-Adresse der Charts geändert hatte). 

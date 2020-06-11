@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-14
+ @version 1999-03-25
 */
 
 
@@ -40,13 +40,9 @@ public static String getOSString() {
 	{
 		return OS_WINDOWS;
 	}
-	else if (isLinux())
-	{
-		return OS_LINUX;
-	}
 	else
 	{
-		return "";
+		return OS_LINUX;
 	}
 }
 

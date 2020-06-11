@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-02-06
+ @version 1999-03-28
 */
 
 import java.awt.*;
@@ -11,7 +11,7 @@ import java.awt.event.*;
 public final class Konfiguration extends AFrame {
 
 private Choice plaetze,waehrung,bank,quelle;
-private Checkbox cbAktualisieren,cbKamera,cbAktiennamen,cbKuerzen,cbSteuerfrei,cbTimeout;
+private Checkbox cbAktualisieren,cbKamera,cbAktiennamen,cbKuerzen,cbSteuerfrei,cbTimeout,cbJahr;
 private Checkbox rb6Monate,rb12Monate;
 private TextField tfStdGewinn,tfStdGebuehren,tfMinuten;
 
@@ -35,6 +35,7 @@ public void setupElements() {
 	cbKuerzen = new Checkbox("Aktiennamen k\u00fcrzen",BenutzerListe.useShortNames());
 	cbSteuerfrei = new Checkbox("\"steuerfrei\" statt Laufzeit anzeigen",BenutzerListe.useSteuerfrei());
 	cbTimeout = new Checkbox("Liste automatisch aktualisieren alle",AktienMan.properties.getBoolean("Konfig.KursTimeout"));
+	cbJahr = new Checkbox("%Jahr erst nach 360 Tagen Laufzeit berechnen",BenutzerListe.calcProzJahr());
 	
 	tfStdGewinn = new TextField(AktienMan.properties.getString("Konfig.StdGewinn"),6);
 	tfStdGebuehren = new TextField(AktienMan.properties.getString("Konfig.StdGebuehren"),6);
@@ -55,6 +56,11 @@ public void setupElements() {
 	quelle.select(KursQuellen.getKursQuelleIndex());
 	constrain(quellePanel,quelle,0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	constrain(quellePanel,new Label("als Quelle f\u00fcr die Online-Kursdaten verwenden"),1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
+	
+	Choice charts = new Choice(); /**/
+	charts.add("Comdirect"); /**/
+	constrain(quellePanel,charts,0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(quellePanel,new Label("als Quelle f\u00fcr die Online-Charts verwenden"),1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 	
 	constrain(panelOben,quellePanel,0,3,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
 	
@@ -81,6 +87,8 @@ public void setupElements() {
 	constrain(panelOben,spekuPanel,0,6,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
 
 	constrain(panelOben,cbSteuerfrei,0,7,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+
+	constrain(panelOben,cbJahr,0,8,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	
 	constrain(panelStandard,new Label("Vorgaben f\u00fcr neu zu kaufende Aktien:"),0,0,4,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 
@@ -165,6 +173,7 @@ public void executeOK() {
 	AktienMan.properties.setBoolean("Konfig.Aktiennamen",cbAktiennamen.getState());
 	AktienMan.properties.setBoolean("Konfig.Aktiennamen.kuerzen",cbKuerzen.getState());
 	AktienMan.properties.setBoolean("Konfig.Steuerfrei",cbSteuerfrei.getState());
+	AktienMan.properties.setBoolean("Konfig.ProzJahr",cbJahr.getState());
 	AktienMan.properties.setString("Konfig.StdGewinn",tfStdGewinn.getText());
 	AktienMan.properties.setString("Konfig.StdGebuehren",tfStdGebuehren.getText());
 	AktienMan.properties.setInt("Konfig.StdBoerse",plaetze.getSelectedIndex());

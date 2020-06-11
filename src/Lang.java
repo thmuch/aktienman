@@ -23,7 +23,8 @@ public static final String CHARTERROR  = "Chart konnte nicht geladen werden.";
 public static final String EDITMENUTITLE = "Bearbeiten";
 
 /* #Ablaufdatum */
-public static final String DEMOVERSION = "DEMO-VERSION, L\u00c4UFT AM 8.6.1999 AB!";
+//public static final String DEMOVERSION = "DEMO-VERSION, L\u00c4UFT AM 8.6.1999 AB!";
+public static final String DEMOVERSION = "D E M O - V E R S I O N";
 
 
 
