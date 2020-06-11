@@ -1,11 +1,12 @@
 /**
  @author Thomas Much
- @version 1999-01-15
+ @version 1999-06-13
 */
 
 import java.net.*;
 import java.awt.*;
 import java.io.*;
+
 
 
 
@@ -21,6 +22,7 @@ private ChartViewer chartviewer;
 
 
 
+
 public ChartLoader(ChartViewer chartviewer, String filename, boolean reload) {
 	super();
 	this.chartviewer = chartviewer;
@@ -29,9 +31,11 @@ public ChartLoader(ChartViewer chartviewer, String filename, boolean reload) {
 }
 
 
+
 public void stopLoading() {
 	stopped = true;
 }
+
 
 
 public void run() {
@@ -62,7 +66,7 @@ public void run() {
 
 			if (!stopped)
 			{
-				chartviewer.setImage(AktienMan.hauptdialog.getToolkit().createImage(daten));
+				chartviewer.setImage(AktienMan.hauptdialog.getToolkit().createImage(daten),daten);
 			}
 		}
 		catch (MalformedURLException e)

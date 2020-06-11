@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-05-23
+ @version 1999-06-21
 */
 
 import java.io.*;
@@ -9,6 +9,14 @@ import java.net.*;
 
 
 public class ComdirectMaxkursLeser extends Thread {
+
+private static final int STATUS_WAIT4KURS    = 0;
+private static final int STATUS_READKURS     = 1;
+private static final int STATUS_WAIT4ZEIT    = 2;
+private static final int STATUS_READZEIT     = 3;
+private static final int STATUS_WAIT4VOLUMEN = 4;
+private static final int STATUS_READVOLUMEN  = 5;
+private static final int STATUS_FINISHED     = 6;
 
 private AktieMaximalkurs parent;
 private String request;
@@ -33,59 +41,82 @@ public void run() {
 	
 	try
 	{
-		URL url = new URL(AktienMan.url.get(URLs.URL_KURSECOMDIRECT) + request);
+		int sp = request.indexOf(".");
+
+		String spwkn    = request.substring(0,sp);
+		String spboerse = request.substring(sp+1);
+
+		URL url = new URL(AktienMan.url.getComdirectKursURL(spwkn,spboerse));
 		
 		in = new BufferedReader(new InputStreamReader(url.openStream()));
 		
-		String s, datum = "";
-		int status = 0;
-		long kurs = BenutzerAktie.VALUE_NA;
-		boolean found = false;
+		String str_fehler  = AktienMan.url.getString(URLs.STR_CD_KURSFEHLER);
+		String str_aktkurs = AktienMan.url.getString(URLs.STR_CD_KURS);
+		String str_zeit    = AktienMan.url.getString(URLs.STR_CD_KURSZEIT);
+		String str_volumen = AktienMan.url.getString(URLs.STR_CD_KURSVOLUMEN);
+		String str_ende    = AktienMan.url.getString(URLs.STR_CD_KURSENDE);
 		
-		while ((s = in.readLine()) != null)
+		String s, datum = "";
+		int status = STATUS_WAIT4KURS;
+		long kurs = BenutzerAktie.VALUE_NA;
+		long handelsvolumen = 0L;
+		boolean found = false;
+		boolean valid = false;
+		
+		while (((s = in.readLine()) != null) && (status != STATUS_FINISHED))
 		{
-			if (status == 0)
+			s = s.trim();
+			
+			if (s.length() == 0) continue;
+			
+			if (s.indexOf(str_ende) >= 0)
 			{
-				if (s.indexOf("NAME=\"searchfor\" VALUE=") > 0)
-				{
-					parent.setKurs(index,BenutzerAktie.VALUE_NA);
-					found = true;
-					break;
-				}
-
-				if (s.indexOf(".html?") > 0) {
-					status = 1;
-					kurs = BenutzerAktie.VALUE_NA;
-				}
+				status = STATUS_FINISHED;
+				continue;
 			}
-			else
+			
+			switch (status)
 			{
-				if (s.indexOf("</TR>") >= 0)
+			case STATUS_WAIT4KURS:
+				if (s.indexOf(str_fehler) >= 0)
 				{
 					parent.setKurs(index,BenutzerAktie.VALUE_NA);
+					status = STATUS_FINISHED;
 					found = true;
-					status = 0;
 				}
-				else
+				else if (s.indexOf(str_aktkurs) >= 0)
 				{
-					int i = s.indexOf("<TD");
-
-					if (i >= 0)
+					status = STATUS_READKURS;
+				}
+				break;
+			
+			case STATUS_READKURS:
+				{
+					int i = s.indexOf(">");
+					int i2 = s.indexOf("<",i+1);
+					
+					if ((i > 0) && (i2 > i))
 					{
-						if (status == 2)
+						String kstr = s.substring(i+1,i2).trim();
+						
+						if ((i = kstr.indexOf(" ")) > 0)
 						{
-							int i2 = s.indexOf(">",i+4);
-							int i3 = s.indexOf("<",i2);
-							
-							String kstr = s.substring(i2+1,i3);
-							
-							if (kstr.equalsIgnoreCase(ComdirectQuelle.VALUENA))
-							{
-								parent.setKurs(index,BenutzerAktie.VALUE_NA);
-								found = true;
-								break;
-							}
-							
+							kstr = kstr.substring(0,i);
+						}
+
+						if ((i = kstr.indexOf("&")) > 0)
+						{
+							kstr = kstr.substring(0,i);
+						}
+						
+						if (kstr.equalsIgnoreCase(ComdirectQuelle.VALUENA))
+						{
+							parent.setKurs(index,BenutzerAktie.VALUE_NA);
+							status = STATUS_FINISHED;
+							found = true;
+						}
+						else
+						{
 							try
 							{
 								kurs = Waehrungen.doubleToLong(kstr);
@@ -94,47 +125,87 @@ public void run() {
 							{
 								kurs = BenutzerAktie.VALUE_NA;
 							}
+							
+							status = STATUS_WAIT4ZEIT;
+							valid = true;
 						}
-						else if (status == 3)
-						{
-							int i2 = s.indexOf(">",i+4);
-							int i3 = s.indexOf("<",i2);
-							
-							datum = s.substring(i2+1,i3);
-
-							i2 = s.indexOf(">",i3);
-							i3 = s.indexOf("<",i2);
-
-							datum = datum + " " + s.substring(i2+1,i3);
-						}
-						else if (status == 6)
-						{
-							int i2 = s.indexOf(">",s.indexOf(">",i)+1);
-							int i3 = s.indexOf("<",i2);
-
-							String volumen = s.substring(i2+1,i3).trim();
-							
-							long handelsvolumen;
-							try
-							{
-								handelsvolumen = Long.parseLong(volumen);
-							}
-							catch (NumberFormatException e)
-							{
-								handelsvolumen = 0L;
-							}
-							
-							int kurswaehrung = Waehrungen.getOnlineWaehrung();
-							
-							parent.setKurs(index,kurs,datum,kurswaehrung,handelsvolumen);
-							found = true;
-							break;
-						}
-
-						status++;
+					}
+					else
+					{
+						status = STATUS_FINISHED;
 					}
 				}
+				break;
+			
+			case STATUS_WAIT4ZEIT:
+				if (s.indexOf(str_zeit) >= 0)
+				{
+					status = STATUS_READZEIT;
+				}
+				break;
+			
+			case STATUS_READZEIT:
+				{
+					int i = s.indexOf(">");
+					int i2 = s.indexOf("<",i+1);
+					
+					if ((i > 0) && (i2 > i))
+					{
+						datum = s.substring(i+1,i2).trim();
+						
+						i = datum.indexOf(",");
+						
+						if (i >= 0)
+						{
+							datum = datum.substring(0,i) + datum.substring(i+1);
+						}
+					}
+					
+					status = STATUS_WAIT4VOLUMEN;
+				}
+				break;
+			
+			case STATUS_WAIT4VOLUMEN:
+				if (s.indexOf(str_volumen) >= 0)
+				{
+					status = STATUS_READVOLUMEN;
+				}
+				break;
+
+			case STATUS_READVOLUMEN:
+				{
+					int i = s.indexOf(">");
+					int i2 = s.indexOf("<",i+1);
+
+					if ((i > 0) && (i2 > i))
+					{
+						String volumen = s.substring(i+1,i2).trim();
+						
+						i = volumen.indexOf(".");
+						
+						while (i >= 0)
+						{
+							volumen = volumen.substring(0,i) + volumen.substring(i+1);
+							i = volumen.indexOf(".");
+						}
+
+						try
+						{
+							handelsvolumen = Long.parseLong(volumen);
+						}
+						catch (NumberFormatException e) {}
+					}
+					
+					status = STATUS_FINISHED;
+				}
+				break;
 			}
+		}
+		
+		if (valid)
+		{
+			parent.setKurs(index,kurs,datum,Waehrungen.getOnlineWaehrung(),handelsvolumen);
+			found = true;
 		}
 		
 		if (!found)

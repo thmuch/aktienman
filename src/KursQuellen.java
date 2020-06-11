@@ -1,10 +1,11 @@
 /**
  @author Thomas Much
- @version 1999-05-04
+ @version 1999-06-14
 */
 
 import java.util.*;
 import java.awt.*;
+
 
 
 
@@ -19,7 +20,8 @@ private static final int STANDARDQUELLE = QUELLE_COMDIRECT;
 
 private static KursQuellen quellen = new KursQuellen();
 
-private static int kursquelle = -1;
+private static int kursquelle = QUELLE_NONE;
+
 
 
 
@@ -29,6 +31,7 @@ public KursQuellen() {
 }
 
 
+
 public synchronized void setupList() {
 	add(new ComdirectQuelle());
 	add(new DeutscheBankQuelle());
@@ -36,14 +39,17 @@ public synchronized void setupList() {
 }
 
 
+
 public synchronized void add(KursQuelle eintrag) {
 	addElement(eintrag);
 }
 
 
+
 public synchronized KursQuelle getAt(int index) {
 	return (KursQuelle)elementAt(index);
 }
+
 
 
 public synchronized static Choice getChoice() {
@@ -58,9 +64,11 @@ public synchronized static Choice getChoice() {
 }
 
 
+
 public synchronized static KursQuelle getKursQuelle(int index) {
 	return quellen.getAt(index);
 }
+
 
 
 public synchronized static KursQuelle getKursQuelle() {
@@ -68,20 +76,22 @@ public synchronized static KursQuelle getKursQuelle() {
 }
 
 
+
 public synchronized static KursQuelle getFondsQuelle() {
 	return getKursQuelle();
-//	return getKursQuelle(QUELLE_COMDIRECT);
 }
 
 
+
 public synchronized static int getKursQuelleIndex() {
-	if (kursquelle < 0)
+	if (kursquelle <= QUELLE_NONE)
 	{
 		kursquelle = AktienMan.properties.getInt("Konfig.Kursquelle",STANDARDQUELLE);
 	}
 	
 	return kursquelle;
 }
+
 
 
 public synchronized static void setKursQuelleIndex(int neu) {

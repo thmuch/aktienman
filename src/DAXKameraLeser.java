@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-05-23
+ @version 1999-06-13
 */
 
 import java.net.*;
@@ -13,12 +13,16 @@ public final class DAXKameraLeser extends Thread {
 
 private static final long TIMEOUT = 120000L;
 
+private DAXKamera kamera;
+
 private boolean stopped = false;
 
 
 
-public DAXKameraLeser() {
+
+public DAXKameraLeser(DAXKamera kamera) {
 	super();
+	this.kamera = kamera;
 }
 
 
@@ -52,6 +56,8 @@ public void run() {
 
 			if (!stopped)
 			{
+				kamera.setKameraDaten(daten);
+				
 				AktienMan.daxImage = AktienMan.hauptdialog.getToolkit().createImage(daten);
 				
 				AktienMan.daxImage.getWidth(AktienMan.daxKamera);

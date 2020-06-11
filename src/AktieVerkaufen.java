@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-03-13
+ @version 1999-06-13
 */
 
 import java.awt.*;
@@ -292,7 +292,7 @@ private void checkButtonAlle() {
 
 		buttonVerkaufen.setEnabled(true);
 		
-		if (changed) anzahl.setText(new Long(anz).toString());
+		if (changed) anzahl.setText(""+anz);
 	}
 	
 	checkBankGebuehren();

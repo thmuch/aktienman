@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-03-12
+ @version 1999-06-14
 */
 
 import java.util.*;
@@ -113,13 +113,30 @@ public boolean equals(ADate adate) {
 
 
 public String toString() {
-	return (new Integer(getDay()).toString())+"."+(new Integer(getMonth()).toString())+"."+(new Integer(getYear()).toString());
+	return "" + getDay() + "." + getMonth() + "." + getYear();
 }
 
 
 public String timeToString() {
 	int m = getMinute();
-	return (new Integer(getHour()).toString())+":"+((m<10)?"0":"")+(new Integer(m).toString());
+	return "" + getHour() + ":" + ((m<10)?"0":"") + m;
+}
+
+
+public String toTimestamp(boolean time) {
+	int minute = getMinute();
+	int hour = getHour();
+	int month = getMonth();
+	int day = getDay();
+	
+	String t = "" + getYear() + ((month<10)?"0":"") + month + ((day<10)?"0":"") + day;
+	
+	if (time)
+	{
+		t += "-" + ((hour<10)?"0":"") + hour + ((minute<10)?"0":"") + minute;
+	}
+	
+	return t;
 }
 
 
@@ -221,7 +238,7 @@ public static ADate parse(String s) throws Exception {
 			}
 			else
 			{
-				str_jahr = new Integer(new ADate().getYear()).toString();
+				str_jahr = "" + (new ADate().getYear());
 			}
 			
 			int jahr  = Integer.parseInt(str_jahr);

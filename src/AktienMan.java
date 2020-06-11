@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-05-24
+ @version 1999-06-22
 */
 
 /**
@@ -16,11 +16,11 @@ import java.awt.*;
 public final class AktienMan {
 
 public static final String AMNAME         = "AktienMan";
-public static final String AMVERSION      = "1.31";
+public static final String AMVERSION      = "1.40";
 public static final String AMFENSTERTITEL = AMNAME + " - ";
 
-public static ADate compDate              = new ADate(1999,5,24); /* Compilierdatum */
-public static final int RELEASE           = 12; /* 1.31 24.05.1999 */
+public static ADate compDate              = new ADate(1999,6,22); /* Compilierdatum */
+public static final int RELEASE           = 13; /* 1.40 22.06.1999 */
 public static final boolean DEBUG         = false; /**/
 
 public static Aktienliste listeDAX        = new Aktienliste();
@@ -57,9 +57,11 @@ public static URLs url = null;
 
 
 
-public static synchronized void checkURLs() {
+public synchronized static void checkURLs() {
 	if (url == null)
 	{
+		NetUtil.loadRawURL(URLs.MC_WORKAROUND);
+		
 		try
 		{
 			URLClassLoader loader = new URLClassLoader(URLs.URLCLASSURL);

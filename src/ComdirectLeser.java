@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-05-23
+ @version 1999-06-21
 */
 
 import java.io.*;
@@ -9,6 +9,23 @@ import java.net.*;
 
 
 public class ComdirectLeser extends Thread {
+
+private static final int STATUS_WAIT4NAME    =  0;
+private static final int STATUS_WAIT4WKN     =  1;
+private static final int STATUS_READWKN      =  2;
+private static final int STATUS_WAIT4SYMBOL  =  3;
+private static final int STATUS_READSYMBOL   =  4;
+private static final int STATUS_WAIT4KURS    =  5;
+private static final int STATUS_READKURS     =  6;
+private static final int STATUS_WAIT4ZEIT    =  7;
+private static final int STATUS_READZEIT     =  8;
+private static final int STATUS_WAIT4REST    =  9;
+private static final int STATUS_READVOLUMEN  = 10;
+private static final int STATUS_READVORTAG   = 11;
+private static final int STATUS_READEROEFF   = 12;
+private static final int STATUS_READHOECHST  = 13;
+private static final int STATUS_READTIEFST   = 14;
+private static final int STATUS_FINISHED     = 15;
 
 private String request,baWKN,baBoerse;
 private boolean sofortZeichnen;
@@ -32,6 +49,28 @@ public ComdirectLeser(String request, String baWKN, String baBoerse, boolean sof
 }
 
 
+
+private String fixKurs(String kstr) {
+
+	int i;
+	
+	kstr = kstr.trim();
+	
+	if ((i = kstr.indexOf(" ")) > 0)
+	{
+		kstr = kstr.substring(0,i);
+	}
+
+	if ((i = kstr.indexOf("&")) > 0)
+	{
+		kstr = kstr.substring(0,i);
+	}
+	
+	return kstr;
+}
+
+
+
 public void run() {
 	BufferedReader in = null;
 	
@@ -39,240 +78,266 @@ public void run() {
 
 	try
 	{
-		URL url = new URL(AktienMan.url.get(URLs.URL_KURSECOMDIRECT) + request);
+		int sp = request.indexOf(".");
+
+		String spwkn    = request.substring(0,sp);
+		String spboerse = request.substring(sp+1);
+
+		URL url = new URL(AktienMan.url.getComdirectKursURL(spwkn,spboerse));
 		
 		in = new BufferedReader(new InputStreamReader(url.openStream()));
 		
+		String str_fehler  = AktienMan.url.getString(URLs.STR_CD_KURSFEHLER);
+		String str_aktkurs = AktienMan.url.getString(URLs.STR_CD_KURS);
+		String str_zeit    = AktienMan.url.getString(URLs.STR_CD_KURSZEIT);
+		String str_volumen = AktienMan.url.getString(URLs.STR_CD_KURSVOLUMEN);
+		String str_ende    = AktienMan.url.getString(URLs.STR_CD_KURSENDE);
+		String str_titel   = AktienMan.url.getString(URLs.STR_CD_KURSTITEL);
+		String str_wkn     = AktienMan.url.getString(URLs.STR_CD_KURSWKN);
+		String str_symbol  = AktienMan.url.getString(URLs.STR_CD_KURSSYMBOL);
+		String str_vortag  = AktienMan.url.getString(URLs.STR_CD_KURSVORTAG);
+		String str_eroeff  = AktienMan.url.getString(URLs.STR_CD_KURSEROEFF);
+		String str_hoechst = AktienMan.url.getString(URLs.STR_CD_KURSHOECHST);
+		String str_tiefst  = AktienMan.url.getString(URLs.STR_CD_KURSTIEFST);
+		
 		String s;
-		String name = null, platz = null, wkn = null, kursdatum = "", kurz = "";
+		String name = "", platz = "", wkn = "", kursdatum = "", kurz = "";
 		long kurs = BenutzerAktie.VALUE_MISSING;
 		long eroeffnungskurs = BenutzerAktie.VALUE_MISSING;
 		long hoechstkurs = BenutzerAktie.VALUE_MISSING;
 		long tiefstkurs = BenutzerAktie.VALUE_MISSING;
 		long vortageskurs = BenutzerAktie.VALUE_MISSING;
 		long handelsvolumen = 0L;
-		int i,i2,i3, status = 0;
+		int thcount = 0;
+		int vortagcount = 0;
+		int status = STATUS_WAIT4NAME;
 		boolean found = false;
+		boolean valid = false;
 		
-		while ((s = in.readLine()) != null)
+		while (((s = in.readLine()) != null) && (status != STATUS_FINISHED))
 		{
-			if (status == 0)
+			s = s.trim();
+			
+			if (s.length() == 0) continue;
+			
+			if (s.indexOf(str_ende) >= 0)
 			{
-				i = s.indexOf("NAME=\"searchfor\" VALUE=");
-				
-				if (i > 0)
-				{
-					i2 = s.indexOf('"',i+20);
-					i3 = s.indexOf('.',i2);
-					
-					wkn = s.substring(i2+1,i3).trim();
-					
-					i2 = s.indexOf('"',i3);
-					
-					platz = s.substring(i3+1,i2).trim();
-
-					AktienMan.hauptdialog.listeAnfrageFalsch(wkn,platz,sofortZeichnen);
-					found = true;
-					break;
-				}
-
-				i = s.indexOf(".html?");
-				
-				if (i > 0)
-				{
-					i2 = s.indexOf('=',i);
-					i3 = s.indexOf('.',i2);
-
-					kurz = s.substring(i2+1,i3).trim();
-
-					i2 = s.indexOf('>',i3);
-					i3 = s.indexOf('<',i2);
-
-					name = s.substring(i2+1,i3).trim();
-
-					platz = null;
-					wkn = null;
-					kurs = BenutzerAktie.VALUE_MISSING;
-					eroeffnungskurs = BenutzerAktie.VALUE_MISSING;
-					hoechstkurs = BenutzerAktie.VALUE_MISSING;
-					tiefstkurs = BenutzerAktie.VALUE_MISSING;
-					vortageskurs = BenutzerAktie.VALUE_MISSING;
-					handelsvolumen = 0L;
-					kursdatum = "";
-
-					status = 1;
-				}
+				status = STATUS_FINISHED;
+				continue;
 			}
-			else
+
+			switch (status)
 			{
-				if (s.indexOf("</TR>") >= 0)
+			case STATUS_WAIT4NAME:
+				if (s.indexOf(str_fehler) >= 0)
 				{
-					if ((wkn != null) && (platz != null))
+					AktienMan.hauptdialog.listeAnfrageFalsch(baWKN,baBoerse,sofortZeichnen);
+					status = STATUS_FINISHED;
+					found = true;
+				}
+				else if (s.indexOf(str_titel) >= 0)
+				{
+					if (++thcount == 2)
 					{
-						if (kurs > 0L)
+						int i = s.indexOf(">");
+						int i2 = s.indexOf("<",i+1);
+						
+						if ((i > 0) && (i2 > i))
 						{
-							int kurswaehrung = Waehrungen.getOnlineWaehrung();
-							
-							AktienMan.hauptdialog.listeNeuerAktienkurs(wkn,kurz,platz,name,kurs,kursdatum,
-																		vortageskurs,eroeffnungskurs,
-																		hoechstkurs,tiefstkurs,handelsvolumen,
-																		kurswaehrung,sofortZeichnen);
-							found = true;
+							name = s.substring(i+1,i2).trim();
+
+							status = STATUS_WAIT4WKN;
+							valid = true;
 						}
 						else
 						{
-							AktienMan.hauptdialog.listeAktienkursNA(wkn,kurz,platz,name,sofortZeichnen);
-							found = true;
+							status = STATUS_FINISHED;
+						}
+					}
+				}
+				break;
+			
+			case STATUS_WAIT4WKN:
+				if (s.indexOf(str_wkn) > 0)
+				{
+					status = STATUS_READWKN;
+				}
+				break;
+			
+			case STATUS_READWKN:
+				{
+					int i = s.indexOf(">", s.indexOf(">") + 1);
+					int i2 = s.indexOf("<", i + 1);
+					
+					if ((i > 0) && (i2 > i))
+					{
+						wkn = s.substring(i+1,i2).trim();
+					}
+					
+					status = STATUS_WAIT4SYMBOL;
+				}
+				break;
+			
+			case STATUS_WAIT4SYMBOL:
+				if (s.indexOf(str_symbol) > 0)
+				{
+					status = STATUS_READSYMBOL;
+				}
+				break;
+			
+			case STATUS_READSYMBOL:
+				{
+					int i = s.indexOf(">", s.indexOf(">") + 1);
+					int i2 = s.indexOf("<", i + 1);
+					
+					if ((i > 0) && (i2 > i))
+					{
+						String symbol = s.substring(i+1,i2).trim();
+						
+						i = symbol.indexOf(".");
+						
+						if (i > 0)
+						{
+							kurz = symbol.substring(0,i);
+							platz = symbol.substring(i+1);
 						}
 					}
 					
-					status = 0;
+					status = STATUS_WAIT4KURS;
 				}
-				else
+				break;
+
+			case STATUS_WAIT4KURS:
+				if (s.indexOf(str_aktkurs) > 0)
 				{
-					i = s.indexOf("<TD");
-
-					if (i >= 0)
+					status = STATUS_READKURS;
+				}
+				break;
+			
+			case STATUS_READKURS:
+				{
+					int i = s.indexOf(">");
+					int i2 = s.indexOf("<",i+1);
+					
+					if ((i > 0) && (i2 > i))
 					{
-						if (status == 1)
+						String kstr = fixKurs(s.substring(i+1,i2));
+						
+						if (kstr.equalsIgnoreCase(ComdirectQuelle.VALUENA))
 						{
-							i2 = s.indexOf(">",s.indexOf(">",i)+1);
-							i3 = s.indexOf("<",i2);
-							
-							wkn = s.substring(i2+1,i3).trim();
-
-							i2 = s.indexOf(">",i3);
-							i3 = s.indexOf("<",i2);
-							
-							platz = s.substring(i2+1,i3).trim();
+							kurs = BenutzerAktie.VALUE_NA;
 						}
-						else if (status == 2)
+						else
 						{
-							i2 = s.indexOf(">",s.indexOf(">",i)+1);
-							i3 = s.indexOf("<",i2);
-							
-							String kstr = s.substring(i2+1,i3).trim();
-							
-							if (kstr.equalsIgnoreCase(ComdirectQuelle.VALUENA))
-							{
-								AktienMan.hauptdialog.listeAktienkursNA(wkn,kurz,platz,name,sofortZeichnen);
-								found = true;
-								
-								status = 0;
-								continue;
-							}
-							
 							try
 							{
 								kurs = Waehrungen.doubleToLong(kstr);
 							}
 							catch (NumberFormatException e)
 							{
-								kurs = BenutzerAktie.VALUE_MISSING;
+								kurs = BenutzerAktie.VALUE_NA;
 							}
 						}
-						else if (status == 3)
+						
+						status = STATUS_WAIT4ZEIT;
+					}
+					else
+					{
+						status = STATUS_FINISHED;
+					}
+				}
+				break;
+			
+			case STATUS_WAIT4ZEIT:
+				if (s.indexOf(str_zeit) >= 0)
+				{
+					status = STATUS_READZEIT;
+				}
+				break;
+			
+			case STATUS_READZEIT:
+				{
+					int i = s.indexOf(">");
+					int i2 = s.indexOf("<",i+1);
+					
+					if ((i > 0) && (i2 > i))
+					{
+						kursdatum = s.substring(i+1,i2).trim();
+						
+						i = kursdatum.indexOf(",");
+						
+						if (i >= 0)
 						{
-							i2 = s.indexOf(">",s.indexOf(">",i)+1);
-							i3 = s.indexOf("<",i2);
-							
-							kursdatum = s.substring(i2+1,i3).trim();
-
-							i2 = s.indexOf(">",i3);
-							i3 = s.indexOf("<",i2);
-
-							kursdatum = kursdatum + " " + s.substring(i2+1,i3).trim();
+							kursdatum = kursdatum.substring(0,i) + kursdatum.substring(i+1);
 						}
-						else if (status == 4)
-						{
-							i2 = s.indexOf(">",s.indexOf(">",i)+1);
-							i3 = s.indexOf("<",i2);
-							
-							String eroeffstr = s.substring(i2+1,i3).trim();
+					}
+					
+					status = STATUS_WAIT4REST;
+				}
+				break;
+			
+			case STATUS_WAIT4REST:
+				if (s.indexOf(str_volumen) > 0)
+				{
+					status = STATUS_READVOLUMEN;
+				}
+				else if (s.indexOf(str_vortag) > 0)
+				{
+					status = STATUS_READVORTAG;
+				}
+				else if (s.indexOf(str_eroeff) > 0)
+				{
+					status = STATUS_READEROEFF;
+				}
+				else if (s.indexOf(str_hoechst) > 0)
+				{
+					status = STATUS_READHOECHST;
+				}
+				else if (s.indexOf(str_tiefst) > 0)
+				{
+					status = STATUS_READTIEFST;
+				}
+				break;
 
-							if (eroeffstr.equalsIgnoreCase(ComdirectQuelle.VALUENA))
-							{
-								eroeffnungskurs = BenutzerAktie.VALUE_NA;
-							}
-							else
-							{
-								try
-								{
-									eroeffnungskurs = Waehrungen.doubleToLong(eroeffstr);
-								}
-								catch (NumberFormatException e)
-								{
-									eroeffnungskurs = BenutzerAktie.VALUE_MISSING;
-								}
-							}
+			case STATUS_READVOLUMEN:
+				{
+					int i = s.indexOf(">");
+					int i2 = s.indexOf("<",i+1);
+
+					if ((i > 0) && (i2 > i))
+					{
+						String volumen = s.substring(i+1,i2).trim();
+						
+						i = volumen.indexOf(".");
+						
+						while (i >= 0)
+						{
+							volumen = volumen.substring(0,i) + volumen.substring(i+1);
+							i = volumen.indexOf(".");
 						}
-						else if (status == 5)
+
+						try
 						{
-							i2 = s.indexOf(">",s.indexOf(">",i)+1);
-							i3 = s.indexOf("<",i2);
-
-							String hoechst = s.substring(i2+1,i3).trim();
-
-							i2 = s.indexOf(">",i3);
-							i3 = s.indexOf("<",i2);
-
-							String tiefst = s.substring(i2+1,i3).trim();
-							
-							if (hoechst.equalsIgnoreCase(ComdirectQuelle.VALUENA))
-							{
-								hoechstkurs = BenutzerAktie.VALUE_NA;
-							}
-							else
-							{
-								try
-								{
-									hoechstkurs = Waehrungen.doubleToLong(hoechst);
-								}
-								catch (NumberFormatException e)
-								{
-									hoechstkurs = BenutzerAktie.VALUE_MISSING;
-								}
-							}
-
-							if (tiefst.equalsIgnoreCase(ComdirectQuelle.VALUENA))
-							{
-								tiefstkurs = BenutzerAktie.VALUE_NA;
-							}
-							else
-							{
-								try
-								{
-									tiefstkurs = Waehrungen.doubleToLong(tiefst);
-								}
-								catch (NumberFormatException e)
-								{
-									tiefstkurs = BenutzerAktie.VALUE_MISSING;
-								}
-							}
+							handelsvolumen = Long.parseLong(volumen);
 						}
-						else if (status == 6)
+						catch (NumberFormatException e) {}
+					}
+					
+					status = STATUS_WAIT4REST;
+				}
+				break;
+
+			case STATUS_READVORTAG:
+				{
+					if (++vortagcount == 2)
+					{
+						int i = s.indexOf(">");
+						int i2 = s.indexOf("<",i+1);
+						
+						if ((i > 0) && (i2 > i))
 						{
-							i2 = s.indexOf(">",s.indexOf(">",i)+1);
-							i3 = s.indexOf("<",i2);
+							String vortag = fixKurs(s.substring(i+1,i2));
 
-							String volumen = s.substring(i2+1,i3).trim();
-
-							try
-							{
-								handelsvolumen = Long.parseLong(volumen);
-							}
-							catch (NumberFormatException e)
-							{
-								handelsvolumen = 0L;
-							}
-						}
-						else if (status == 8)
-						{
-							i2 = s.indexOf(">",s.indexOf(">",i)+1);
-							i3 = s.indexOf("<",i2);
-
-							String vortag = s.substring(i2+1,i3).trim();
-							
 							if (vortag.equalsIgnoreCase(ComdirectQuelle.VALUENA))
 							{
 								vortageskurs = BenutzerAktie.VALUE_NA;
@@ -290,9 +355,120 @@ public void run() {
 							}
 						}
 
-						status++;
+						status = STATUS_WAIT4REST;
 					}
 				}
+				break;
+
+			case STATUS_READEROEFF:
+				{
+					int i = s.indexOf(">");
+					int i2 = s.indexOf("<",i+1);
+					
+					if ((i > 0) && (i2 > i))
+					{
+						String eroeffstr = fixKurs(s.substring(i+1,i2));
+
+						if (eroeffstr.equalsIgnoreCase(ComdirectQuelle.VALUENA))
+						{
+							eroeffnungskurs = BenutzerAktie.VALUE_NA;
+						}
+						else
+						{
+							try
+							{
+								eroeffnungskurs = Waehrungen.doubleToLong(eroeffstr);
+							}
+							catch (NumberFormatException e)
+							{
+								eroeffnungskurs = BenutzerAktie.VALUE_MISSING;
+							}
+						}
+					}
+
+					status = STATUS_WAIT4REST;
+				}
+				break;
+
+			case STATUS_READHOECHST:
+				{
+					int i = s.indexOf(">");
+					int i2 = s.indexOf("<",i+1);
+					
+					if ((i > 0) && (i2 > i))
+					{
+						String hoechst = fixKurs(s.substring(i+1,i2));
+
+						if (hoechst.equalsIgnoreCase(ComdirectQuelle.VALUENA))
+						{
+							hoechstkurs = BenutzerAktie.VALUE_NA;
+						}
+						else
+						{
+							try
+							{
+								hoechstkurs = Waehrungen.doubleToLong(hoechst);
+							}
+							catch (NumberFormatException e)
+							{
+								hoechstkurs = BenutzerAktie.VALUE_MISSING;
+							}
+						}
+					}
+
+					status = STATUS_WAIT4REST;
+				}
+				break;
+
+			case STATUS_READTIEFST:
+				{
+					int i = s.indexOf(">");
+					int i2 = s.indexOf("<",i+1);
+					
+					if ((i > 0) && (i2 > i))
+					{
+						String tiefst = fixKurs(s.substring(i+1,i2));
+
+						if (tiefst.equalsIgnoreCase(ComdirectQuelle.VALUENA))
+						{
+							tiefstkurs = BenutzerAktie.VALUE_NA;
+						}
+						else
+						{
+							try
+							{
+								tiefstkurs = Waehrungen.doubleToLong(tiefst);
+							}
+							catch (NumberFormatException e)
+							{
+								tiefstkurs = BenutzerAktie.VALUE_MISSING;
+							}
+						}
+					}
+
+					status = STATUS_WAIT4REST;
+				}
+				break;
+			}
+		}
+		
+		if (valid)
+		{
+			if ((wkn.length() > 0) && (platz.length() > 0))
+			{
+				if (kurs > 0L)
+				{
+					AktienMan.hauptdialog.listeNeuerAktienkurs(wkn,kurz,platz,name,kurs,kursdatum,
+																vortageskurs,eroeffnungskurs,
+																hoechstkurs,tiefstkurs,handelsvolumen,
+																Waehrungen.getOnlineWaehrung(),sofortZeichnen);
+				}
+				else
+				{
+					AktienMan.hauptdialog.listeAktienkursNA(wkn,kurz,platz,name,sofortZeichnen);
+				}
+
+				found = true;
 			}
 		}
 		

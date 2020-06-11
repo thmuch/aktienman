@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-05-04
+ @version 1999-06-13
 */
 
 import java.awt.*;
@@ -133,7 +133,7 @@ private synchronized void fillKursPanel(boolean draw) {
 			else
 			{
 				s = Waehrungen.getString(Waehrungen.exchange(k,kwaehrung[i],Waehrungen.getListenWaehrung()),Waehrungen.getListenWaehrung());
-				svol = new Long(volumen[i]).toString();
+				svol = "" + volumen[i];
 			}
 			
 			Label l = new Label(s);

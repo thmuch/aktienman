@@ -1,10 +1,11 @@
 /**
  @author Thomas Much
- @version 1999-03-28
+ @version 1999-06-15
 */
 
 import java.awt.*;
 import java.awt.event.*;
+
 
 
 
@@ -13,9 +14,10 @@ public final class AktieAendern extends AktienFrame {
 private TextField neuername,aktienWKN,kaufdatum,kaufkurs;
 private TextField stueckzahl,hochkurs,tiefkurs,gewinngrenze;
 private Choice plaetze,waehrung;
-private Checkbox boerseNurDiese,gewinnAbs,gewinnProz,watchOnly;
+private Checkbox boerseNurDiese,gewinnAbs,gewinnProz,watchOnly,dontUpdate;
 private CheckboxGroup gewinnGruppe;
 private Button buttonChange,buttonDelete;
+
 
 
 
@@ -23,6 +25,7 @@ public AktieAendern(int index, BenutzerAktie ba) {
 	super(AktienMan.AMFENSTERTITEL+"Aktiendaten \u00e4ndern",index,ba);
 	kaufkurs.requestFocus();
 }
+
 
 
 public void setupElements2() {
@@ -65,7 +68,10 @@ public void setupElements2() {
 	constrain(panelMitte,waehrung,1,3,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,10,2,0,0);
 
 	watchOnly = new Checkbox("nur beobachten",ba.nurBeobachten());
-	constrain(panelMitte,watchOnly,1,4,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,45,2,0,0);
+	constrain(panelMitte,watchOnly,1,4,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,35,2,0,0);
+	
+	dontUpdate = new Checkbox("nicht aktualisieren",ba.doNotUpdate());
+	constrain(panelMitte,dontUpdate,1,5,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,2,0,0);
 
 	constrain(panelRest,new Label("Kaufdatum"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	constrain(panelRest,new Label("Kaufkurs"),1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
@@ -167,6 +173,7 @@ public void setupElements2() {
 }
 
 
+
 public synchronized void executeOK() {
 	String s;
 	
@@ -177,8 +184,10 @@ public synchronized void executeOK() {
 	String wkn = aktienWKN.getText().trim();
 
 	Boersenplatz bp = AktienMan.boersenliste.getAt(plaetze.getSelectedIndex());
+
 	boolean nurdiese = boerseNurDiese.getState();
 	boolean watchonly = watchOnly.getState();
+	boolean dontupdate = dontUpdate.getState();
 	
 	ADate kdate = new ADate();
 	s = kaufdatum.getText().trim();
@@ -237,9 +246,11 @@ public synchronized void executeOK() {
 	boolean usegrenze = gewinnProz.getState();
 
 	ba.changeValues(name,wkn,bp,nurdiese,kdate,kkurs,anzaktien,khoch,ktief,ggrenze,
-					waehrung.getSelectedIndex(),usegrenze,watchonly);
+					waehrung.getSelectedIndex(),usegrenze,watchonly,dontupdate);
+
 	AktienMan.hauptdialog.listeUpdate(true,true,true,false);
 }
+
 
 
 public synchronized boolean canOK() {
@@ -435,6 +446,7 @@ public synchronized boolean canOK() {
 }
 
 
+
 private void doDelete() {
 	buttonDelete.setEnabled(false);
 	buttonChange.setEnabled(false);
@@ -443,6 +455,7 @@ private void doDelete() {
 
 	dispose();
 }
+
 
 
 public void closed() {

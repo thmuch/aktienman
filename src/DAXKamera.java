@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-15
+ @version 1999-06-14
 */
 
 import java.awt.*;
@@ -8,10 +8,13 @@ import java.awt.image.*;
 
 
 
-public final class DAXKamera extends AFrame implements ImageObserver {
+public final class DAXKamera extends ImageFrame implements ImageObserver {
 
 private static final int KAMERABREITE = 404;
 private static final int KAMERAHOEHE  = 308;
+
+private static final String EXT   = "jpg";
+private static final String FTYPE = "JPEG";
 
 public static final int S_LOADING =  0;
 public static final int S_ERROR   =  1;
@@ -20,22 +23,22 @@ public static final int S_OFFLINE =  2;
 private int status = S_LOADING;
 private DAXKameraLeser kameraLeser = null;
 
+private byte[] kameraDaten = null;
+
+
 
 
 public DAXKamera() {
-	super(AktienMan.AMFENSTERTITEL+"DAX-Kamera");
+	super(AktienMan.AMFENSTERTITEL+"DAX-Kamera","DAX-Kamera",EXT,FTYPE);
 }
 
-
-public void setupFrame() {
-	setResizable(true);
-}
 
 
 public void setupElements() {
 	setLayout(new BorderLayout());
 	add(BorderLayout.CENTER,new DAXCanvas(this));
 }
+
 
 
 public void setupSize() {
@@ -58,15 +61,17 @@ public void setupSize() {
 }
 
 
+
 public boolean canOK() {
 	return false;
 }
 
 
+
 public synchronized void showKamera() {
 	if (kameraLeser == null)
 	{
-		kameraLeser = new DAXKameraLeser();
+		kameraLeser = new DAXKameraLeser(this);
 
 		if (kameraLeser != null) kameraLeser.start();		
 	}
@@ -77,6 +82,7 @@ public synchronized void showKamera() {
 	
 	toFront();
 }
+
 
 
 public void closed() {
@@ -92,6 +98,7 @@ public void closed() {
 }
 
 
+
 public void savePos() {
 	Rectangle r = getBounds();
 
@@ -102,10 +109,12 @@ public void savePos() {
 }
 
 
+
 public synchronized void setStatus(int stat) {
 	status = stat;
 	neuZeichnen();
 }
+
 
 
 public synchronized int getStatus() {
@@ -113,9 +122,11 @@ public synchronized int getStatus() {
 }
 
 
+
 public void neuZeichnen() {
 	paintAll(getGraphics());
 }
+
 
 
 public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
@@ -123,8 +134,33 @@ public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, in
 	{
 		neuZeichnen();
 	}
+	
+	return true;
+}
 
-	return super.imageUpdate(img,infoflags,x,y,width,height);
+
+
+public synchronized void setKameraDaten(byte[] kameraDaten) {
+	this.kameraDaten = kameraDaten;
+}
+
+
+
+public synchronized byte[] getImageData() {
+	return kameraDaten;
+}
+
+
+
+public synchronized Image getImage() {
+	return AktienMan.daxImage;
+}
+
+
+
+public String getDefaultFilename() {
+
+	return "DAX-" + new ADate().toTimestamp(true) + "." + EXT;
 }
 
 }

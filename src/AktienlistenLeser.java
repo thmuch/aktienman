@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-05-23
+ @version 1999-06-19
 */
 
 import java.net.*;
@@ -11,21 +11,17 @@ import java.util.*;
 
 
 
+
 public final class AktienlistenLeser extends Thread {
 
-private static final int STATUS_WAIT4TABLE = 0;
-private static final int STATUS_WAIT4TR    = 1;
-private static final int STATUS_WAIT4TD    = 2;
-private static final int STATUS_WAIT4WKN   = 3;
-
-private String request,listenname,ignore;
-private int index;
+private String listenname,ignore;
+private int index,request;
 private AktienAktualisieren aadialog;
-private Aktienliste aktienliste;
 
 
 
-public AktienlistenLeser(String listenname, String request, String ignore,
+
+public AktienlistenLeser(String listenname, int request, String ignore,
 							AktienAktualisieren aadialog, int index) {
 	super();
 	this.listenname = listenname;
@@ -36,19 +32,24 @@ public AktienlistenLeser(String listenname, String request, String ignore,
 }
 
 
+
 public void run() {
+
 	BufferedReader in = null;
 
 	try
 	{
-		URL url = new URL(AktienMan.url.get(URLs.URL_POPUPLISTEN) + request);
+		Aktienliste aktienliste = new Aktienliste();
+
+		URL url = new URL(AktienMan.url.get(request));
 		
 		in = new BufferedReader(new InputStreamReader(url.openStream()));
 
 		String s, name = "";
-		int status = STATUS_WAIT4TABLE;
-		int trcount = 0;
-		boolean skip = false;
+
+		boolean skip = (ignore.length() > 0);
+		boolean readWKN = false;
+		boolean valid = false;
 		
 		while ((s = in.readLine()) != null)
 		{
@@ -56,122 +57,107 @@ public void run() {
 			
 			if (s.length() > 0)
 			{
-				if (status == STATUS_WAIT4TABLE)
+				if (readWKN)
 				{
-					if (s.indexOf("<TABLE") >= 0)
+					int von = s.indexOf(">", s.indexOf(">") + 1);
+					
+					if (von > 0)
 					{
-						status = STATUS_WAIT4TR;
-						trcount = 0;
+						int bis = s.indexOf("<", von + 1);
 						
-						aktienliste = new Aktienliste();
-					}
-				}
-				else if (s.indexOf("</TABLE>") >= 0)
-				{
-					aktienliste.updateChoice();
-					
-					switch (index)
-					{
-					case AktienAktualisieren.INDEX_DAX:
-						AktienMan.listeDAX = aktienliste;
-						break;
-					
-					case AktienAktualisieren.INDEX_MDAX:
-						AktienMan.listeMDAX = aktienliste;
-						break;
-					
-					case AktienAktualisieren.INDEX_NMARKT:
-						AktienMan.listeNMarkt = aktienliste;
-						break;
-					
-					case AktienAktualisieren.INDEX_EUROSTOXX:
-						AktienMan.listeEuroSTOXX = aktienliste;
-						break;
-					
-					case AktienAktualisieren.INDEX_AUSLAND:
-						AktienMan.listeAusland = aktienliste;
-						break;
-					}
+						String wknstr = s.substring(von+1,bis).trim();
 
-					aadialog.finishCounting(index);
-					
-					if (index == AktienAktualisieren.INDEX_DAX)
-					{
-						new AktienlistenLeser("MDAX",AktienMan.url.get(URLs.LISTE_DAX100),"DAX 100",aadialog,AktienAktualisieren.INDEX_MDAX).start();
-					}
-
-					break;
-				}
-				else
-				{
-					if (status == STATUS_WAIT4TR)
-					{
-						if (s.indexOf("<TR>") >= 0)
+						try
 						{
-							if (++trcount > 1)
-							{
-								status = STATUS_WAIT4TD;
-
-								skip = (ignore.length() > 0);
-							}
-						}
-					}
-					else if (status == STATUS_WAIT4TD)
-					{
-						if (s.indexOf("<TD") >= 0)
-						{
-							int i = s.indexOf(">",s.indexOf(">") + 1) + 1;
+							int wkn = Integer.parseInt(wknstr);
 							
-							name = s.substring(i,s.indexOf("<",i));
-							
-							if (skip)
+							if (index == AktienAktualisieren.INDEX_MDAX)
 							{
-								if (name.toUpperCase().indexOf(ignore) < 0)
+								if (AktienMan.listeDAX.isMember(wkn))
 								{
-									skip = false;
-								}
-								else
-								{
-									status = STATUS_WAIT4TR;
+									readWKN = false;
 									continue;
 								}
 							}
-
-							status = STATUS_WAIT4WKN;
+							
+							aktienliste.add(new Aktie(name,"",wkn));
+						
+							aadialog.incCount(index);
+							
+							valid = true;
 						}
+						catch (NumberFormatException e) {}
 					}
-					else if (status == STATUS_WAIT4WKN)
+
+					readWKN = false;
+				}
+				else
+				{
+					int i = s.indexOf("KA_Charts.htm?");
+					
+					if (i > 0)
 					{
-						if (s.indexOf("<TD") >= 0)
+						int von = s.indexOf(">", s.indexOf(">",i) + 1);
+
+						int bis = s.indexOf("<", von + 1);
+
+						name = s.substring(von+1,bis).trim();
+						
+						if (skip)
 						{
-							int i = s.indexOf(">",s.indexOf(">") + 1) + 1;
-							
-							String wknstr = s.substring(i,s.indexOf("<",i));
-							
-							try
+							if (name.toUpperCase().indexOf(ignore) < 0)
 							{
-								int wkn = Integer.parseInt(wknstr);
-								
-								if (index == AktienAktualisieren.INDEX_MDAX)
-								{
-									if (AktienMan.listeDAX.isMember(wkn))
-									{
-										status = STATUS_WAIT4TR;
-										continue;
-									}
-								}
-								
-								aktienliste.add(new Aktie(name,"",wkn));
-							
-								aadialog.incCount(index);
+								skip = false;
 							}
-							catch (NumberFormatException e) {}
-							
-							status = STATUS_WAIT4TR;
+							else
+							{
+								continue;
+							}
 						}
+						
+						readWKN = true;
 					}
 				}
 			}
+		}
+		
+		if (valid)
+		{
+			aktienliste.updateChoice();
+			
+			switch (index)
+			{
+			case AktienAktualisieren.INDEX_DAX:
+				AktienMan.listeDAX = aktienliste;
+				break;
+			
+			case AktienAktualisieren.INDEX_MDAX:
+				AktienMan.listeMDAX = aktienliste;
+				break;
+			
+			case AktienAktualisieren.INDEX_NMARKT:
+				AktienMan.listeNMarkt = aktienliste;
+				break;
+			
+			case AktienAktualisieren.INDEX_EUROSTOXX:
+				AktienMan.listeEuroSTOXX = aktienliste;
+				break;
+			
+			case AktienAktualisieren.INDEX_AUSLAND:
+				AktienMan.listeAusland = aktienliste;
+				break;
+			}
+
+			aadialog.finishCounting(index);
+			
+			if (index == AktienAktualisieren.INDEX_DAX)
+			{
+				new AktienlistenLeser("MDAX",URLs.URL_DAX100,"DAX 100",aadialog,AktienAktualisieren.INDEX_MDAX).start();
+			}
+		}
+		else
+		{
+			aadialog.setError(index);
 		}
 	}
 	catch (MalformedURLException e)

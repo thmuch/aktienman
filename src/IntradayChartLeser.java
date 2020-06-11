@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-05-23
+ @version 1999-06-19
 */
 
 import java.net.*;
@@ -33,7 +33,7 @@ public void run() {
 	
 	String wkn = ba.getWKNString();
 
-	chartviewer = new ChartViewer(null,"Intraday "+ba.getName(true),"",670,285,ChartViewer.TYPE_INTRADAY,true);
+	chartviewer = new IntradayChartViewer(wkn+"."+boerse,ba);
 	
 	try
 	{
@@ -54,7 +54,7 @@ public void run() {
 					int i2 = s.indexOf(">",s.indexOf(">",i)+1);
 					int i3 = s.indexOf("<",i2);
 					
-					new ChartLoader(chartviewer,AktienMan.url.get(URLs.URL_CHARTINTRADAY) + s.substring(i2+1,i3).trim() + "." + boerse + ".EUR.gif",true).start();
+					new ChartLoader(chartviewer,AktienMan.url.getExchangeIntradayChartURL(s.substring(i2+1,i3).trim(),boerse),true).start();
 					valid = true;
 					break;
 				}

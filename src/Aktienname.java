@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-03-21
+ @version 1999-06-19
 */
 
 
@@ -123,6 +123,12 @@ public static String getKurzName(String langname) {
 	if (i > 0) return getKurzName(n.substring(0,i));
 
 	i = s.indexOf(" EFFEKTEN ");
+	if (i > 0) return getKurzName(n.substring(0,i));
+
+	i = s.indexOf("SUEDW.GEN.-ZENTRALBK.");
+	if (i > 0) return getKurzName(n.substring(0,i) + n.substring(i+21));
+
+	i = s.indexOf(" PART.Z.");
 	if (i > 0) return getKurzName(n.substring(0,i));
 	
 	return n;

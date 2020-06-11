@@ -1,12 +1,13 @@
 /**
  @author Thomas Much
- @version 1999-03-28
+ @version 1999-06-19
 */
 
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import java.io.*;
+
 
 
 
@@ -68,10 +69,13 @@ private int watchwaehrung = Waehrungen.DEM;
 
 private int waehrung = Waehrungen.DEM; /* KaufwŠhrung */
 private int kurswaehrung = Waehrungen.DEM;
-private int spekulationsfrist = 6;
+private int spekulationsfrist = 12;
+
 private boolean nurdiese = false;
 private boolean usegrenze = true;
 private boolean watchonly = false;
+private boolean dontUpdate = false;
+
 
 
 
@@ -95,16 +99,18 @@ public BenutzerAktie(String name, String wkn, Boersenplatz platz, boolean nurdie
 
 	kursdatum = "";
 
-	spekulationsfrist = AktienMan.properties.getInt("Konfig.Spekulationsfrist");
+	spekulationsfrist = 12/*AktienMan.properties.getInt("Konfig.Spekulationsfrist")*/;
 	
 	setupValues();
 	setColors();
 }
 
 
+
 public synchronized void destroy() {
 	infoDialogClose();
 }
+
 
 
 private void setupValues() {
@@ -113,9 +119,11 @@ private void setupValues() {
 }
 
 
+
 private synchronized void gewinngrenzeBerechnen() {
 	gewinngrenze = (prozgrenze == 0L) ? 0L : (getKaufkurs()*(Waehrungen.PRECISION*100L+prozgrenze))/(Waehrungen.PRECISION*100L);
 }
+
 
 
 private synchronized void steuerfreiBerechnen() {
@@ -170,6 +178,7 @@ private synchronized void steuerfreiBerechnen() {
 }
 
 
+
 private synchronized void checkSpekulationsfrist(int neu) {
 	if (spekulationsfrist != neu)
 	{
@@ -180,6 +189,7 @@ private synchronized void checkSpekulationsfrist(int neu) {
 }
 
 
+
 private void setColors() {
 	farbeSteuerfrei = Color.yellow.darker().darker();
 	farbeSelected = Color.lightGray;
@@ -187,9 +197,11 @@ private void setColors() {
 }
 
 
+
 public synchronized String getProzentString() {
 	return (prozgrenze == 0L) ? "" : NumUtil.get00String(prozgrenze);
 }
+
 
 
 private String datum2String(String datum) {
@@ -200,9 +212,11 @@ private String datum2String(String datum) {
 }
 
 
+
 public synchronized String getKursdatumString() {
 	return datum2String(kursdatum);
 }
+
 
 
 public synchronized long getHochkurs() {
@@ -210,9 +224,11 @@ public synchronized long getHochkurs() {
 }
 
 
+
 public synchronized String getHochkursString() {
 	return (getHochkurs() == 0L) ? "" : NumUtil.get00String(getHochkurs());
 }
+
 
 
 public synchronized long getTiefkurs() {
@@ -220,9 +236,11 @@ public synchronized long getTiefkurs() {
 }
 
 
+
 public synchronized String getTiefkursString() {
 	return (getTiefkurs() == 0L) ? "" : NumUtil.get00String(getTiefkurs());
 }
+
 
 
 public synchronized ADate getKaufdatum() {
@@ -230,9 +248,11 @@ public synchronized ADate getKaufdatum() {
 }
 
 
+
 public synchronized String getWKNString() {
 	return wkn;
 }
+
 
 
 public synchronized boolean isBoerseFixed() {
@@ -240,9 +260,11 @@ public synchronized boolean isBoerseFixed() {
 }
 
 
+
 public synchronized boolean isFonds() {
 	return boersenplatz.isFondsOnly();
 }
+
 
 
 public synchronized boolean doUseGrenze() {
@@ -250,9 +272,17 @@ public synchronized boolean doUseGrenze() {
 }
 
 
+
 public synchronized boolean nurBeobachten() {
 	return watchonly;
 }
+
+
+
+public synchronized boolean doNotUpdate() {
+	return dontUpdate;
+}
+
 
 
 public synchronized String getVortageskursString() {
@@ -260,9 +290,11 @@ public synchronized String getVortageskursString() {
 }
 
 
+
 public synchronized String getEroeffnungskursString() {
 	return kurs2String(eroeffnungskurs,getKurswaehrung());
 }
+
 
 
 public synchronized String getHoechstkursString() {
@@ -270,14 +302,17 @@ public synchronized String getHoechstkursString() {
 }
 
 
+
 public synchronized String getTiefstkursString() {
 	return kurs2String(tiefstkurs,getKurswaehrung());
 }
 
 
+
 public synchronized String getHandelsvolumenString() {
-	return new Long(handelsvolumen).toString();
+	return "" + handelsvolumen;
 }
+
 
 
 public synchronized String getWatchStartString() {
@@ -292,9 +327,11 @@ public synchronized String getWatchStartString() {
 }
 
 
+
 public synchronized String getWatchHoechstString() {
 	return kurs2String(watchhoechst,watchwaehrung);
 }
+
 
 
 public synchronized String getWatchHoechstDatumString() {
@@ -302,14 +339,17 @@ public synchronized String getWatchHoechstDatumString() {
 }
 
 
+
 public synchronized String getWatchTiefstString() {
 	return kurs2String(watchtiefst,watchwaehrung);
 }
 
 
+
 public synchronized String getWatchTiefstDatumString() {
 	return datum2String(watchtdate);
 }
+
 
 
 public synchronized int getWKN() {
@@ -325,23 +365,42 @@ public synchronized int getWKN() {
 }
 
 
+
 public synchronized String getBoerse() {
+
 	return boersenplatz.getKurz();
 }
 
 
-public synchronized String getRequest(String boerse) {
+
+public synchronized String getBoerse(String boerse) {
+
 	if ((isBoerseFixed()) || (boerse == null))
 	{
-		boerse = getBoerse();
+		return getBoerse();
 	}
 	else if (boerse.length() == 0)
 	{
-		boerse = getBoerse();
+		return getBoerse();
 	}
-
-	return getWKNString()+"."+boerse;
+	
+	return boerse;
 }
+
+
+
+public synchronized String getRequest() {
+
+	return getRequest("");
+}
+
+
+
+public synchronized String getRequest(String boerse) {
+
+	return getWKNString() + "." + getBoerse(boerse);
+}
+
 
 
 public synchronized String getName(boolean kurz) {
@@ -356,9 +415,11 @@ public synchronized String getName(boolean kurz) {
 }
 
 
+
 public synchronized int getKaufwaehrung() {
 	return waehrung;
 }
+
 
 
 public synchronized int getKurswaehrung() {
@@ -366,14 +427,17 @@ public synchronized int getKurswaehrung() {
 }
 
 
+
 public synchronized long getStueckzahl() {
 	return stueckzahl;
 }
 
 
+
 public synchronized String getStueckzahlString() {
-	return new Long(getStueckzahl()).toString();
+	return "" + getStueckzahl();
 }
+
 
 
 public synchronized void decStueckzahl(long delta) {
@@ -386,9 +450,11 @@ public synchronized void decStueckzahl(long delta) {
 }
 
 
+
 public synchronized long getKurs() {
 	return kurs;
 }
+
 
 
 public synchronized String getRawVerkaufsKursString() {
@@ -401,6 +467,7 @@ public synchronized String getRawVerkaufsKursString() {
 		return NumUtil.get00String(Waehrungen.exchange(getKurs(),getKurswaehrung(),Waehrungen.getVerkaufsWaehrung()));
 	}
 }
+
 
 
 private String kurs2String(long k, int w) {
@@ -423,9 +490,11 @@ private String kurs2String(long k, int w) {
 }
 
 
+
 public synchronized String getKursString() {
 	return kurs2String(getKurs(),getKurswaehrung());
 }
+
 
 
 public synchronized long getWert() {
@@ -447,9 +516,11 @@ public synchronized long getWert() {
 }
 
 
+
 public synchronized long getKaufkurs() {
 	return kaufkurs;
 }
+
 
 
 public synchronized String getKaufkursString() {
@@ -457,9 +528,11 @@ public synchronized String getKaufkursString() {
 }
 
 
+
 public synchronized boolean isEqual(String wkn, String platz, boolean compPlatz) {
 	return isEqual(wkn,"",platz,compPlatz);
 }
+
 
 
 public synchronized boolean isEqual(String wkn, String kurz, String platz, boolean compPlatz) {
@@ -472,6 +545,7 @@ public synchronized boolean isEqual(String wkn, String kurz, String platz, boole
 		return isEqual(wkn,kurz);
 	}
 }
+
 
 
 private synchronized boolean isEqual(String wkn, String kurz, String platz) {
@@ -490,6 +564,7 @@ private synchronized boolean isEqual(String wkn, String kurz, String platz) {
 }
 
 
+
 private synchronized boolean isEqual(String wkn, String kurz) {
 	boolean valid;
 	
@@ -506,9 +581,11 @@ private synchronized boolean isEqual(String wkn, String kurz) {
 }
 
 
+
 public synchronized boolean istSteuerfrei() {
 	return heute.after(steuerfrei);
 }
+
 
 
 public synchronized void setValues(long kurs) {
@@ -516,64 +593,69 @@ public synchronized void setValues(long kurs) {
 }
 
 
+
 public synchronized void setValues(String name, long kurs) {
 	setValues(name,kurs,"",VALUE_NA,VALUE_NA,VALUE_NA,VALUE_NA,0L,getKurswaehrung());
 }
+
 
 
 public synchronized void setValues(String name, long kurs, String kursdatum,
 									long vortageskurs, long eroeffnungskurs,
 									long hoechstkurs, long tiefstkurs,
 									long handelsvolumen, int kurswaehrung) {
-	if (name.length() > 0)
+	if (!doNotUpdate())
 	{
-		if ((this.name.length() == 0) || AktienMan.properties.getBoolean("Konfig.Aktiennamen"))
+		if (name.length() > 0)
 		{
-			this.name = name;
+			if ((this.name.length() == 0) || AktienMan.properties.getBoolean("Konfig.Aktiennamen"))
+			{
+				this.name = name;
+			}
 		}
-	}
 
-	this.kurswaehrung = kurswaehrung;
-	this.kurs = kurs;
-	this.kursdatum = kursdatum;
-	this.vortageskurs = vortageskurs;
-	this.eroeffnungskurs = eroeffnungskurs;
-	this.hoechstkurs = hoechstkurs;
-	this.tiefstkurs = tiefstkurs;
-	this.handelsvolumen = handelsvolumen;
-	
-	if ((kaufkurs == VALUE_MISSING) && nurBeobachten() && (kurs > VALUE_MISSING))
-	{
-		kaufkurs = kurs;
-		kaufdatum = new ADate();
+		this.kurswaehrung = kurswaehrung;
+		this.kurs = kurs;
+		this.kursdatum = kursdatum;
+		this.vortageskurs = vortageskurs;
+		this.eroeffnungskurs = eroeffnungskurs;
+		this.hoechstkurs = hoechstkurs;
+		this.tiefstkurs = tiefstkurs;
+		this.handelsvolumen = handelsvolumen;
 		
-		waehrung = kurswaehrung;
-		
-		setupValues();
-	}
+		if ((kaufkurs == VALUE_MISSING) && nurBeobachten() && (kurs > VALUE_MISSING))
+		{
+			kaufkurs = kurs;
+			kaufdatum = new ADate();
+			
+			waehrung = kurswaehrung;
+			
+			setupValues();
+		}
 
-	if ((kurs > VALUE_MISSING) && (watchstart == null))
-	{
-		watchstart = new ADate();
-	}
-	
-	if (kurswaehrung != watchwaehrung)
-	{
-		watchhoechst = Waehrungen.exchange(watchhoechst,watchwaehrung,kurswaehrung);
-		watchtiefst = Waehrungen.exchange(watchtiefst,watchwaehrung,kurswaehrung);
-		watchwaehrung = kurswaehrung;
-	}
-
-	if ((hoechstkurs > VALUE_MISSING) && ((hoechstkurs > watchhoechst) || (watchhoechst == VALUE_MISSING)))
-	{
-		watchhoechst = hoechstkurs;
-		watchhdate = kursdatum;
-	}
+		if ((kurs > VALUE_MISSING) && (watchstart == null))
+		{
+			watchstart = new ADate();
+		}
 		
-	if ((tiefstkurs > VALUE_MISSING) && ((tiefstkurs < watchtiefst) || (watchtiefst == VALUE_MISSING)))
-	{
-		watchtiefst = tiefstkurs;
-		watchtdate = kursdatum;
+		if (kurswaehrung != watchwaehrung)
+		{
+			watchhoechst = Waehrungen.exchange(watchhoechst,watchwaehrung,kurswaehrung);
+			watchtiefst = Waehrungen.exchange(watchtiefst,watchwaehrung,kurswaehrung);
+			watchwaehrung = kurswaehrung;
+		}
+
+		if ((hoechstkurs > VALUE_MISSING) && ((hoechstkurs > watchhoechst) || (watchhoechst == VALUE_MISSING)))
+		{
+			watchhoechst = hoechstkurs;
+			watchhdate = kursdatum;
+		}
+			
+		if ((tiefstkurs > VALUE_MISSING) && ((tiefstkurs < watchtiefst) || (watchtiefst == VALUE_MISSING)))
+		{
+			watchtiefst = tiefstkurs;
+			watchtdate = kursdatum;
+		}
 	}
 	
 	clearStatusRequesting();
@@ -581,10 +663,12 @@ public synchronized void setValues(String name, long kurs, String kursdatum,
 }
 
 
+
 public synchronized void changeValues(String newName, String newWKN, Boersenplatz newBp,
 								boolean newNurDiese, ADate newDate, long newKaufkurs,
 								long newAnz, long newHoch, long newTief, long newGrenze,
-								int neueWaehrung, boolean newUseGrenze, boolean newWatchonly) {
+								int neueWaehrung, boolean newUseGrenze, boolean newWatchonly,
+								boolean newDontUpdate) {
 
 	boolean reset = ((!newWKN.equalsIgnoreCase(getWKNString())) || (!newBp.getKurz().equalsIgnoreCase(getBoerse())));
 	
@@ -600,6 +684,7 @@ public synchronized void changeValues(String newName, String newWKN, Boersenplat
 	prozgrenze = newGrenze;
 	usegrenze = newUseGrenze;
 	watchonly = newWatchonly;
+	dontUpdate = newDontUpdate;
 	waehrung = neueWaehrung;
 
 	setupValues();
@@ -628,14 +713,17 @@ public synchronized void setStatusErrorAndRepaint() {
 }
 
 
+
 public synchronized void clearStatusRequesting() {
 	farbeName = Color.black;
 }
 
 
+
 public synchronized boolean isSelected() {
 	return selected;
 }
+
 
 
 private synchronized void setColorAndRepaint(Color c) {
@@ -667,6 +755,7 @@ private synchronized void setColorAndRepaint(Color c) {
 }
 
 
+
 public synchronized void Select() {
 	if (!isSelected())
 	{
@@ -676,6 +765,7 @@ public synchronized void Select() {
 }
 
 
+
 public synchronized void Unselect() {
 	if (isSelected())
 	{
@@ -683,6 +773,7 @@ public synchronized void Unselect() {
 		setColorAndRepaint(farbeHintergrund);
 	}
 }
+
 
 
 public synchronized void Toggle() {
@@ -697,10 +788,12 @@ public synchronized void Toggle() {
 }
 
 
+
 private void readObject(ObjectInputStream in) throws IOException,ClassNotFoundException {
 	in.defaultReadObject();
 	this.setColors();
 }
+
 
 
 public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean nameSteuerfrei, boolean calcJahr) {
@@ -829,7 +922,7 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 				if (kabs > 0L) kabs += 5L;
 				else if (kabs < 0L) kabs -= 5L;
 				kabs /= 10L;
-				sk = new Double((double)kabs/10.0).toString();
+				sk = "" + ((double)kabs/10.0);
 
 				if (pabs > 0L) sk = "+" + sk;
 			}
@@ -857,7 +950,7 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 				if (pabs > 0L) pabs += 5L;
 				else if (pabs < 0L) pabs -= 5L;
 				pabs /= 10L;
-				sk = new Double((double)pabs/10.0).toString();
+				sk = "" + ((double)pabs/10.0);
 
 				if (pabs > 0L) sk = "+" + sk;
 			}
@@ -892,6 +985,7 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 	}
 	catch (IOException e) {}
 }
+
 
 
 public synchronized static void saveHeaderHTML(BufferedWriter out, String aktualisierung) {
@@ -979,6 +1073,7 @@ public synchronized static void saveHeaderHTML(BufferedWriter out, String aktual
 }
 
 
+
 public synchronized static void saveFooterHTML(BufferedWriter out) {
 	try
 	{
@@ -1027,7 +1122,7 @@ public synchronized static void saveFooterHTML(BufferedWriter out) {
 			if (kdif > 0L) kdif += 5L;
 			else if (kdif < 0L) kdif -= 5L;
 			kdif /= 10L;
-			String percdif = new Double((double)kdif/10.0).toString();
+			String percdif = "" + ((double)kdif/10.0);
 			if (kdif > 0L) percdif = "+" + percdif;
 			out.write(HTMLUtil.toNbspHTML(percdif));
 
@@ -1051,6 +1146,7 @@ public synchronized static void saveFooterHTML(BufferedWriter out) {
 }
 
 
+
 public synchronized static void addSummen(Panel pTxt, String akt, String dif, String percdif, boolean isRed) {
 	AFrame.constrain(pTxt,new Label("Summe aktuell:"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	AFrame.constrain(pTxt,new Label(akt),1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,2,0,0);
@@ -1065,6 +1161,7 @@ public synchronized static void addSummen(Panel pTxt, String akt, String dif, St
 	if (isRed) l.setForeground(Color.red);
 	AFrame.constrain(pTxt,l,3,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,2,0,0);
 }
+
 
 
 public synchronized static void addFooterToPanel(Panel p, int y, Panel pTxt) {
@@ -1098,7 +1195,7 @@ public synchronized static void addFooterToPanel(Panel p, int y, Panel pTxt) {
 		if (kdif > 0L) kdif += 5L;
 		else if (kdif < 0L) kdif -= 5L;
 		kdif /= 10L;
-		percdif = new Double((double)kdif/10.0).toString();
+		percdif = "" + ((double)kdif/10.0);
 		if (kdif > 0L) percdif = "+" + percdif;
 		
 		l = new Label("  " + percdif,Label.RIGHT);
@@ -1117,6 +1214,7 @@ public synchronized static void addFooterToPanel(Panel p, int y, Panel pTxt) {
 }
 
 
+
 public synchronized static void setLastUpdateAndRepaint(String aktualisierung) {
 	if (lupdate != null)
 	{
@@ -1124,6 +1222,7 @@ public synchronized static void setLastUpdateAndRepaint(String aktualisierung) {
 		lupdate.repaint();
 	}
 }
+
 
 
 public synchronized static int addHeadingsToPanel(Panel p, String aktualisierung) {
@@ -1146,15 +1245,17 @@ public synchronized static int addHeadingsToPanel(Panel p, String aktualisierung
 	kaufsumme = 0L;
 	aktsumme = 0L;
 	farbeHintergrund = p.getBackground();
-	konfigspekfrist = AktienMan.properties.getInt("Konfig.Spekulationsfrist");
+	konfigspekfrist = 12/*AktienMan.properties.getInt("Konfig.Spekulationsfrist")*/;
 
 	return HEADROWS;
 }
 
 
+
 private synchronized String getLaufzeitTageString(long tageLaufzeit) {
-	return new Long(tageLaufzeit).toString() + ((tageLaufzeit == 1L) ? " Tag" : " Tage");
+	return "" + tageLaufzeit + ((tageLaufzeit == 1L) ? " Tag" : " Tage");
 }
+
 
 
 private synchronized String getLaufzeitMonateString() {
@@ -1202,7 +1303,7 @@ private synchronized String getLaufzeitMonateString() {
 		tage += (ADate.getDays(kaufjahr,kaufmonat) - kauftag) + tag;
 	}
 	
-	String tstr = (new Integer(tage).toString())+((tage==1)?" Tag":" Tage");
+	String tstr = "" + tage + ((tage==1)?" Tag":" Tage");
 	
 	if (monate == 0)
 	{
@@ -1210,9 +1311,10 @@ private synchronized String getLaufzeitMonateString() {
 	}
 	else
 	{
-		return (new Integer(monate).toString())+((monate==1)?" Monat ":" Monate ")+tstr;
+		return "" + monate + ((monate==1)?" Monat ":" Monate ") + tstr;
 	}
 }
+
 
 
 public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean nameSteuerfrei, boolean calcJahr) {
@@ -1364,7 +1466,7 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 			if (kabs > 0L) kabs += 5L;
 			else if (kabs < 0L) kabs -= 5L;
 			kabs /= 10L;
-			sk = new Double((double)kabs/10.0).toString();
+			sk = "" + ((double)kabs/10.0);
 
 			if (pabs > 0L) sk = "+" + sk;
 		}
@@ -1400,7 +1502,7 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 			if (pabs > 0L) pabs += 5L;
 			else if (pabs < 0L) pabs -= 5L;
 			pabs /= 10L;
-			sk = new Double((double)pabs/10.0).toString();
+			sk = "" + ((double)pabs/10.0);
 
 			if (pabs > 0L) sk = "+" + sk;
 		}
@@ -1452,6 +1554,7 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 }
 
 
+
 public synchronized void infoDialogOpen() {
 	if (infodialog == null)
 	{
@@ -1472,12 +1575,14 @@ public synchronized void infoDialogOpen() {
 }
 
 
+
 public synchronized void infoDialogSetValues(boolean draw) {
 	if (infodialog != null)
 	{
 		infodialog.setValues(draw);
 	}
 }
+
 
 
 public synchronized void infoDialogClose() {
@@ -1487,6 +1592,7 @@ public synchronized void infoDialogClose() {
 		infodialog = null;
 	}
 }
+
 
 
 public synchronized void infoDialogClosed() {

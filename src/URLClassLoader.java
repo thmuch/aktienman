@@ -1,11 +1,9 @@
 /**
  @author Thomas Much
- @version 1999-05-24
+ @version 1999-05-25
 */
 
 import java.util.*;
-import java.io.*;
-import java.net.*;
 
 
 
@@ -60,40 +58,8 @@ private byte[] loadClassData(String name) {
 	{
 		return null;
 	}
-
-	DataInputStream in = null;
-
-	try
-	{
-		URL url = new URL(host + name + ".class");
-
-		URLConnection curl = url.openConnection();
-			
-		byte[] daten = new byte[curl.getContentLength()];
-			
-		in = new DataInputStream(curl.getInputStream());
-
-		in.readFully(daten);
-		
-		return daten;
-	}
-	catch (Exception e)
-	{
-		return null;
-	}
-	finally
-	{
-		if (in != null)
-		{
-			try
-			{
-				in.close();
-			}
-			catch (IOException e) {}
-		
-			in = null;
-		}
-	}
+	
+	return NetUtil.loadRawURL(host + name + ".class");
 }
 
 }

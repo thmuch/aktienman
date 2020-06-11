@@ -1,11 +1,12 @@
 /**
  @author Thomas Much
- @version 1999-01-02
+ @version 1999-06-18
 */
 
 import java.awt.*;
 import java.util.*;
 import java.io.*;
+
 
 
 
@@ -17,6 +18,7 @@ private Choice choice;
 
 
 
+
 public Aktienliste() {
 	super(60);
 	setupList();
@@ -24,7 +26,9 @@ public Aktienliste() {
 }
 
 
+
 public synchronized void setupList() {}
+
 
 
 public synchronized void add(Listeneintrag eintrag) {
@@ -32,9 +36,11 @@ public synchronized void add(Listeneintrag eintrag) {
 }
 
 
+
 public synchronized Aktie getAktie(int index) {
 	return (Aktie)elementAt(index);
 }
+
 
 
 public synchronized boolean isMember(int wkn) {
@@ -47,6 +53,7 @@ public synchronized boolean isMember(int wkn) {
 }
 
 
+
 public synchronized Choice getChoice(boolean immerNeu) {
 	if (immerNeu)
 	{
@@ -55,6 +62,7 @@ public synchronized Choice getChoice(boolean immerNeu) {
 	
 	return choice;
 }
+
 
 
 public synchronized void updateChoice() {

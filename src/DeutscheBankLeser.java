@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-05-23
+ @version 1999-06-19
 */
 
 import java.io.*;
@@ -39,7 +39,12 @@ public void run() {
 
 	try
 	{
-		URL url = new URL(AktienMan.url.get(URLs.URL_KURSEDEUBA) + request);
+		int sp = request.indexOf(".");
+
+		String spwkn    = request.substring(0,sp);
+		String spboerse = request.substring(sp+1);
+
+		URL url = new URL(AktienMan.url.getDeubaKursURL(spwkn,spboerse));
 		
 		in = new BufferedReader(new InputStreamReader(url.openStream()));
 		

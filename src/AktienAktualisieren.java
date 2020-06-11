@@ -1,12 +1,13 @@
 /**
  @author Thomas Much
- @version 1999-05-23
+ @version 1999-06-19
 */
 
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.zip.*;
+
 
 
 
@@ -22,6 +23,8 @@ private static final int STATUS_START    =  0;
 private static final int STATUS_FINISHED = -1;
 private static final int STATUS_ERROR    = -2;
 
+private static final int UPDATE = 10;
+
 private String[] titel = {"DAX","MDAX","Neuer Markt","EuroSTOXX50","Ausland"};
 private int[] count;
 private Panel panelListe;
@@ -29,6 +32,7 @@ private Button buttonOK;
 private int buttonCount;
 
 private boolean doSave = false;
+
 
 
 
@@ -45,12 +49,15 @@ public AktienAktualisieren() {
 }
 
 
+
 public void setupElements() {
 	setLayout(gridbag);
 }
 
 
+
 public void display() {}
+
 
 
 public synchronized void setupElements2() {
@@ -81,16 +88,18 @@ public synchronized void setupElements2() {
 }
 
 
+
 private void startThreads() {
 	buttonCount = 5;
 	
 	AktienMan.checkURLs();
 	
-	new AktienlistenLeser("DAX",AktienMan.url.get(URLs.LISTE_DAX30),"DAX",this,INDEX_DAX).start();
-	new AktienlistenLeser("Neuer Markt",AktienMan.url.get(URLs.LISTE_NMARKT),"NEUER MARKT",this,INDEX_NMARKT).start();
-	new AktienlistenLeser("EuroSTOXX50",AktienMan.url.get(URLs.LISTE_EURO50),"STOXX",this,INDEX_EUROSTOXX).start();
-	new AktienlistenLeser("Ausland",AktienMan.url.get(URLs.LISTE_AUSLAND),"",this,INDEX_AUSLAND).start();
+	new AktienlistenLeser("DAX",URLs.URL_DAX30,"DAX",this,INDEX_DAX).start();
+	new AktienlistenLeser("Neuer Markt",URLs.URL_NMARKT,"NEUER MARKT",this,INDEX_NMARKT).start();
+	new AktienlistenLeser("EuroSTOXX50",URLs.URL_EURO50,"STOXX",this,INDEX_EUROSTOXX).start();
+	new AktienlistenLeser("Ausland",URLs.URL_AUSLAND,"",this,INDEX_AUSLAND).start();
 }
+
 
 
 private synchronized void fillListenPanel(boolean draw) {
@@ -104,7 +113,7 @@ private synchronized void fillListenPanel(boolean draw) {
 		
 		if (count[i] >= STATUS_START)
 		{
-			s = new Integer(count[i]).toString();
+			s = "" + count[i];
 		}
 		else if (count[i] == STATUS_FINISHED)
 		{
@@ -122,10 +131,12 @@ private synchronized void fillListenPanel(boolean draw) {
 }
 
 
+
 public synchronized void incCount(int index) {
 	count[index]++;
-	if ((count[index] % 20)== 0) fillListenPanel(true);
+	if ((count[index] % UPDATE) == 0) fillListenPanel(true);
 }
+
 
 
 public synchronized void finishCounting(int index) {
@@ -139,6 +150,7 @@ public synchronized void finishCounting(int index) {
 		buttonOK.setEnabled(true);
 	}
 }
+
 
 
 public synchronized void setError(int index) {
@@ -160,6 +172,7 @@ public synchronized void setError(int index) {
 		setError(INDEX_MDAX);
 	}
 }
+
 
 
 private synchronized void savePopups() {
@@ -197,6 +210,7 @@ private synchronized void savePopups() {
 }
 
 
+
 public synchronized static void loadPopups() {
 	ObjectInputStream in = null;
 
@@ -211,7 +225,6 @@ public synchronized static void loadPopups() {
 		catch (IOException e)
 		{
 			fis = ClassLoader.getSystemResourceAsStream(AktienMan.AMNAME + FileUtil.EXT_POPUP);
-//			fis = new FileInputStream(FileUtil.findLocalFile(AktienMan.AMNAME + FileUtil.EXT_POPUP));
 		}
 		
 		GZIPInputStream gzis = new GZIPInputStream(fis);

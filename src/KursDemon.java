@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-01-15
+ @version 1999-06-13
 */
 
 
@@ -104,7 +104,7 @@ public synchronized static long getTimeoutMillis() {
 
 
 public synchronized static String getTimeoutMinutenString() {
-	return new Integer((int)(getTimeoutMillis() / 60000L)).toString();
+	return "" + ((int)(getTimeoutMillis() / 60000L));
 }
 
 

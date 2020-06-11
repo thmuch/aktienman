@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-02-08
+ @version 1999-06-15
 */
 
 import java.awt.*;
@@ -170,6 +170,7 @@ private synchronized static void setIndex(int i, boolean doSave, boolean doLoad)
 			
 			if (doLoad)
 			{
+				hauptdialog.resetProgress();
 				hauptdialog.loadPortfolio(doSave);
 			}
 		}

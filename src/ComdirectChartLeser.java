@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-05-23
+ @version 1999-06-21
 */
 
 import java.net.*;
@@ -10,17 +10,23 @@ import java.io.*;
 
 public final class ComdirectChartLeser extends Thread {
 
-private String request;
-private String monate;
-private ChartViewer chartviewer;
+private String wkn,boerse;
+private int nextID,type;
+private boolean isFonds;
+private ComdirectChartViewer chartviewer;
 
 
 
-public ComdirectChartLeser(String request, String monate) {
+
+public ComdirectChartLeser(String wkn, String boerse, boolean isFonds, int type, int nextID) {
 	super();
-	this.request = request;
-	this.monate = monate;
+	this.wkn = wkn;
+	this.boerse = boerse;
+	this.type = type;
+	this.nextID = nextID;
+	this.isFonds = isFonds;
 }
+
 
 
 public void run() {
@@ -29,35 +35,43 @@ public void run() {
 	
 	AktienMan.checkURLs();
 
-	chartviewer = new ChartViewer(null,"Chart "+request,monate,400,330,ChartViewer.TYPE_COMDIRECT,false);
+	chartviewer = new ComdirectChartViewer(wkn+"."+boerse,isFonds,type,nextID);
 	
 	try
 	{
-		URL url = new URL(AktienMan.url.get(URLs.URL_KURSECOMDIRECT) + request);
+		URL url = new URL(AktienMan.url.getComdirectKursURL(wkn,boerse));
 		
 		in = new BufferedReader(new InputStreamReader(url.openStream()));
 
 		String s;
 		
+		String str_charts    = AktienMan.url.getString(URLs.STR_CD_CHARTS);
+		String str_charthref = AktienMan.url.getString(URLs.STR_CD_CHARTHREF);
+		
 		while ((s = in.readLine()) != null)
 		{
-			int i = s.indexOf(".html?");
-			/**/
-//	<TD><FONT SIZE="2"><A HREF="chart6.html?sb=1&show=DBK.STU">DEUTSCHE BANK AG AKTIEN O.N.</A></FONT></TD>
-			
-			if (i > 0)
+			if (s.indexOf(str_charts) > 0)
 			{
-				int i2 = s.indexOf("\"",i);
-
-				String s1 = AktienMan.url.get(URLs.URL_CHARTCOMDIRECT);
-				String s2 = s.substring(i,i2);
+				int i = s.indexOf(str_charthref);
 				
-				chartviewer.setComdirectStrings(s1,s2);
+				if (i > 0)
+				{
+					int i2 = s.indexOf("\"", i + str_charthref.length());
+					
+					if (i2 > i)
+					{
+						String rel = s.substring(i + str_charthref.length(), i2);
+						
+						chartviewer.setComdirectRelURL(rel);
+						
+						int charttype = ((isFonds) || (type == ChartViewer.TYPE_INTRA)) ? URLs.CHART_LINIE : URLs.CHART_STANDARD;
+						
+						new ComdirectChartLoader(chartviewer,AktienMan.url.getComdirectChartURL(rel,chartviewer.getTypeComdirectString(type),charttype),type).start();
 
-				new ComdirectChartLoader(chartviewer,s1+monate+s2).start();
-
-				valid = true;
-				break;
+						valid = true;
+						break;
+					}
+				}
 			}
 		}
 	}

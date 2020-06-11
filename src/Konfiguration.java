@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-03-28
+ @version 1999-06-14
 */
 
 import java.awt.*;
@@ -8,18 +8,21 @@ import java.awt.event.*;
 
 
 
+
 public final class Konfiguration extends AFrame {
 
-private Choice plaetze,waehrung,bank,quelle;
+private Choice plaetze,waehrung,bank,quelle,charts;
 private Checkbox cbAktualisieren,cbKamera,cbAktiennamen,cbKuerzen,cbSteuerfrei,cbTimeout,cbJahr;
-private Checkbox rb6Monate,rb12Monate;
+//private Checkbox rb6Monate,rb12Monate;
 private TextField tfStdGewinn,tfStdGebuehren,tfMinuten;
+
 
 
 
 public Konfiguration() {
 	super(AktienMan.AMFENSTERTITEL+"Voreinstellungen");
 }
+
 
 
 public void setupElements() {
@@ -52,13 +55,14 @@ public void setupElements() {
 	constrain(panelOben,timeoutPanel,0,2,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
 	
 	Panel quellePanel = new Panel(gridbag);
+
 	quelle = KursQuellen.getChoice();
 	quelle.select(KursQuellen.getKursQuelleIndex());
 	constrain(quellePanel,quelle,0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	constrain(quellePanel,new Label("als Quelle f\u00fcr die Online-Kursdaten verwenden"),1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 	
-	Choice charts = new Choice(); /**/
-	charts.add("Comdirect"); /**/
+	charts = ChartQuellen.getChoice();
+	charts.select(ChartQuellen.getChartQuelleIndex());
 	constrain(quellePanel,charts,0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	constrain(quellePanel,new Label("als Quelle f\u00fcr die Online-Charts verwenden"),1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 	
@@ -67,7 +71,7 @@ public void setupElements() {
 	constrain(panelOben,cbAktiennamen,0,4,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
 	constrain(panelOben,cbKuerzen,0,5,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 
-	Panel spekuPanel = new Panel(gridbag);
+/*	Panel spekuPanel = new Panel(gridbag);
 	CheckboxGroup spekuGroup = new CheckboxGroup();
 
 	rb6Monate = new Checkbox("6 Monate",false,spekuGroup);
@@ -84,11 +88,11 @@ public void setupElements() {
 	constrain(spekuPanel,new Label("Spekulationsfrist:"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	constrain(spekuPanel,rb6Monate,1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,0,0);
 	constrain(spekuPanel,rb12Monate,2,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
-	constrain(panelOben,spekuPanel,0,6,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
+	constrain(panelOben,spekuPanel,0,6,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0); */
 
-	constrain(panelOben,cbSteuerfrei,0,7,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(panelOben,cbSteuerfrei,0,6,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
 
-	constrain(panelOben,cbJahr,0,8,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(panelOben,cbJahr,0,7,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	
 	constrain(panelStandard,new Label("Vorgaben f\u00fcr neu zu kaufende Aktien:"),0,0,4,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 
@@ -143,6 +147,7 @@ public void setupElements() {
 }
 
 
+
 public boolean canOK() {
 	String s = tfMinuten.getText().trim();
 
@@ -167,6 +172,7 @@ public boolean canOK() {
 }
 
 
+
 public void executeOK() {
 	AktienMan.properties.setBoolean("Konfig.Aktualisieren",cbAktualisieren.getState());
 	AktienMan.properties.setBoolean("Konfig.Kamera",cbKamera.getState());
@@ -179,9 +185,10 @@ public void executeOK() {
 	AktienMan.properties.setInt("Konfig.StdBoerse",plaetze.getSelectedIndex());
 	AktienMan.properties.setInt("Konfig.StdWaehrung",waehrung.getSelectedIndex());
 	AktienMan.properties.setInt("Konfig.StdBank",bank.getSelectedIndex());
-	AktienMan.properties.setInt("Konfig.Spekulationsfrist",(rb12Monate.getState()) ? 12 : 6);
+//	AktienMan.properties.setInt("Konfig.Spekulationsfrist",(rb12Monate.getState()) ? 12 : 6);
 	
 	KursQuellen.setKursQuelleIndex(quelle.getSelectedIndex());
+	ChartQuellen.setChartQuelleIndex(charts.getSelectedIndex());
 	
 	boolean timeoutAktiv = cbTimeout.getState();
 	AktienMan.properties.setBoolean("Konfig.KursTimeout",timeoutAktiv);
@@ -199,6 +206,7 @@ public void executeOK() {
 	KursDemon.deleteKursDemon();
 	if (timeoutAktiv) KursDemon.createKursDemon();
 }
+
 
 
 public void closed() {

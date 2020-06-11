@@ -1,48 +1,66 @@
 /**
  @author Thomas Much
- @version 1999-05-07
+ @version 1999-06-21
 */
 
 import java.awt.*;
-import java.awt.event.*;
 import java.awt.image.*;
+import java.awt.event.*;
 
 
 
-public final class ChartViewer extends AFrame implements ImageObserver,MouseListener {
 
-private static final int TYPE_UNKNOWN   = 0;
-public  static final int TYPE_COMDIRECT = 1;
-public  static final int TYPE_INTRADAY  = 2;
+public abstract class ChartViewer extends ImageFrame implements ImageObserver,MouseListener {
+
+public static final int TYPE_INTRA = 0;
+public static final int TYPE_3     = 1;
+public static final int TYPE_6     = 2;
+public static final int TYPE_12    = 3;
+public static final int TYPE_24    = 4;
+public static final int TYPE_36    = 5;
+
+protected static final int TYPE_NONE  = -1;
+protected static final int TYPE_COUNT =  6;
 
 private static final int STATUS_ERROR    = -1;
 private static final int STATUS_EMPTY    =  0;
 private static final int STATUS_LOADING  =  1;
 private static final int STATUS_FINISHED =  2;
 
-private Image[] comdirectCharts = new Image[3];
+protected static final int WINFIX = 20;
+
 private Image chartImage = null;
+
 private ChartLoader chartloader = null;
+
+private boolean fondsonly;
+
 private int initWidth;
 private int initHeight;
-private String comstr1,comstr2,aktMonate = "";
+private int nextID;
+private int type;
+
+private String wknboerse = "";
+
 private int status = STATUS_EMPTY;
-private int type = TYPE_UNKNOWN;
 
 
 
-public ChartViewer(Image chartImage, String request, String aktMonate,
-								int initWidth, int initHeight, int type, boolean canScale) {
-	super(AktienMan.AMFENSTERTITEL+request);
+
+public ChartViewer(Image chartImage, String titel, String wknboerse, int type, String ext, String ftype,
+								int initWidth, int initHeight, int nextID, boolean fondsonly, boolean canScale) {
+
+	super(AktienMan.AMFENSTERTITEL+titel,"Chart",ext,ftype);
 
 	this.initWidth = initWidth;
 	this.initHeight = initHeight;
-	this.type = type;
-	this.aktMonate = aktMonate;
+	this.wknboerse = wknboerse;
+	this.nextID = nextID;
+	this.fondsonly = fondsonly;
+	
+	setType(type);
 
-	for (int i = 0; i < comdirectCharts.length; i++) comdirectCharts[i] = null;
-
-	setImage(chartImage);
+	setImage(chartImage,null);
 
 	addMouseListener(this);
 	
@@ -58,12 +76,33 @@ public ChartViewer(Image chartImage, String request, String aktMonate,
 }
 
 
+
 public void display() {}
 
 
-private synchronized void setStatus(int status) {
+
+protected boolean isFonds() {
+	return fondsonly;
+}
+
+
+
+protected synchronized void setType(int type) {
+	this.type = type;
+}
+
+
+
+protected synchronized int getType() {
+	return type;
+}
+
+
+
+protected synchronized void setStatus(int status) {
 	this.status = status;
 }
+
 
 
 private synchronized int getStatus() {
@@ -71,22 +110,64 @@ private synchronized int getStatus() {
 }
 
 
+
 public synchronized String getStatusString() {
-	switch (getStatus()) {
+
+	switch (getStatus())
+	{
 	case STATUS_ERROR:
 		return Lang.CHARTERROR;
+
 	case STATUS_FINISHED:
 		return "";
-	default:
-		return Lang.LOADCHART;
 	}
+
+	return Lang.LOADCHART;
 }
+
+
+
+protected synchronized void setStatusFinished() {
+	setStatus(STATUS_FINISHED);
+	nextID = ChartQuellen.CHARTQUELLE_NONE;
+}
+
 
 
 public synchronized void setStatusError() {
-	setStatus(STATUS_ERROR);
+
+	if (getImage() == null)
+	{
+		setStatus(STATUS_ERROR);
+	}
+	else
+	{
+		setStatusFinished();
+	}
+	
 	neuZeichnen();
+
+	if (AktienMan.DEBUG)
+	{
+		System.out.println("Fehler beim Einlesen von Chart " + wknboerse + "  -> " + nextID);
+	}
+	
+	if (nextID != ChartQuellen.CHARTQUELLE_NONE)
+	{
+		int i = wknboerse.indexOf(".");
+		
+		if (i > 0)
+		{
+			String wkn    = wknboerse.substring(0,i);
+			String boerse = wknboerse.substring(i+1);
+			
+			ChartQuellen.getChartQuelle(nextID).displayChart(wkn,boerse,getType(),isFonds(),false);
+
+			dispose();
+		}
+	}
 }
+
 
 
 public synchronized void setStatusEmpty() {
@@ -95,7 +176,14 @@ public synchronized void setStatusEmpty() {
 }
 
 
-public synchronized void setImage(Image chartImage) {
+
+protected String getWKNBoerse() {
+	return wknboerse;
+}
+
+
+
+public synchronized void setImage(Image chartImage, byte[] data) {
 	this.chartImage = chartImage;
 	
 	if (chartImage == null)
@@ -109,8 +197,18 @@ public synchronized void setImage(Image chartImage) {
 
 		setStatus(STATUS_LOADING);
 		neuZeichnen();
+
+		if (data != null)
+		{
+			setImageData(data);
+		}
 	}
 }
+
+
+
+protected abstract void setImageData(byte[] data);
+
 
 
 public synchronized Image getImage() {
@@ -118,19 +216,17 @@ public synchronized Image getImage() {
 }
 
 
-public void setupFrame() {
-	setResizable(true);
-}
-
 
 public void setupElements() {
 	setLayout(new BorderLayout());
 }
 
 
+
 private void neuZeichnen() {
 	paintAll(getGraphics());
 }
+
 
 
 public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
@@ -140,33 +236,28 @@ public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, in
 	if ((infoflags & (ERROR | FRAMEBITS | ALLBITS)) != 0)
 	{
 		toFront();
-		setStatus(STATUS_FINISHED);
+		setStatusFinished();
 		neuzeichnen = true;
-
-		if (type == TYPE_COMDIRECT) setComdirectImage(aktMonate,getImage());
+		
+		loadingFinished();
 	}
 	
 	if (neuzeichnen)
 	{
 		neuZeichnen();
 	}
-
-	return super.imageUpdate(img,infoflags,x,y,width,height);
+	
+	return true;
 }
 
 
-public synchronized void setComdirectStrings(String s1, String s2) {
-	comstr1 = s1;
-	comstr2 = s2;
-}
+
+protected void loadingFinished() {}
 
 
-public synchronized void setChartLoader(ChartLoader chartloader) {
-	this.chartloader = chartloader;
-}
 
+protected void resetChartLoader() {
 
-public void closed() {
 	if (chartloader != null)
 	{
 		chartloader.stopLoading();
@@ -175,94 +266,42 @@ public void closed() {
 }
 
 
-private int monate2Index(String m) {
-	int idx;
-	
-	if (m.equals("12"))
-	{
-		idx = 1;
-	}
-	else if (m.equals("24"))
-	{
-		idx = 2;
-	}
-	else
-	{
-		idx = 0;
-	}
-	
-	return idx;
+
+public synchronized void setChartLoader(ChartLoader chartloader) {
+	resetChartLoader();
+	this.chartloader = chartloader;
 }
 
 
-private synchronized Image getComdirectImage(String m) {
-	return comdirectCharts[monate2Index(m)];
+
+public void closed() {
+	resetChartLoader();
 }
 
 
-private synchronized void setComdirectImage(String m, Image img) {
-	comdirectCharts[monate2Index(m)] = img;
-}
 
+protected void checkXY(int x, int y) {}
 
-private synchronized void switchImage(String monate) {
-	if (!monate.equals(aktMonate))
-	{
-		aktMonate = monate;
-
-		Image newChart = getComdirectImage(aktMonate);
-		
-		setImage(newChart);
-		
-		if (newChart == null)
-		{
-			new ComdirectChartLoader(this,comstr1 + aktMonate + comstr2).start();
-		}
-		else
-		{
-			setStatus(STATUS_FINISHED);
-		}
-	}
-}
-
-
-private synchronized void checkComdirectXY(int x, int y) {
-	if ((y >= 10) && (y <= 51/*31*/))
-	{
-		if ((x >= 3) && (x <= 74))
-		{
-			switchImage("6");
-		}
-		else if ((x >= 75) && (x <= 142))
-		{
-			switchImage("12");
-		}
-		else if ((x >= 143) && (x <= 215))
-		{
-			switchImage("24");
-		}
-	}
-}
 
 
 public void mouseClicked(MouseEvent e) {
-	if (getStatus() != STATUS_FINISHED) return;
-	
-	int y = e.getY();
-	int x = e.getX();
 
-	if (type == TYPE_COMDIRECT) checkComdirectXY(x,y);
+	if (getStatus() == STATUS_FINISHED)
+	{
+		checkXY(e.getX(),e.getY());
+	}
 }
+
 
 
 public void mousePressed(MouseEvent e) {
-	if (getStatus() != STATUS_FINISHED) return;
-	
-	int y = e.getY();
-	int x = e.getX();
 
-	if (type == TYPE_COMDIRECT) checkComdirectXY(x,y);
+	if (getStatus() == STATUS_FINISHED)
+	{
+		checkXY(e.getX(),e.getY());
+	}
 }
+
 
 
 public void mouseEntered(MouseEvent e) {}

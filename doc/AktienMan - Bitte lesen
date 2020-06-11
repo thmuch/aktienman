@@ -1,4 +1,4 @@
-AktienMan 1.30
+AktienMan 1.40
 Copyright ©1998,99 Thomas Much
 Ein Programm von AktienMan&Friends (http://www.aktienman.de).
 
@@ -29,51 +29,23 @@ AktienMan kennt nun drei unabhängige Währungen, die bei Bedarf automatisch inein
 - die Listenwährung bestimmt, in welcher Währung die Aktien in der Liste des Hauptdialogs angezeigt werden; unten links im Hauptdialog kann man die Listenwährung umschalten.
 
 Versionsübersicht
-1999-05-07
+1.40 (1999-06-22)
+- Unten links im Hauptfenster wird bei jedem Aktualisieren ein Fortschrittsbalken eingeblendet.
+- Neben den Comdirect-Charts können auch die Charts der Deutschen Bank geladen werden. Die Auswahl der Chartquelle geschieht im Konfigurationsdialog.
+- Die DAX-Kamera und die Charts können mit den entsprechenden Menüeinträgen gespeichert und gedruckt werden.
+- Im "Aktie ändern"-Dialog kann eine Aktie von der Aktualisierung mit "nicht aktualisieren" ausgenommen werden.
+- Das Einlesen der Aktienlisten funktioniert wieder, allerdings ist nun die Liste der Auslandsaktien deutlich kürzer.
+- Das Einlesen der Comdirect-Kurse funktioniert wieder.
+- Die Spekulationsfrist beträgt nun fest 12 Monate und kann nicht mehr im Konfigurationsdialog geändert werden.
+- Die Aktie MUV2 (Münchener Rück.) kann nun aktualisiert werden.
+- Einige Provider (z.B. Mobilcom) lenken die erste HTTP-Anfrage auf ihre Firmenseite um. AktienMan kann nun auch bei solchen Providern sofort korrekt aktualisieren.
+- viele weitere kleine Änderungen 
+1.31 (1999-05-24)
+- Für Comdirect-Kurse und -Charts wurde eine erneute Anpassung erforderlich.
+- Damit eine geänderte URL die Kursaktualisierung nicht mehr so schnell verhindert, fragt AktienMan die aktuellen URLs nun online im Netz ab.
+1.30 (1999-05-07)
 - Charts, Aktienlisten und Comdirect-Kursdaten können wieder aktualisiert werden.
 - weitere interne Optimierungen
-1999-03-29
-- Die DAX-Kamera und Intraday-Charts werden nun so skaliert, daß sie genau in ihr Fenster passen.
-- Im "Voreinstellungen"-Dialog gibt es nun die Option "%Jahr erst nach 360 Tagen Laufzeit berechnen".
-- Aktiennamen werden besser gekürzt
-- sonstige kleinere Änderungen
-1999-03-15
-- Das Aktualisieren der Fonds funktioniert wieder.
-- Die Intraday-Chart-Grafiken werden bei der Anzeige rechts nicht mehr abgeschnitten.
-- Bei Datumseingaben wird das aktuelle Jahr ergänzt, wenn es nicht mit eingegeben wurde.
-- Datumseingaben können auch mit einem Komma, Schrägstrich, Minus- oder Leerzeichen getrennt werden (und nicht mehr nur mit einem Punkt).
-- Fehleingaben beim Kauf einer Aktie werden verhindert.
-- Der Speicherbedarf wurde um 1MB verringert.
-- sonstige kleinere Korrekturen und Verbesserungen
-1999-03-02
-- Bei jedem Portfolio sowie beim HTML-Export wird nun die Gesamtperformance des Portfolios ausgegeben. 
-- Die 6/12/24-Monats-Charts können nun wieder geladen werden (eine Anpassung war nötig, da sich die WWW-Adresse der Charts geändert hatte). 
-- Der HTML-Export wurde optimiert.
-1999-02-22
-- AktienMan besitzt intern nun Standard-Aktienlisten (AktienMan.pop), die verwendet werden, wenn der Benutzer die Aktienmenüs bisher noch nicht aktualisiert hat
-- Mindest-Maklercourtage bei "Aktie verkaufen" auf 0,75 EUR korrigiert
-1999-02-12
-- Fehler in der Laufzeitberechnung behoben (bei einer Laufzeit von 12 Monaten wurde nur "11" angezeigt)
-- Fehler beim Aktien-Beobachten behoben (bei Kaufwährung DEM und fehlender Kaufkursangabe war der automatisch zugewiesene Kaufkurs halbiert)
-1999-02-08
-- im "Portfolio"-Menü können beliebig viele Aktienlisten verwaltet werden
-- im "Voreinstellungen"-Dialog (vormals "Konfiguration") kann die Online-Kursquelle für Aktien- und Maximalkurse gewählt werden; verfügbar sind derzeit "Comdirect" und "Deutsche Bank"; tritt bei der gewählten Quelle ein Fehler auf, schaltet AktienMan automatisch auf die andere Quelle um
-- im "Voreinstellungen"-Dialog kann eine automatische Kursaktualisierung eingestellt werden
-- das Neuzeichnen der Liste beim Aktualisieren der Kurse geschieht nun deutlich ruhiger
-- beim Feld "%Jahr" wird bei einer Laufzeit unter einem Jahr nun "<1 J." ausgegeben
-- und wie immer: weitere Korrekturen und Optimierungen
-1999-01-05
-- AktienMan ist nun komplett Euro-fähig
-- im Maximalkurs-Dialog wird auch das Handelsvolumen angezeigt
-- im Kontextpopup kann eine einzelne Aktie aktualisiert werden
-- Fehler in der Laufzeitberechnung behoben (nach einem Jahreswechsel war die Laufzeit einen Monat zu lang)
-- wie immer: kleinere Korrekturen und Optimierungen
-1998-12-21
-- im Dialog "Konfiguration" kann die Spekulationsfrist von 6 auf 12 Monate umgestellt werden, falls der Gesetzgeber das entsprechende Gesetz beschließt
-- fehlerhafte Onlinedaten werden besser erkannt
-- kleinere Korrekturen und Optimierungen
-1998-12-01
-- Version 1.00
 
 Kontakt
 Bestellungen richten Sie bitte an bestellung@aktienman.de, am besten wickeln Sie Ihre Bestellung aber über die AktienMan-Homepage http://www.aktienman.de ab. Supportanfragen beantwortet support@aktienman.de.

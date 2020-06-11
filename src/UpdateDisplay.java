@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-02-11
+ @version 1999-06-13
 */
 
 import java.awt.*;
@@ -78,7 +78,7 @@ public void setupElements2() {
 
 
 public synchronized void setProgress(int kbytes, int percent) {
-	progress.setText(new Integer(kbytes).toString() + "K (" + new Integer(percent).toString() + "%)  ");
+	progress.setText("" + kbytes + "K (" + percent + "%)  ");
 	progress.repaint();
 }
 

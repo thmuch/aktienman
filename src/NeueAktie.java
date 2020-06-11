@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-03-28
+ @version 1999-06-18
 */
 
 import java.awt.*;

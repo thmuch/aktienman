@@ -1,4 +1,4 @@
-AktienMan 1.31-beta (1999-05-24)
+AktienMan 1.40-beta (1999-06-22)
 Copyright (c)1998,99 by Thomas Much (thomas@aktienman.de)
 
 
@@ -21,8 +21,6 @@ todo
 // Spaltenreihenfolge bel. festlegbar
 // Aktie splitten
 // Backup der Listendaten
-// ADate: Sommerzeit beachten
-// -> Checkbox für Sommerzeit
 // Konfig-Dialog zur Auswahl, welche Spalten angezeigt werden
 // Börsen konfigurierbar machen
 // HTML-Export mit Farben
@@ -30,16 +28,10 @@ todo
 // Dialog, um zu Aktien die WKN abzufragen (und umgekehrt)
 // Börsenplätze NAS (NASDAQ) und NYS (Wallstreet)
 // Liste der aktuellen Währungskurse
-// Tool "Obfuscator": Variablennamen aus Klassen entfernen
-// Linux: Archiv, Skript
-// Layout an EA3 anpassen (Abstände größer)
-// Layout von "Neue Aktie" verbessern
 // € statt EUR anzeigen (oder Zeichen[kette] einstellbar machen)
-// Verfall der Listendaten (bei Demoversion)
 // Spalte für +/-% zum Vortag (direkt von Comdirect übernehmen)
 // Info: Button "Zurücksetzen"
 // Maximalkurs: Button "Aktualisieren"
-// bei "Aktie kaufen" und "ändern" Währung anzeigen
 // Speicherung von x Börsentagen incl. Mini-Chart (gleitender Durchschnitt)
 // Kontextpopup: "Duplizieren, Kopieren nach, Verschieben nach" vor Löschen
 // Konfiguration: Allgemein, Anzeige, Spezial (Browser etc.)
@@ -58,26 +50,62 @@ todo
 // nach HTML-Export Browser (derzeit nur Netscape) nachstarten (nur Mac, ab MRJ 2.1)
 // Aktien sofort nach Kauf bei Kaufwert-Summe berücksichtigen
 // Popuplisten: Choice mit fester Pixelrückgabe überschreiben
-// Realtime-Kurse von Comdirect
 // Yahoo-Kursleser
 // beim Kaufen optional Gebühren errechnen
-// Charts auch von der Deuba abrufen
-// Workaround für Münchener Rück (?)
 // auch Maximalskurs per Timer anzeigen
 // Liste/Portfolio mit Verkäufen
 // DAX-Kamera optional im Hauptfenster darstellen
 // Aktien verwalten, die keine WKN haben, d.h. deren Kurs manuell eingetragen werden muß
 // Backupfunktion für Listen
-// neue Charts von Comdirect
-// Kurse auch von bbbank.de, http://www.consors.de, http://www.fimatex.de
+// neue Comdirect-Kurse
+// Kurse+Charts auch von bbbank.de, http://www.consors.de, http://www.fimatex.de
 // Kurs- und Chartklassen bei Bedarf von aktienman.de laden
-Version 1.32 (.05.99)
+Version 1.41 (.06.99)
 // RELEASE erhöhen, DEBUG entfernen
-// DeuBa-Charts
-// neue Comdirect-Charts
 // Aktienlisten etc. in XML speichern (Strings als UTF8)
 // Kopieren+Verschieben zwischen Portfolios
+// "Aktie kaufen": Choices alle auf die gleiche breite bringen
 // Prozentualer Anteil der einzelnen Aktien am Gesamtportfolio
+// Deuba-Charts (3, intra) direkt aufrufbar
+// Charts optional (?) preloaden und auf Platte speichern
+// wenn ein Chart nicht geladen werden konnte, auf letzten verfügbaren (intern merken!) umschalten
+// Splashscreen für alle Systeme
+// Parkett-DAX?
+// SMAX von yahoo.de (evtl. auch andere Listen)
+// DAX-Wert von finanzen.yahoo.de im Hauptfenster anzeigen (? - evtl. Indizes im separaten Fenster)
+// akt. Kurs eingebbar
+//
+Version 1.40 (22.06.99)
+- kleine Korrektur der Deuba-Kurs-URL
+- auch Comdirect-Intraday-Charts werden als Linienchart angezeigt
+- Comdirect-Fonds-Charts werden nicht als Open/Hi/Close-, sondern als Linienchart angezeigt
+- die Intraday-Charts der Deutschen Börse stehen nicht mehr zu Verfügung, da die anderen
+  Charttypen nun auch Intradaycharts bieten
+- die Chartmenüs bieten nun alle Charttypen zur direkten Auswahl an
+- Comdirect-Kurse und -Charts an den Informer2 angepaßt
+- die Aktienlisten werden nun von der BBBank eingelesen; die Auslandsliste hat dadurch
+  eine andere Zusammensetzung (und ist leider deutlich kürzer)
+- Aktiennamenkürzung wieder etwas verbessert
+- der Fortschrittsbalken ist nun in das Hauptfenster integriert
+- im Offlinebetrieb werden geladene Deuba-Intradaycharts nicht mehr gelöscht
+- im "Aktie ändern"-Dialog kann eine Aktie von der Aktualisierung mit "nicht aktualisieren"
+  ausgenommen werden
+- nun können auch Charts der Deutschen Bank geladen werden; die gewünschte Chartquelle kann
+  im Konfigurationsdialog eingestellt werden; wenn eine Chartquelle nicht geladen werden
+  kann, wird automatisch auf die andere Chartquelle umgeschaltet
+- die Deuba-Intraday-Charts werden automatisch aktualisiert
+- DAX-Kamera und Charts können nun mit den entsprechenden Menüeinträgen gespeichert und
+  gedruckt werden
+- die Spekulationsfrist beträgt nun fest 12 Monate und kann nicht mehr im Konfigurations-
+  Dialog geändert werden
+- Workaround für Münchener Rück eingebaut
+- beim Aktualisieren wird nun in einem Fortschrittsfenster der Stand der Aktualisierung
+  angezeigt; das Fenster verschwindet nach kompletter Aktualisierung wieder
+- wenn eine Aktie überhaupt nicht aktualisiert werden kann (Name bleibt blau; bisher z.B.
+  Münchener Rück), wird das Fortschrittsfenster erst beim Pofo-Wechsel geschlossen
+- nach Aktualisierung der letzten Aktie wird die Liste sofort neu gezeichnet
+- interne Optimierungen (toString)
+- Mobilcom-Workaround
 Version 1.31 (24.05.99)
 - Comdirect-Charts und -Kurse gehen wieder
 - neuer Update-Mechanismus (URL-Objekt)

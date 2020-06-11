@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-03-21
+ @version 1999-06-13
 */
 
 import java.io.*;
@@ -34,7 +34,7 @@ public int getWKN() {
 
 
 public String getWKNString() {
-	return new Integer(getWKN()).toString();
+	return "" + getWKN();
 }
 
 

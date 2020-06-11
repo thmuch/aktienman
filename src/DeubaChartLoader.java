@@ -9,7 +9,7 @@ import java.io.*;
 
 
 
-public final class ComdirectChartLoader extends Thread {
+public final class DeubaChartLoader extends Thread {
 
 private String filename;
 private ChartViewer chartviewer;
@@ -18,7 +18,7 @@ private boolean doReload;
 
 
 
-public ComdirectChartLoader(ChartViewer chartviewer, String filename, int type) {
+public DeubaChartLoader(ChartViewer chartviewer, String filename, int type) {
 	super();
 	this.chartviewer = chartviewer;
 	this.filename = filename;
@@ -39,36 +39,29 @@ public void run() {
 		in = new BufferedReader(new InputStreamReader(url.openStream()));
 
 		String s;
-
-		String str_chartimage = AktienMan.url.getString(URLs.STR_CD_CHARTIMAGE);
-		String str_chartsrc   = AktienMan.url.getString(URLs.STR_CD_CHARTSRC);
 		
 		while ((s = in.readLine()) != null)
 		{
-			if (s.indexOf(str_chartimage) > 0)
+			if (s.indexOf(" src=") >= 0)
 			{
-				int i = s.indexOf(str_chartsrc);
-				
-				if (i > 0)
+				if (s.indexOf(" usemap=") > 0)
 				{
-					int i2 = s.indexOf("\"", i + str_chartsrc.length());
+					int i = s.indexOf("http://");
+					int i2 = s.indexOf("\"",i);
 					
-					if (i2 > i)
-					{
-						String imgsrc = s.substring(i + str_chartsrc.length(), i2);
+					String imgsrc = s.substring(i,i2);
 
-						new ChartLoader(chartviewer,imgsrc,doReload).start();
+					new ChartLoader(chartviewer,imgsrc,doReload).start();
 
-						valid = true;
-						break;
-					}
+					valid = true;
+					break;
 				}
 			}
 		}
 	}
 	catch (MalformedURLException e)
 	{
-		System.out.println("Comdirect-Netchart-URL fehlerhaft.");
+		System.out.println("Deuba-Netchart-URL fehlerhaft.");
 	}
 	catch (IOException e) {}
 	finally
