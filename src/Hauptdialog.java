@@ -1,16 +1,17 @@
 /**
  @author Thomas Much
- @version 1998-11-03
+ @version 1998-11-05
 */
 
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.zip.*;
+import com.apple.mrj.*;
 
 
 
-public class Hauptdialog extends AFrame implements ComponentListener {
+public class Hauptdialog extends AFrame implements ComponentListener,MRJAboutHandler {
 
 public static final int MINBREITE = 620;
 public static final int MINHOEHE  = 300;
@@ -129,6 +130,13 @@ public void display() {
 	setupSize();
 	listeUpdate(false);
 	checkListButtons();
+	
+	MRJApplicationUtils.registerAboutHandler(this);
+}
+
+
+public void handleAbout() {
+	callAbout();
 }
 
 
@@ -413,7 +421,7 @@ public void setupElements() {
 	Menu fileMenu = new Menu(Lang.getFileMenuTitle());
 	menubar.add(fileMenu);
 	
-	Menu amMenu = new Menu(AktienMan.AMNAME);
+	Menu amMenu = new Menu(Lang.EDITMENUTITLE);
 	menubar.add(amMenu);
 
 	mi = new MenuItem("Neu...",new MenuShortcut(KeyEvent.VK_N));
@@ -469,16 +477,19 @@ public void setupElements() {
 		}
 	});
 	amMenu.add(mi);
-	
-	amMenu.addSeparator();
 
-	mi = new MenuItem("\u00dcber AktienMan...",new MenuShortcut(KeyEvent.VK_I));
-	mi.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			callAbout();
-		}
-	});
-	amMenu.add(mi);
+	if (!MRJApplicationUtils.isMRJToolkitAvailable())
+	{
+		amMenu.addSeparator();
+
+		mi = new MenuItem("\u00dcber AktienMan...");
+		mi.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				callAbout();
+			}
+		});
+		amMenu.add(mi);
+	}
 }
 
 

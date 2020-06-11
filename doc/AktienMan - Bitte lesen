@@ -1,4 +1,4 @@
-AktienMan 0.90 Preview-Version
+AktienMan 0.91 Preview-Version
 Copyright ©1998 Thomas Much
 Ein Programm von AktienMan&Friends (<http://www.aktienman.de>).
 
@@ -9,9 +9,9 @@ Einsatzbereiche
 Wer bisher jeden Tag die aktuellen Kurse seiner Aktien aus n-tv, T-Online oder dem Internet ermittelte und ausrechnen mußte, welchen Wert die eigenen Aktien im Einzelnen und insgesamt haben, wird von AktienMan spürbar entlastet. Ein kurzer Klick auf den Knopf "Aktualisieren" genügt, und AktienMan holt sich alle aktuellen Kurse von allen deutschen Börsen automatisch aus dem Internet und berechnet den Wert des eigenen Portfolios. Zusätzlich können die Kaufs- und Verkaufskosten der wichtigsten deutschen Banken berechnet werden.
 
 Installation
-Systemvoraussetzung für AktienMan/Mac sind ein Apple PowerMacintosh mit mindestens 166 Mhz Systemtakt, das Betriebssystem MacOS in der Version 8.0 oder höher sowie ein fertig installiertes "Macintosh Runtime for Java" (MRJ) in der Version 2.0.
+Systemvoraussetzung für AktienMan/Mac sind ein Apple PowerMacintosh mit mindestens 166 Mhz Systemtakt, das Betriebssystem MacOS in der Version 8.0 oder höher sowie ein fertig installiertes "Macintosh Runtime for Java" (MRJ) in der Version 2.0 (oder höher).
 Normalerweise wird MRJ 2.0 bei der Installation von MacOS 8.1 bzw. 8.5 automatisch mitinstalliert. Haben sie MRJ dennoch nicht installiert, legen Sie bitte Ihre MacOS-System-CD ein und lassen MRJ vom Aktualisierer nachträglich installieren.
-Die eigentliche Installation von AktienMan ist denkbar einfach: Sie haben das AktienMan-Archiv bereits heruntergeladen und mit StuffIt ausgepackt. Das war es auch schon, eine weitere Installation ist nicht notwendig! Klicken Sie einfach doppelt auf das Programmsymbol "AktienMan". AktienMan wird geladen, und nach wenigen Sekunden - abhängig von der Geschwindigkeit des Rechners - erscheint das Hauptfenster. Wer mit dem Aktienhandel bereits vertraut ist, sollte AktienMan weitestgehend intuitiv bedienen können. Alle anderen finden demnächst eine Onlineversion des Handbuchs auf unserer Homepage, außerdem erhält man nach der Registrierung natürlich ein gedrucktes Handbuch.
+Die eigentliche Installation von AktienMan ist denkbar einfach: Sie haben das AktienMan-Archiv bereits heruntergeladen und mit StuffIt ausgepackt. Das war es auch schon, eine weitere Installation ist nicht notwendig! Klicken Sie einfach doppelt auf das Programmsymbol "AktienMan". AktienMan wird geladen, und nach wenigen Sekunden - abhängig von der Geschwindigkeit des Rechners - erscheint das Hauptfenster. Wer mit dem Aktienhandel bereits vertraut ist, sollte AktienMan weitestgehend intuitiv bedienen können. Und ansonsten erhält man nach der Registrierung natürlich ein gedrucktes Handbuch.
 
 Einschränkungen der Preview-Version
 Die wesentlichste Einschränkung der Preview-Version ist, daß sie nach dem 30.11.98 ihren Dienst verweigert. Sie können dann entweder eine aktuelle Demoversion herunterladen (müssen dann aber alle Aktiendaten neu eingeben), oder aber sie lassen sich registrieren (s.u.).
@@ -25,6 +25,9 @@ Rechtliches
 AktienMan kann auf einem beliebigen Rechner/Betriebssystem eingesetzt werden. Es muß lediglich gewährleistet sein, daß AktienMan nur vom registrierten Benutzer zum Einsatz kommt. Jeder registrierte Benutzer kann für jeweils DM 50,-- (inkl. Mwst.) weitere Schlüssel von AktienMan&Friends bestellen.
 
 Versionsübersicht
+Version 0.91 (05.11.98)
+- Mac: Menüleiste überarbeitet
+- Mac: Redrawprobleme mit MRJ 2.1 EA3 beseitigt
 Version 0.90 (03.11.98)
 - erste öffentliche Version (Preview)
 

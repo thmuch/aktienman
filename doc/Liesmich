@@ -1,4 +1,4 @@
-AktienMan 0.90-beta (1998-11-03)
+AktienMan 0.91-beta (1998-11-05)
 Copyright (c)1998 by Thomas Much (thomas@aktienman.de)
 
 >>>>> BETAVERSION, L€UFT AM 30.11.1998 AB <<<<<
@@ -59,11 +59,21 @@ Version 1.0:
 // Tool "Obfuscator": Variablennamen aus Klassen entfernen
 // Linux: Archiv, Skript
 // Mac: neue Icons von Sven
+// optisches Feedback wŠhrend des Ladens eines Charts
 // About-Dialog fertigstellen
 // Registrierung, Demoversion
 // Neue Aktie: "Beobachten"
 // HTML-Export
 // innerhalb des Chart-Image zwischen 6/12/24 umschalten
+// Layout an EA3 anpassen (AbstŠnde grš§er)
+// MRJToolkit auf Windows testen/anpassen
+Version 0.91 (05.11.98)
+- Redrawprobleme unter MRJ 2.1 EA3 beseitigt
+- "†ber AktienMan" hat nun keinen Shortcut mehr
+- bei AM/Mac wird "†ber AktienMan" im Apple-MenŸ angezeigt
+- das "AktienMan"-MenŸ hei§t nun "Bearbeiten"
+- im Apple-MenŸ taucht der "Quit"-Eintrag nicht mehr auf
+- KŸrzungsroutine fŸr Aktiennamen optimiert, damit das Auslandspopup nicht mehr so breit ist
 Version 0.90 (03.11.98)
 - neue Bšrse "Fonds (DFK)"
 - bei "Maximalkurs" wird DFK nicht berŸcksichtigt

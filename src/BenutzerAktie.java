@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-03
+ @version 1998-11-05
 */
 
 import java.awt.*;
@@ -251,6 +251,9 @@ public static String getKurzName(String langname) {
 	if (i > 0) return getKurzName(n.substring(0,i));
 
 	i = s.indexOf("-SA ");
+	if (i > 0) return getKurzName(n.substring(0,i));
+
+	i = s.indexOf(".SAACCIONES");
 	if (i > 0) return getKurzName(n.substring(0,i));
 
 	i = s.indexOf(" PLC");
@@ -521,22 +524,40 @@ public synchronized boolean isSelected() {
 }
 
 
+private void setColorAndRepaint(Color c) {
+	l1.setBackground(c);
+	l2.setBackground(c);
+	l11.setBackground(c);
+	l12.setBackground(c);
+	l3.setBackground(c);
+	l4.setBackground(c);
+	l5.setBackground(c);
+	l6.setBackground(c);
+	l7.setBackground(c);
+	l8.setBackground(c);
+	l9.setBackground(c);
+	l10.setBackground(c);
+	
+	l1.repaint();
+	l2.repaint();
+	l11.repaint();
+	l12.repaint();
+	l3.repaint();
+	l4.repaint();
+	l5.repaint();
+	l6.repaint();
+	l7.repaint();
+	l8.repaint();
+	l9.repaint();
+	l10.repaint();
+}
+
+
 public synchronized void Select() {
 	if (!isSelected())
 	{
 		selected = true;
-		l1.setBackground(farbeSelected);
-		l2.setBackground(farbeSelected);
-		l11.setBackground(farbeSelected);
-		l12.setBackground(farbeSelected);
-		l3.setBackground(farbeSelected);
-		l4.setBackground(farbeSelected);
-		l5.setBackground(farbeSelected);
-		l6.setBackground(farbeSelected);
-		l7.setBackground(farbeSelected);
-		l8.setBackground(farbeSelected);
-		l9.setBackground(farbeSelected);
-		l10.setBackground(farbeSelected);
+		setColorAndRepaint(farbeSelected);
 	}
 }
 
@@ -545,18 +566,7 @@ public synchronized void Unselect() {
 	if (isSelected())
 	{
 		selected = false;
-		l1.setBackground(farbeHintergrund);
-		l2.setBackground(farbeHintergrund);
-		l11.setBackground(farbeHintergrund);
-		l12.setBackground(farbeHintergrund);
-		l3.setBackground(farbeHintergrund);
-		l4.setBackground(farbeHintergrund);
-		l5.setBackground(farbeHintergrund);
-		l6.setBackground(farbeHintergrund);
-		l7.setBackground(farbeHintergrund);
-		l8.setBackground(farbeHintergrund);
-		l9.setBackground(farbeHintergrund);
-		l10.setBackground(farbeHintergrund);
+		setColorAndRepaint(farbeHintergrund);
 	}
 }
 

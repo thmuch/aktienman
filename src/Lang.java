@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-10-31
+ @version 1998-11-05
 */
 
 
@@ -16,6 +16,8 @@ public static final String NO     = "   Nein   ";
 public static final String CHANGE = "  \u00c4ndern  ";
 
 public static final String LOADIMAGE = "Bild wird geladen...";
+
+public static final String EDITMENUTITLE = "Bearbeiten";
 
 
 

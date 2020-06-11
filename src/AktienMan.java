@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-03
+ @version 1998-11-05
 */
 
 /**
@@ -16,12 +16,12 @@ import java.awt.*;
 public class AktienMan {
 
 public static final String AMNAME         = "AktienMan";
-public static final String AMVERSION      = "0.90-pre";
+public static final String AMVERSION      = "0.91-pre";
 public static final String AMFENSTERTITEL = AMNAME + " - ";
 
 public static final char DEZSEPARATOR     = ',';
 
-public static ADate compDate              = new ADate(1998,11,3); /* Compilierdatum */
+public static ADate compDate              = new ADate(1998,11,5); /* Compilierdatum */
 public static final int PORTFOLIOVER      = 0;
 
 public static Aktienliste listeDAX        = new Aktienliste();
@@ -179,7 +179,7 @@ public static void main(String args[]) {
 			(listeEuroSTOXX.getChoice().getItemCount() < 1) ||
 			(listeAusland.getChoice().getItemCount() < 1))
 		{
-			new Warnalert(hauptdialog,"Bitte gehen Sie online und rufen dann den Men\u00fcpunkt|\"Aktienlisten aktualisieren\" im Men\u00fc \"AktienMan\" auf!");
+			new Warnalert(hauptdialog,"Bitte gehen Sie online und rufen dann den Men\u00fcpunkt|\"Aktienlisten aktualisieren\" im Men\u00fc \""+Lang.EDITMENUTITLE+"\" auf!");
 		}
 	}
 	catch (Exception e)
