@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-16
+ @version 1998-11-21
 */
 
 import java.net.*;
@@ -49,9 +49,9 @@ public void run() {
 					int i2 = s.indexOf(">",s.indexOf(">",i)+1);
 					int i3 = s.indexOf("<",i2);
 					
-					readImage(s.substring(i2+1,i3).trim());
-
 					in.close();
+
+					new ChartLoader(chartviewer,URLs.DAXINTRADAY + s.substring(i2+1,i3).trim() + "." + boerse + ".DEM.gif",true).start();
 					return;
 				}
 			}
@@ -66,34 +66,6 @@ public void run() {
 		System.out.println("Exchange-URL fehlerhaft.");
 	}
 	catch (IOException e) {}
-}
-
-
-private void readImage(String kuerzel) {
-	String filename = URLs.DAXINTRADAY + kuerzel + "." + boerse + ".DEM.gif";
-
-	try
-	{
-		URL url = new URL(filename);
-		URLConnection curl = url.openConnection();
-		curl.setUseCaches(false);
-		
-		byte[] daten = new byte[curl.getContentLength()];
-		
-		DataInputStream in = new DataInputStream(curl.getInputStream());
-		
-		in.readFully(daten);
-
-		in.close();
-
-		chartviewer.setImage(AktienMan.hauptdialog.getToolkit().createImage(daten));
-	}
-	catch (MalformedURLException e)
-	{
-		System.out.println("URL des Intraday-Charts fehlerhaft.");
-	}
-	catch (IOException e) {}
-	catch (NegativeArraySizeException e) {}
 }
 
 }

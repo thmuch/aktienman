@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-14
+ @version 1998-11-25
 */
 
 import java.awt.*;
@@ -21,16 +21,17 @@ public Window backWindow;
 private int locked = 0;
 private boolean abenabled = false;
 
-private Button buttonVerkaufen,buttonLoeschen,buttonSplitten,buttonAendern;
-private Button buttonDrucken,buttonSpeichern,buttonMaxkurs;
+private Button buttonVerkaufen,buttonAendern;
+private Button buttonSpeichern,buttonMaxkurs,buttonInfo;
 private Button buttonAktFSE,buttonAktXetra,buttonAktualisieren;
 private BenutzerListe benutzerliste;
 private ScrollPane pane;
 private Panel panelText,panelGewinn;
 private Listenbereich panelListe;
 private PopupMenu aktienpopup;
-private MenuItem menuVerkaufen,menuSplitten,menuMaxkurs,fileSave,filePrint;
-private Menu menuChart,menuIntraday;
+private MenuItem menuSave,menuVerkaufen,menuAendern,menuLoeschen,menuInfo,menuMaxkurs;
+private MenuItem popVerkaufen,popMaxkurs;
+private ChartMenu menuChart,popChart;
 private Choice chErloes,buttonChart;
 private int popX,popY;
 private BALabel popParent;
@@ -158,18 +159,10 @@ public void setupElements() {
 	panelText = new Panel(gridbag);
 	panelGewinn = new Panel(gridbag);
 	
-	Button buttonNeu = new Button(" Neue Aktie... ");
-	Button buttonKamera = new Button(" DAX-Kamera ");
-
+	buttonAktualisieren = new Button(" Aktualisieren! ");
 	buttonAktFSE = new Button(" Akt. FSE ");
 	buttonAktXetra = new Button(" Akt. Xetra ");
-	buttonAktualisieren = new Button(" Aktualisieren! ");
-
-	buttonNeu.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			callNeueAktie();
-		}
-	});
+	Button buttonKamera = new Button(" DAX-Kamera ");
 
 	buttonAktFSE.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -195,36 +188,29 @@ public void setupElements() {
 		}
 	});
 	
-	constrain(panelOben,buttonNeu,0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,15);
-	
-	constrain(panelOben,buttonAktFSE,1,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,0,0,0,10);
-	constrain(panelOben,buttonAktXetra,2,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH,1.0,0.0,0,0,0,10);
-	constrain(panelOben,buttonAktualisieren,3,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,0,0,0);
+	constrain(panelOben,buttonAktualisieren,0,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH,1.0,0.0,0,0,0,10);
+	constrain(panelOben,buttonAktFSE,1,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH,0.7,0.0,0,0,0,10);
+	constrain(panelOben,buttonAktXetra,2,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH,0.7,0.0,0,0,0,10);
+	constrain(panelOben,buttonKamera,3,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH,0.4,0.0,0,5,0,0);
 
-	constrain(panelOben,buttonKamera,4,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,15,0,0);
-
-	buttonDrucken = new Button(" Liste drucken... ");
 	buttonSpeichern = new Button(" Liste exportieren... ");
-
-	buttonDrucken.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			listeAusdrucken();
-		}
-	});
-
 	buttonSpeichern.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			listeSpeichern();
 		}
 	});
 	
-	constrain(panelULinks,buttonDrucken,0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,0,0,6,0);
-	constrain(panelULinks,buttonSpeichern,0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.SOUTHWEST,0.0,0.0,0,0,0,0);
+	constrain(panelULinks,buttonSpeichern,0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.SOUTHWEST,0.0,0.0,0,0,0,0);
 	
+	Button buttonNeu = new Button(" Aktie kaufen... ");
 	buttonVerkaufen = new Button(" Aktie verkaufen... ");
-	buttonLoeschen = new Button(" Aktie l\u00f6schen... ");
-	buttonSplitten = new Button(" Aktie splitten... ");
-	buttonAendern = new Button(" Daten \u00e4ndern... ");
+	buttonAendern = new Button(" Aktie \u00e4ndern... ");
+
+	buttonNeu.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			callNeueAktie();
+		}
+	});
 
 	buttonVerkaufen.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -232,21 +218,9 @@ public void setupElements() {
 		}
 	});
 
-	buttonLoeschen.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			listeSelektierteAktieLoeschen();
-		}
-	});
-
 	buttonAendern.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			listeSelektierteAktieAendern();
-		}
-	});
-
-	buttonSplitten.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			/**/
 		}
 	});
 	
@@ -289,19 +263,25 @@ public void setupElements() {
 		}
 	});
 
+	buttonInfo = new Button(" Aktie Info ");
+	buttonInfo.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			listeSelektierteAktieInfo();
+		}
+	});
+
 	setChartChoice(true);
-	disableAktienButtons();
 	
-	constrain(panelUMitte,buttonVerkaufen,0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,6,0);
-	constrain(panelUMitte,buttonLoeschen,1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,6,0);
-	constrain(panelUMitte,buttonChart,2,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,6,0);
-	constrain(panelUMitte,buttonSplitten,0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
-	constrain(panelUMitte,buttonAendern,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,0,0);
-	constrain(panelUMitte,buttonMaxkurs,2,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,0,0);
+	constrain(panelUMitte,buttonNeu,0,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.EAST,1.0,0.0,0,0,6,0);
+	constrain(panelUMitte,buttonInfo,1,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,10,6,0);
+	constrain(panelUMitte,buttonChart,2,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,10,6,0);
+	constrain(panelUMitte,buttonVerkaufen,0,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.EAST,1.0,0.0,0,0,0,0);
+	constrain(panelUMitte,buttonAendern,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,10,0,0);
+	constrain(panelUMitte,buttonMaxkurs,2,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,10,0,0);
 	
 	BenutzerAktie.addSummen(panelText,"-----","-----",false);
 	
-	pane = new ScrollPane(ScrollPane.SCROLLBARS_ALWAYS);
+	pane = new ScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED);
 	pane.add(panelListe);
 	
 	Adjustable vAdjust = pane.getVAdjustable();
@@ -321,85 +301,34 @@ public void setupElements() {
 
 	aktienpopup = new PopupMenu();
 
-	MenuItem mi = new MenuItem("Info...");
+	MenuItem mi = new MenuItem("Info");
 	mi.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			listeSelektierteAktieInfo();
 		}
 	});
-	mi.setEnabled(false); /**/
 	aktienpopup.add(mi);
 
-	menuChart = new Menu("Chart");
-	aktienpopup.add(menuChart);
+	popChart = new ChartMenu();
+	aktienpopup.add(popChart);
 
-	mi = new MenuItem("6 Monate");	
-	mi.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			listeSelektierteAktieChart("6");
-		}
-	});
-	menuChart.add(mi);
-
-	mi = new MenuItem("12 Monate");
-	mi.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			listeSelektierteAktieChart("12");
-		}
-	});
-	menuChart.add(mi);
-
-	mi = new MenuItem("24 Monate");
-	mi.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			listeSelektierteAktieChart("24");
-		}
-	});
-	menuChart.add(mi);
-	
-	menuChart.addSeparator();
-
-	menuIntraday = new Menu("Intraday");
-	menuChart.add(menuIntraday);
-
-	mi = new MenuItem("Frankfurt");
-	mi.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			listeSelektierteAktieIntradayChart("FRA");
-		}
-	});
-	menuIntraday.add(mi);
-
-	mi = new MenuItem("Xetra");
-	mi.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			listeSelektierteAktieIntradayChart("ETR");
-		}
-	});
-	menuIntraday.add(mi);
-
-	menuMaxkurs = new MenuItem("Maximalkurs");
-	menuMaxkurs.addActionListener(new ActionListener() {
+	popMaxkurs = new MenuItem("Maximalkurs");
+	popMaxkurs.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			listeSelektierteAktieMaxkurs();
 		}
 	});
-	aktienpopup.add(menuMaxkurs);
+	aktienpopup.add(popMaxkurs);
 	
 	aktienpopup.addSeparator();
 
-	menuVerkaufen = new MenuItem("Verkaufen...");	
-	menuVerkaufen.addActionListener(new ActionListener() {
+	popVerkaufen = new MenuItem("Verkaufen...");	
+	popVerkaufen.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			listeSelektierteAktieVerkaufen();
 		}
 	});
-	aktienpopup.add(menuVerkaufen);
-
-	menuSplitten = new MenuItem("Splitten...");
-	menuSplitten.setEnabled(false); /**/
-	/**/
-	aktienpopup.add(menuSplitten);
+	aktienpopup.add(popVerkaufen);
 
 	mi = new MenuItem("\u00c4ndern...");
 	mi.addActionListener(new ActionListener() {
@@ -424,39 +353,25 @@ public void setupElements() {
 	MenuBar menubar = new MenuBar();
 	setMenuBar(menubar);
 
-	Menu fileMenu = new Menu(Lang.getFileMenuTitle());
+	Menu fileMenu = new Menu(Lang.getFileMenuTitle(),true);
 	menubar.add(fileMenu);
 	
-	Menu amMenu = new Menu(Lang.EDITMENUTITLE);
+	Menu amMenu = new Menu(Lang.EDITMENUTITLE,true);
 	menubar.add(amMenu);
+	
+	Menu aktMenu = new Menu("Aktualisieren",true);
+	menubar.add(aktMenu);
 
-	mi = new MenuItem("Neu...",new MenuShortcut(KeyEvent.VK_N));
-	mi.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			callNeueAktie();
-		}
-	});
-	fileMenu.add(mi);
+	Menu aktieMenu = new Menu("Aktie",true);
+	menubar.add(aktieMenu);
 
-	fileMenu.addSeparator();
-
-	fileSave = new MenuItem("Liste exportieren...",new MenuShortcut(KeyEvent.VK_E));
-	fileSave.addActionListener(new ActionListener() {
+	menuSave = new MenuItem("Liste exportieren...",new MenuShortcut(KeyEvent.VK_E));
+	menuSave.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			listeSpeichern();
 		}
 	});
-	fileMenu.add(fileSave);
-	
-	fileMenu.addSeparator();
-
-	filePrint = new MenuItem("Drucken...",new MenuShortcut(KeyEvent.VK_P));
-	filePrint.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			listeAusdrucken();
-		}
-	});
-	fileMenu.add(filePrint);
+	fileMenu.add(menuSave);
 	
 	fileMenu.addSeparator();
 
@@ -468,7 +383,7 @@ public void setupElements() {
 	});
 	fileMenu.add(mi);
 	
-	mi = new MenuItem("Konfiguration...",new MenuShortcut(KeyEvent.VK_K));
+	mi = new MenuItem("Konfiguration...");
 	mi.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			callKonfiguration();
@@ -476,10 +391,24 @@ public void setupElements() {
 	});
 	amMenu.add(mi);
 
+	amMenu.addSeparator();
+
 	mi = new MenuItem("Aktienlisten aktualisieren...");
 	mi.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			new AktienAktualisieren();
+			/* #Demoversion */
+			if (!main() && (AktienMan.listeDAX.getChoice().getItemCount() > 0)
+				&& (AktienMan.listeMDAX.getChoice().getItemCount() > 0)
+				&& (AktienMan.listeNMarkt.getChoice().getItemCount() > 0)
+				&& (AktienMan.listeEuroSTOXX.getChoice().getItemCount() > 0)
+				&& (AktienMan.listeAusland.getChoice().getItemCount() > 0))
+			{
+				new Warnalert(AktienMan.hauptdialog,"Die Demoversion kann die Listen nur einmal aktualisieren.");
+			}
+			else
+			{
+				new AktienAktualisieren();
+			}
 		}
 	});
 	amMenu.add(mi);
@@ -496,6 +425,99 @@ public void setupElements() {
 		});
 		amMenu.add(mi);
 	}
+	
+	mi = new MenuItem("An der jeweiligen B\u00f6rse",new MenuShortcut(KeyEvent.VK_A));
+	mi.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			listeAktualisieren();
+		}
+	});
+	aktMenu.add(mi);
+
+	aktMenu.addSeparator();
+	
+	mi = new MenuItem("Alle Aktien an FSE");
+	mi.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			listeAktualisieren("FSE");
+		}
+	});
+	aktMenu.add(mi);
+
+	mi = new MenuItem("Alle Aktien an Xetra");
+	mi.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			listeAktualisieren("ETR");
+		}
+	});
+	aktMenu.add(mi);
+	
+	aktMenu.addSeparator();
+	
+	mi = new MenuItem("DAX-Kamera",new MenuShortcut(KeyEvent.VK_D));
+	mi.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			callKamera();
+		}
+	});
+	aktMenu.add(mi);
+	
+	mi = new MenuItem("Kaufen...",new MenuShortcut(KeyEvent.VK_K));
+	mi.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			callNeueAktie();
+		}
+	});
+	aktieMenu.add(mi);
+
+	menuVerkaufen = new MenuItem("Verkaufen...");	
+	menuVerkaufen.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			listeSelektierteAktieVerkaufen();
+		}
+	});
+	aktieMenu.add(menuVerkaufen);
+
+	menuAendern = new MenuItem("\u00c4ndern...");
+	menuAendern.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			listeSelektierteAktieAendern();
+		}
+	});
+	aktieMenu.add(menuAendern);
+
+	aktieMenu.addSeparator();
+
+	menuLoeschen = new MenuItem("L\u00f6schen...");
+	menuLoeschen.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			listeSelektierteAktieLoeschen();
+		}
+	});
+	aktieMenu.add(menuLoeschen);
+	
+	aktieMenu.addSeparator();
+
+	menuInfo = new MenuItem("Info",new MenuShortcut(KeyEvent.VK_I));
+	menuInfo.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			listeSelektierteAktieInfo();
+		}
+	});
+	aktieMenu.add(menuInfo);
+
+	menuChart = new ChartMenu();
+	aktieMenu.add(menuChart);
+
+	menuMaxkurs = new MenuItem("Maximalkurs",new MenuShortcut(KeyEvent.VK_M));
+	menuMaxkurs.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			listeSelektierteAktieMaxkurs();
+		}
+	});
+	aktieMenu.add(menuMaxkurs);
+
+	disableAktienButtons();
 }
 
 
@@ -683,44 +705,62 @@ private void checkAktienButtons(BenutzerAktie ba) {
 		if ((ba.getStueckzahl() > 0L) && (ba.getKurs() > 0L) && (!ba.nurBeobachten()))
 		{
 			buttonVerkaufen.setEnabled(true);
-			buttonSplitten.setEnabled(false); /**/
+			menuVerkaufen.setEnabled(true);
 		}
 		else
 		{
 			buttonVerkaufen.setEnabled(false);
-			buttonSplitten.setEnabled(false);
+			menuVerkaufen.setEnabled(false);
 		}
 
 		if (ba.getKurs() > 0L)
 		{
-			setChartChoice(AktienMan.listeDAX.isMember(ba.getWKN()));
+			boolean intraday = AktienMan.listeDAX.isMember(ba.getWKN());
+
+			setChartChoice(intraday);
 			buttonChart.setEnabled(true);
+			
+			menuChart.setIntraday(intraday);
+			menuChart.setEnabled(true);
 		}
 		else
 		{
 			buttonChart.setEnabled(false);
+			menuChart.setEnabled(false);
 		}
 		
 		buttonAendern.setEnabled(true);
-		buttonLoeschen.setEnabled(true);
+		buttonInfo.setEnabled(true);
+
+		menuAendern.setEnabled(true);
+		menuLoeschen.setEnabled(true);
+		menuInfo.setEnabled(true);
 
 		if (ba.isBoerseFondsOnly())
 		{
 			buttonMaxkurs.setEnabled(false);
+			menuMaxkurs.setEnabled(false);
 		}
 		else
 		{
 			buttonMaxkurs.setEnabled(true);
+			menuMaxkurs.setEnabled(true);
 		}
 	}
 	else
 	{
 		buttonVerkaufen.setEnabled(false);
-		buttonSplitten.setEnabled(false);
 		buttonAendern.setEnabled(false);
-		buttonLoeschen.setEnabled(false);
 		buttonChart.setEnabled(false);
 		buttonMaxkurs.setEnabled(false);
+		buttonInfo.setEnabled(false);
+
+		menuVerkaufen.setEnabled(false);
+		menuAendern.setEnabled(false);
+		menuLoeschen.setEnabled(false);
+		menuChart.setEnabled(false);
+		menuMaxkurs.setEnabled(false);
+		menuInfo.setEnabled(false);
 	}
 }
 
@@ -741,32 +781,36 @@ private void checkLockButtons() {
 }
 
 
+public long getAnzahlAktien() {
+	return benutzerliste.size();
+}
+
+
+public BenutzerAktie getAktieNr(int index) {
+	return benutzerliste.getAt(index);
+}
+
+
 private void checkListButtons() {
 	if (isLocked(false))
 	{
-		buttonDrucken.setEnabled(false);
 		buttonSpeichern.setEnabled(false);
 		
-		fileSave.setEnabled(false);
-		filePrint.setEnabled(false);
+		menuSave.setEnabled(false);
 	}
 	else
 	{
-		if (benutzerliste.size() > 0)
+		if (getAnzahlAktien() > 0)
 		{
-			buttonDrucken.setEnabled(false/*true*/);
 			buttonSpeichern.setEnabled(true);
 
-			fileSave.setEnabled(true);
-			filePrint.setEnabled(false/*true*/);
+			menuSave.setEnabled(true);
 		}
 		else
 		{
-			buttonDrucken.setEnabled(false);
 			buttonSpeichern.setEnabled(false);
 
-			fileSave.setEnabled(false);
-			filePrint.setEnabled(false);
+			menuSave.setEnabled(false);
 
 			benutzerliste.clearDate();
 		}
@@ -788,7 +832,7 @@ public synchronized void listeAktualisieren() {
 private boolean nochNichtAngefordert(String cmp, int bis, String boerse) {
 	for (int i = 0; i < bis; i++)
 	{
-		if (cmp.equalsIgnoreCase(benutzerliste.getAt(i).getRequest(boerse))) return false;
+		if (cmp.equalsIgnoreCase(getAktieNr(i).getRequest(boerse))) return false;
 	}
 
 	return true;
@@ -797,22 +841,28 @@ private boolean nochNichtAngefordert(String cmp, int bis, String boerse) {
 
 public synchronized void listeAktualisieren(String boerse) {
 	if (isLocked(true)) return;
-	
-	if (new ADate().after(new ADate(1998,12,1))) System.exit(0);
+
+	/* #Ablaufdatum */
+	/* #Demoversion */
+	if ((new ADate().after(new ADate(1998,12,22))) && (!main())) System.exit(0);
 	
 	benutzerliste.setDate(boerse);
 	
-	for (int i = 0; i < benutzerliste.size(); i++)
+	for (int i = 0; i < getAnzahlAktien(); i++)
 	{
-		benutzerliste.getAt(i).setStatusRequestingAndRepaint();
+		getAktieNr(i).setStatusRequestingAndRepaint();
 	}
-/*	listeUpdate(false); */
 
-	if (new ADate().after(new ADate(1998,12,2))) return;
+	/* #Ablaufdatum */
+	/* #Demoversion */
+	if ((new ADate().after(new ADate(1998,12,23)))
+		&& (RegAM.string(AktienMan.properties.getString("Key.1"),
+			AktienMan.properties.getString("Key.2"),
+			AktienMan.properties.getString("Key.3")) >= 0)) return;
 
-	for (int i = 0; i < benutzerliste.size(); i++)
+	for (int i = 0; i < getAnzahlAktien(); i++)
 	{
-		String cmp = benutzerliste.getAt(i).getRequest(boerse);
+		String cmp = getAktieNr(i).getRequest(boerse);
 		
 		if (nochNichtAngefordert(cmp,i,boerse))
 		{
@@ -823,20 +873,24 @@ public synchronized void listeAktualisieren(String boerse) {
 
 
 public synchronized void listeNeuerAktienkurs(String wkn, String kurz, String platz,
-												String name, long kurs, String kursdatum, int waehrung) {
+												String name, long kurs, String kursdatum,
+												long vortageskurs, long eroeffnungskurs,
+												long hoechstkurs, long tiefstkurs,
+												long handelsvolumen, int waehrung) {
 	if (wkn.length() == 0) return;
 	if (platz.length() == 0) return;
 
 	boolean valid = false;
 	boolean compPlatz = (benutzerliste.getFesteBoerse().length() == 0);
 	
-	for (int i = 0; i < benutzerliste.size(); i++)
+	for (int i = 0; i < getAnzahlAktien(); i++)
 	{
-		BenutzerAktie ba = benutzerliste.getAt(i);
+		BenutzerAktie ba = getAktieNr(i);
 		
 		if (ba.isEqual(wkn,kurz,platz,compPlatz))
 		{
-			ba.setValues(name,kurs,kursdatum,waehrung);
+			ba.setValues(name,kurs,kursdatum,vortageskurs,eroeffnungskurs,
+							hoechstkurs,tiefstkurs,handelsvolumen,waehrung);
 			valid = true;
 		}
 	}
@@ -852,9 +906,9 @@ public synchronized void listeAktienkursNA(String wkn, String kurz, String platz
 	boolean valid = false;
 	boolean compPlatz = (benutzerliste.getFesteBoerse().length() == 0);
 	
-	for (int i = 0; i < benutzerliste.size(); i++)
+	for (int i = 0; i < getAnzahlAktien(); i++)
 	{
-		BenutzerAktie ba = benutzerliste.getAt(i);
+		BenutzerAktie ba = getAktieNr(i);
 		
 		if (ba.isEqual(wkn,kurz,platz,compPlatz))
 		{
@@ -874,9 +928,9 @@ public synchronized void listeAnfrageFalsch(String wkn, String platz) {
 	boolean valid = false;
 	boolean compPlatz = (benutzerliste.getFesteBoerse().length() == 0);
 
-	for (int i = 0; i < benutzerliste.size(); i++)
+	for (int i = 0; i < getAnzahlAktien(); i++)
 	{
-		BenutzerAktie ba = benutzerliste.getAt(i);
+		BenutzerAktie ba = getAktieNr(i);
 		
 		if (ba.isEqual(wkn,platz,compPlatz))
 		{
@@ -890,11 +944,15 @@ public synchronized void listeAnfrageFalsch(String wkn, String platz) {
 
 
 public synchronized void listeNeueAktie(BenutzerAktie ba) {
-	benutzerliste.add(ba);
-	listeUpdate(true);
-	checkListButtons();
+	/* #Demoversion */
+	if (main() || (getAnzahlAktien() < 3))
+	{
+		benutzerliste.add(ba);
+		listeUpdate(true);
+		checkListButtons();
+	}
 
-	if (benutzerliste.size() == 1)
+	if (getAnzahlAktien() == 1)
 	{
 		Thread t = new Thread() {
 			public synchronized void run() {
@@ -919,16 +977,10 @@ public synchronized void listeSelect(BALabel bal, int row, int mX, int mY,
 	{
 		if (isLocked(true)) return;
 		
-		BenutzerAktie ba = benutzerliste.getAt(row);
+		BenutzerAktie ba = getAktieNr(row);
 		
 		if (ba.isSelected())
 		{
-			if (clicks == 2)
-			{
-				listeSelektierteAktieInfo();
-				return;
-			}
-			
 			if (!ispop)
 			{
 				ba.Unselect();
@@ -941,19 +993,15 @@ public synchronized void listeSelect(BALabel bal, int row, int mX, int mY,
 		}
 		else
 		{
-			for (int i = 0; i < benutzerliste.size(); i++)
+			for (int i = 0; i < getAnzahlAktien(); i++)
 			{
-				benutzerliste.getAt(i).Unselect();
+				getAktieNr(i).Unselect();
 			}
 			
 			ba.Select();
 			enableAktienButtons(ba);
 
-			if (clicks == 2)
-			{
-				listeSelektierteAktieInfo();
-			}
-			else if (ispop)
+			if (ispop)
 			{
 				aktienPopup(ba,bal,mX,mY);
 			}
@@ -965,40 +1013,38 @@ public synchronized void listeSelect(BALabel bal, int row, int mX, int mY,
 private synchronized void aktienPopup(BenutzerAktie ba, BALabel bal, int mX, int mY) {
 	if ((ba.getStueckzahl() > 0L) && (ba.getKurs() > 0L) && (!ba.nurBeobachten()))
 	{
-		menuVerkaufen.setEnabled(true);
-		menuSplitten.setEnabled(false); /**/
+		popVerkaufen.setEnabled(true);
 	}
 	else
 	{
-		menuVerkaufen.setEnabled(false);
-		menuSplitten.setEnabled(false);
+		popVerkaufen.setEnabled(false);
 	}
 	
 	if (ba.getKurs() > 0L)
 	{
-		menuChart.setEnabled(true);
+		popChart.setEnabled(true);
 		
 		if (AktienMan.listeDAX.isMember(ba.getWKN()))
 		{
-			menuIntraday.setEnabled(true);
+			popChart.enableIntraday();
 		}
 		else
 		{
-			menuIntraday.setEnabled(false);
+			popChart.disableIntraday();
 		}
 	}
 	else
 	{
-		menuChart.setEnabled(false);
+		popChart.setEnabled(false);
 	}
 	
 	if (ba.isBoerseFondsOnly())
 	{
-		menuMaxkurs.setEnabled(false);
+		popMaxkurs.setEnabled(false);
 	}
 	else
 	{
-		menuMaxkurs.setEnabled(true);
+		popMaxkurs.setEnabled(true);
 	}
 
 	popParent = bal;
@@ -1031,7 +1077,7 @@ public synchronized void listeUpdate(boolean save) {
 	panelListe.removeAll();
 	panelText.removeAll();
 
-	if (benutzerliste.size() > 0)
+	if (getAnzahlAktien() > 0)
 	{
 		boolean kurz = BenutzerListe.useShortNames();
 		boolean steuerfrei = BenutzerListe.useSteuerfrei();
@@ -1040,9 +1086,9 @@ public synchronized void listeUpdate(boolean save) {
 		
 		int i, yoffs = BenutzerAktie.addHeadingsToPanel(panelListe,benutzerliste.getDateString());
 		
-		for (i = 0; i < benutzerliste.size(); i++)
+		for (i = 0; i < getAnzahlAktien(); i++)
 		{
-			benutzerliste.getAt(i).addToPanel(panelListe,i+yoffs,kurz,steuerfrei);
+			getAktieNr(i).addToPanel(panelListe,i+yoffs,kurz,steuerfrei);
 		}
 		
 		BenutzerAktie.addFooterToPanel(panelListe,i+yoffs,panelText);
@@ -1079,35 +1125,35 @@ public synchronized void windowToFront(Window w) {
 
 
 private synchronized void listeSelektierteAktieMaxkurs() {
-	for (int i = 0; i < benutzerliste.size(); i++)
+	for (int i = 0; i < getAnzahlAktien(); i++)
 	{
-		if (benutzerliste.getAt(i).isSelected())
+		if (getAktieNr(i).isSelected())
 		{
-			new AktieMaximalkurs(benutzerliste.getAt(i));
+			new AktieMaximalkurs(getAktieNr(i));
 			break;
 		}
 	}
 }
 
 
-private synchronized void listeSelektierteAktieChart(String monate) {
-	for (int i = 0; i < benutzerliste.size(); i++)
+public synchronized void listeSelektierteAktieChart(String monate) {
+	for (int i = 0; i < getAnzahlAktien(); i++)
 	{
-		if (benutzerliste.getAt(i).isSelected())
+		if (getAktieNr(i).isSelected())
 		{
-			new ChartLeser(benutzerliste.getAt(i).getRequest(""),monate).start();
+			new ChartLeser(getAktieNr(i).getRequest(""),monate).start();
 			break;
 		}
 	}
 }
 
 
-private synchronized void listeSelektierteAktieIntradayChart(String boerse) {
-	for (int i = 0; i < benutzerliste.size(); i++)
+public synchronized void listeSelektierteAktieIntradayChart(String boerse) {
+	for (int i = 0; i < getAnzahlAktien(); i++)
 	{
-		if (benutzerliste.getAt(i).isSelected())
+		if (getAktieNr(i).isSelected())
 		{
-			new IntradayChartLeser(boerse,benutzerliste.getAt(i)).start();
+			new IntradayChartLeser(boerse,getAktieNr(i)).start();
 			break;
 		}
 	}
@@ -1115,7 +1161,14 @@ private synchronized void listeSelektierteAktieIntradayChart(String boerse) {
 
 
 private synchronized void listeSelektierteAktieInfo() {
-	/**/
+	for (int i = 0; i < getAnzahlAktien(); i++)
+	{
+		if (getAktieNr(i).isSelected())
+		{
+			getAktieNr(i).infoDialogOpen();
+			break;
+		}
+	}
 }
 
 
@@ -1128,11 +1181,11 @@ private synchronized void listeSelektierteAktieAendern() {
 	
 	if (isLocked(true)) return;
 	
-	for (int i = 0; i < benutzerliste.size(); i++)
+	for (int i = 0; i < getAnzahlAktien(); i++)
 	{
-		if (benutzerliste.getAt(i).isSelected())
+		if (getAktieNr(i).isSelected())
 		{
-			AktienMan.aktieaendern = new AktieAendern(i,benutzerliste.getAt(i));
+			AktienMan.aktieaendern = new AktieAendern(i,getAktieNr(i));
 			windowToFront(AktienMan.aktieaendern);
 			break;
 		}
@@ -1149,11 +1202,11 @@ private synchronized void listeSelektierteAktieVerkaufen() {
 	
 	if (isLocked(true)) return;
 	
-	for (int i = 0; i < benutzerliste.size(); i++)
+	for (int i = 0; i < getAnzahlAktien(); i++)
 	{
-		if (benutzerliste.getAt(i).isSelected())
+		if (getAktieNr(i).isSelected())
 		{
-			AktienMan.aktieverkaufen = new AktieVerkaufen(i,benutzerliste.getAt(i));
+			AktienMan.aktieverkaufen = new AktieVerkaufen(i,getAktieNr(i));
 			windowToFront(AktienMan.aktieverkaufen);
 			break;
 		}
@@ -1164,7 +1217,7 @@ private synchronized void listeSelektierteAktieVerkaufen() {
 public synchronized void listeAktieVerkaufen(int index, long anzahl, long verkaufskurs, long gebuehren) {
 	addErloes(true,anzahl*verkaufskurs-gebuehren);
 
-	BenutzerAktie ba = benutzerliste.getAt(index);
+	BenutzerAktie ba = getAktieNr(index);
 	
 	if (ba.getStueckzahl() == anzahl)
 	{
@@ -1189,11 +1242,11 @@ private synchronized void listeSelektierteAktieLoeschen() {
 	
 	if (isLocked(true)) return;
 	
-	for (int i = 0; i < benutzerliste.size(); i++)
+	for (int i = 0; i < getAnzahlAktien(); i++)
 	{
-		if (benutzerliste.getAt(i).isSelected())
+		if (getAktieNr(i).isSelected())
 		{
-			AktienMan.aktieloeschen = new AktieLoeschen(i,benutzerliste.getAt(i));
+			AktienMan.aktieloeschen = new AktieLoeschen(i,getAktieNr(i));
 			windowToFront(AktienMan.aktieloeschen);
 			break;
 		}
@@ -1287,14 +1340,25 @@ public synchronized void listeSpeichern() {
 		try
 		{
 			out = new BufferedWriter(new FileWriter(f));
+
+			String nachname = AktienMan.properties.getString("Key.Nachname");
+			String vorname = AktienMan.properties.getString("Key.Vorname");
 			
 			out.write("<HTML>");
 			out.newLine();
 			out.write("<HEAD>");
 			out.newLine();
 			out.write("<TITLE>");
-			out.write(AktienMan.AMNAME); /* Name reg. Benutzer */
-			out.write("</TITLE>");
+			out.write(AktienMan.AMNAME+" (");
+			if ((nachname.length() > 1) && (vorname.length() > 1))
+			{
+				out.write(vorname+" "+nachname);
+			}
+			else
+			{
+				out.write("DEMOVERSION");
+			}
+			out.write(")</TITLE>");
 			out.newLine();
 			out.write("</HEAD>");
 			out.newLine();
@@ -1307,9 +1371,9 @@ public synchronized void listeSpeichern() {
 			
 			BenutzerAktie.saveHeaderHTML(out,benutzerliste.getDateString());
 
-			for (int i = 0; i < benutzerliste.size(); i++)
+			for (int i = 0; i < getAnzahlAktien(); i++)
 			{
-				benutzerliste.getAt(i).saveHTML(out,kurz,steuerfrei);
+				getAktieNr(i).saveHTML(out,kurz,steuerfrei);
 			}
 
 			BenutzerAktie.saveFooterHTML(out);
@@ -1350,6 +1414,42 @@ public boolean canCancel() {
 
 public boolean canOK() {
 	return false;
+}
+
+
+public boolean main() {
+	/* #SchlŸssel */
+
+	char[] k = AktienMan.properties.getString("Key.3").toCharArray();
+
+	if (!AktienMan.properties.getString("Key.1").equalsIgnoreCase("AMD"))
+	{
+		return false;
+	}
+
+	int valid = 3;
+	
+	if (k.length != 4)
+	{
+		return false;
+	}
+
+	long l = 0L;
+	try
+	{
+		l = Long.parseLong(AktienMan.properties.getString("Key.2"));
+	}
+	catch (NumberFormatException e)
+	{
+		return false;
+	}
+	
+	if (k[0] == ((char) ((l * 31L + 1L) % 26L + 65))) valid--;      /* 1 */
+	if (k[1] == ((char) ((l % 11L) * 2 + 65))) valid--;             /* 2 */
+	if (k[2] == ((char) ((l % 9L) * 3 + (l+1) % 2L + 65))) valid--; /* 3 */
+	if (k[3] == ((char) (l % 13 + l % 11 + l % 3 + 65))) valid--;   /* 4 */
+
+	return (valid < 0);
 }
 
 

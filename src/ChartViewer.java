@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-16
+ @version 1998-11-21
 */
 
 import java.awt.*;
@@ -21,6 +21,7 @@ private static final int STATUS_FINISHED = 2;
 
 private Image[] comdirectCharts = new Image[3];
 private Image chartImage = null;
+private ChartLoader chartloader = null;
 private int initWidth;
 private int initHeight;
 private String comstr1,comstr2,aktMonate = "";
@@ -100,8 +101,6 @@ private void neuZeichnen() {
 public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
 	if (((infoflags & WIDTH) != 0) && ((infoflags & HEIGHT) != 0))
 	{
-/*		if (maxWidth > 0) width = maxWidth;
-		setBounds((AktienMan.screenSize.width-width)/2,(AktienMan.screenSize.height-height)/2,width,height); */
 		neuZeichnen();
 	}
 
@@ -120,6 +119,20 @@ public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, in
 public synchronized void setComdirectStrings(String s1, String s2) {
 	comstr1 = s1;
 	comstr2 = s2;
+}
+
+
+public synchronized void setChartLoader(ChartLoader chartloader) {
+	this.chartloader = chartloader;
+}
+
+
+public void closed() {
+	if (chartloader != null)
+	{
+		chartloader.stop();
+		chartloader = null;
+	}
 }
 
 
@@ -164,7 +177,7 @@ private synchronized void switchImage(String monate) {
 		
 		if (newChart == null)
 		{
-			new ChartLoader(this,comstr1+aktMonate+comstr2).start();
+			new ChartLoader(this,comstr1+aktMonate+comstr2,false).start();
 		}
 		else
 		{

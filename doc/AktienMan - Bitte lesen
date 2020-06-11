@@ -1,4 +1,4 @@
-AktienMan 0.92 Preview-Version
+AktienMan 0.95
 Copyright ©1998 Thomas Much
 Ein Programm von AktienMan&Friends (<http://www.aktienman.de>).
 
@@ -13,9 +13,9 @@ Systemvoraussetzung für AktienMan/Mac sind ein Apple PowerMacintosh mit mindeste
 Normalerweise wird MRJ 2.0 bei der Installation von MacOS 8.1 bzw. 8.5 automatisch mitinstalliert. Haben sie MRJ dennoch nicht installiert, legen Sie bitte Ihre MacOS-System-CD ein und lassen MRJ vom Aktualisierer nachträglich installieren.
 Die eigentliche Installation von AktienMan ist denkbar einfach: Sie haben das AktienMan-Archiv bereits heruntergeladen und mit StuffIt ausgepackt. Das war es auch schon, eine weitere Installation ist nicht notwendig! Klicken Sie einfach doppelt auf das Programmsymbol "AktienMan". AktienMan wird geladen, und nach wenigen Sekunden - abhängig von der Geschwindigkeit des Rechners - erscheint das Hauptfenster. Wer mit dem Aktienhandel bereits vertraut ist, sollte AktienMan weitestgehend intuitiv bedienen können. Und ansonsten erhält man nach der Registrierung natürlich ein gedrucktes Handbuch.
 
-Einschränkungen der Preview-Version
-Die wesentlichste Einschränkung der Preview-Version ist, daß sie nach dem 30.11.98 ihren Dienst verweigert. Sie können dann entweder eine aktuelle Demoversion herunterladen (müssen dann aber alle Aktiendaten neu eingeben), oder aber sie lassen sich registrieren (s.u.).
-In der Preview-Version sind außerdem noch nicht alle Funktionen der Version 1.0 enthalten (z.B. "Aktien splitten"). Eine registrierbare Demoversion 1.0 wird in Kürze auf unserer Homepage zur Verfügung stehen.
+Einschränkungen der Demo-Version
+Die wesentlichste Einschränkung der Demo-Version ist, daß sie nach dem 21.12.98 ihren Dienst verweigert. Sie können dann entweder eine aktuelle Demoversion herunterladen (müssen dann aber alle Aktiendaten neu eingeben), oder aber sie lassen sich registrieren.
+In der Demo-Version können außerdem max. drei Aktien verwaltet werden.
 
 Bestellung der Vollversion
 Sie können jederzeit eine aktuelle Version von AktienMan aus dem Internet von der Seite <http://www.aktienman.de> herunterladen. Diese Version funktioniert über eine Dauer von zwei Wochen und kann in dieser Zeit kostenlos benutzt werden. Nach zwei Wochen läuft die Version ab. Wenn Sie Gefallen an AktienMan gefunden haben und weiter benutzen möchten, können Sie das komplette Handbuch und einen Schlüssel zur dauerhaften Freischaltung von
@@ -25,6 +25,17 @@ Rechtliches
 AktienMan kann auf einem beliebigen Rechner/Betriebssystem eingesetzt werden. Es muß lediglich gewährleistet sein, daß AktienMan nur vom registrierten Benutzer zum Einsatz kommt. Jeder registrierte Benutzer kann für jeweils DM 50,-- (inkl. Mwst.) weitere Schlüssel von AktienMan&Friends bestellen.
 
 Versionsübersicht
+Version 0.95 (26.11.98)
+- AktienMan kann nun beim Programmstart registriert werden, wenn man die Vollversion
+  (und damit einen passenden Schlüssel) gekauft hat
+- neue globale Menüs "Aktualisieren" und "Aktie" (funktionieren wie die Buttons oder das
+  Kontextpopup im Hauptdialog)
+- neuer "Info"-Dialog; darin zeigt AktienMan die Tagesdaten zur Aktie sowie Höchst- und
+  Tiefstkurs seit der ersten Aktualisierung an
+- Reihenfolge der Buttons im Hauptdialog etwas optimiert
+- das Löschen von Aktien erfolgt nun entweder über das Kontextpopup oder über den
+  "Aktie ändern"-Dialog
+- auch die Intraday-Charts werden nun per Timer automatisch aktualisiert
 Version 0.92 (16.11.98)
 - Button "Beobachten" im Dialog "Neue Aktie"; dabei braucht außer der Aktie bzw. WKN
   nichts eingegeben werden; damit kann man Aktienkurse überwachen, ohne daß solche

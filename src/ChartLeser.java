@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-16
+ @version 1998-11-21
 */
 
 import java.net.*;
@@ -54,7 +54,7 @@ public void run() {
 
 					chartviewer.setComdirectStrings(s1,s2);
 
-					new ChartLoader(chartviewer,s1+monate+s2).start();
+					new ChartLoader(chartviewer,s1+monate+s2,true).start();
 					return;
 				}
 			}

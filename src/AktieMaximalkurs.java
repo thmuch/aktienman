@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-03
+ @version 1998-11-20
 */
 
 import java.awt.*;
@@ -103,7 +103,7 @@ private synchronized void fillKursPanel(boolean draw) {
 		if (!b.isFondsOnly())
 		{
 			constrain(panelKurse,new Label(b.getName()),0,ypos,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
-			constrain(panelKurse,new Label("("+b.getKurz()+"):"),1,ypos,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+			constrain(panelKurse,new Label("("+b.getKurz()+"):"),1,ypos,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 			
 			String s;
 			long k = kurse[i];
@@ -134,9 +134,9 @@ private synchronized void fillKursPanel(boolean draw) {
 			{
 				l.setForeground(Color.red);
 			}
-			constrain(panelKurse,l,2,ypos,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
+			constrain(panelKurse,l,2,ypos,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,10,0,0);
 
-			constrain(panelKurse,new Label(kursdatum[i]),3,ypos,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,0,0,0);
+			constrain(panelKurse,new Label(kursdatum[i]),3,ypos,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,10,0,0);
 			
 			ypos++;
 		}

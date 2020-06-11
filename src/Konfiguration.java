@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-13
+ @version 1998-11-23
 */
 
 import java.awt.*;
@@ -51,7 +51,7 @@ public void setupElements() {
 
 	constrain(panelStandard,new Label("Standard-Gewinngrenze:"),0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
 	constrain(panelStandard,tfStdGewinn,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
-	constrain(panelStandard,new Label("%"),2,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
+	constrain(panelStandard,new Label("%"),2,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,2,0,0);
 
 	constrain(panelStandard,new Label("Standard-W\u00e4hrung:"),0,2,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
 

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-15
+ @version 1998-11-23
 */
 
 import java.awt.*;
@@ -15,7 +15,7 @@ private TextField stueckzahl,hochkurs,tiefkurs,gewinngrenze;
 private Choice plaetze,waehrung;
 private Checkbox boerseNurDiese,gewinnAbs,gewinnProz,watchOnly;
 private CheckboxGroup gewinnGruppe;
-private Button buttonChange;
+private Button buttonChange,buttonDelete;
 
 
 
@@ -120,6 +120,7 @@ public void setupElements2() {
 
 	Button buttonCancel = new Button(Lang.CANCEL);
 	buttonChange = new Button(Lang.CHANGE);
+	buttonDelete = new Button(Lang.DELETE);
 	
 	buttonChange.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -133,8 +134,15 @@ public void setupElements2() {
 		}
 	});
 
+	buttonDelete.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			doDelete();
+		}
+	});
+
 	constrain(panelButtons,buttonCancel,0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,10);
-	constrain(panelButtons,buttonChange,1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,1.0,0.0,0,0,0,0);
+	constrain(panelButtons,buttonDelete,1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,10);
+	constrain(panelButtons,buttonChange,2,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
 
 	constrain(this,panelOben,0,0,2,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,10,10,0,10);
 	constrain(this,panelMitte,0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,5,10,0,10);
@@ -155,6 +163,7 @@ public void setupElements2() {
 public synchronized void executeOK() {
 	String s;
 	
+	buttonDelete.setEnabled(false);
 	buttonChange.setEnabled(false);
 
 	String name = neuername.getText().trim();
@@ -415,6 +424,16 @@ public synchronized boolean canOK() {
 	}
 
 	return true;
+}
+
+
+private void doDelete() {
+	buttonDelete.setEnabled(false);
+	buttonChange.setEnabled(false);
+	
+	AktienMan.hauptdialog.listeAktieLoeschen(index);
+
+	dispose();
 }
 
 

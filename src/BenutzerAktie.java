@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-14
+ @version 1998-11-20
 */
 
 import java.awt.*;
@@ -40,6 +40,7 @@ private transient Color farbeSteuerfrei;
 private transient Color farbeName;
 private transient Color farbeSelected;
 private transient boolean selected = false;
+private transient AktieInfo infodialog = null;
 private transient BALabel l1,l2,l3,l4,l5,l6,l7,l8,l9,l10,l11,l12;
 
 private String name,wkn,kursdatum;
@@ -47,7 +48,20 @@ private Boersenplatz boersenplatz;
 private ADate kaufdatum;
 private ADate steuerfrei;
 private long kaufkurs,hochkurs,tiefkurs,gewinngrenze,prozgrenze,stueckzahl;
+
 private long kurs = VALUE_MISSING;
+private long vortageskurs = VALUE_MISSING;
+private long eroeffnungskurs = VALUE_MISSING;
+private long hoechstkurs = VALUE_MISSING;
+private long tiefstkurs = VALUE_MISSING;
+private long handelsvolumen = 0L;
+
+private ADate watchstart = null;
+private long watchhoechst = VALUE_MISSING;
+private long watchtiefst = VALUE_MISSING;
+private String watchhdate = null;
+private String watchtdate = null;
+
 private int waehrung = Waehrungen.DEM;
 private boolean nurdiese = false;
 private boolean usegrenze = true;
@@ -123,6 +137,19 @@ public String getProzentString() {
 }
 
 
+private String datum2String(String datum) {
+	if (datum == null) return "";
+	if (datum.length() == 0) return "";
+	
+	return "(" + datum + ")";
+}
+
+
+public synchronized String getKursdatumString() {
+	return datum2String(kursdatum);
+}
+
+
 public long getHochkurs() {
 	return hochkurs;
 }
@@ -170,6 +197,63 @@ public boolean doUseGrenze() {
 
 public boolean nurBeobachten() {
 	return watchonly;
+}
+
+
+public synchronized String getVortageskursString() {
+	return kurs2String(vortageskurs);
+}
+
+
+public synchronized String getEroeffnungskursString() {
+	return kurs2String(eroeffnungskurs);
+}
+
+
+public synchronized String getHoechstkursString() {
+	return kurs2String(hoechstkurs);
+}
+
+
+public synchronized String getTiefstkursString() {
+	return kurs2String(tiefstkurs);
+}
+
+
+public synchronized String getHandelsvolumenString() {
+	return new Long(handelsvolumen).toString();
+}
+
+
+public synchronized String getWatchStartString() {
+	if (watchstart == null)
+	{
+		return "";
+	}
+	else
+	{
+		return watchstart.toString();
+	}
+}
+
+
+public synchronized String getWatchHoechstString() {
+	return kurs2String(watchhoechst);
+}
+
+
+public synchronized String getWatchHoechstDatumString() {
+	return datum2String(watchhdate);
+}
+
+
+public synchronized String getWatchTiefstString() {
+	return kurs2String(watchtiefst);
+}
+
+
+public synchronized String getWatchTiefstDatumString() {
+	return datum2String(watchtdate);
 }
 
 
@@ -484,11 +568,14 @@ public synchronized void setValues(long kurs) {
 
 
 public synchronized void setValues(String name, long kurs) {
-	setValues(name,kurs,"",getWaehrung());
+	setValues(name,kurs,"",VALUE_NA,VALUE_NA,VALUE_NA,VALUE_NA,0L,getWaehrung());
 }
 
 
-public synchronized void setValues(String name, long kurs, String kursdatum, int kurswaehrung) {
+public synchronized void setValues(String name, long kurs, String kursdatum,
+									long vortageskurs, long eroeffnungskurs,
+									long hoechstkurs, long tiefstkurs,
+									long handelsvolumen, int kurswaehrung) {
 	if (name.length() > 0)
 	{
 		if ((this.name.length() == 0) || AktienMan.properties.getBoolean("Konfig.Aktiennamen"))
@@ -498,9 +585,14 @@ public synchronized void setValues(String name, long kurs, String kursdatum, int
 	}
 
 	// kurswaehrung beachten!
-	this.kurs = kurs;
 
+	this.kurs = kurs;
 	this.kursdatum = kursdatum;
+	this.vortageskurs = vortageskurs;
+	this.eroeffnungskurs = eroeffnungskurs;
+	this.hoechstkurs = hoechstkurs;
+	this.tiefstkurs = tiefstkurs;
+	this.handelsvolumen = handelsvolumen;
 	
 	if ((kaufkurs == VALUE_MISSING) && nurBeobachten())
 	{
@@ -508,8 +600,26 @@ public synchronized void setValues(String name, long kurs, String kursdatum, int
 		kaufdatum = new ADate();
 		setupValues();
 	}
+
+	if ((kurs > VALUE_MISSING) && (watchstart == null))
+	{
+		watchstart = new ADate();
+	}
+
+	if ((hoechstkurs > VALUE_MISSING) && ((hoechstkurs > watchhoechst) || (watchhoechst == VALUE_MISSING)))
+	{
+		watchhoechst = hoechstkurs;
+		watchhdate = kursdatum;
+	}
+		
+	if ((tiefstkurs > VALUE_MISSING) && ((tiefstkurs < watchtiefst) || (watchtiefst == VALUE_MISSING)))
+	{
+		watchtiefst = tiefstkurs;
+		watchtdate = kursdatum;
+	}
 	
 	clearStatusRequesting();
+	infoDialogSetValues(true);
 }
 
 
@@ -540,6 +650,8 @@ public synchronized void changeValues(String newName, String newWKN, Boersenplat
 		kurs = VALUE_MISSING;
 		kursdatum = "";
 	}
+	
+	infoDialogSetValues(true);
 }
 
 
@@ -1192,15 +1304,7 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 	}
 	AFrame.constrain(p,l2,3,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
 	
-	s = "";
-	if (kursdatum != null)
-	{
-		if (kursdatum.length() > 0)
-		{
-			s = " (" + kursdatum + ")";
-		}
-	}
-	l11 = new BALabel(s,row);
+	l11 = new BALabel(" "+getKursdatumString(),row);
 	AFrame.constrain(p,l11,4,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,ZEILENABSTAND,0,0,0);
 	
 	/* (5) akt. Wert: */
@@ -1360,6 +1464,39 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 	/* */
 	
 	Unselect();
+}
+
+
+public synchronized void infoDialogOpen() {
+	if (infodialog == null)
+	{
+		infodialog = new AktieInfo(this);
+
+		infoDialogSetValues(false);
+
+		if (infodialog != null)
+		{
+			infodialog.show();
+			AktienMan.hauptdialog.windowToFront(infodialog);
+		}
+	}
+	else
+	{
+		infodialog.toFront();
+	}
+}
+
+
+public synchronized void infoDialogSetValues(boolean draw) {
+	if (infodialog != null)
+	{
+		infodialog.setValues(draw);
+	}
+}
+
+
+public synchronized void infoDialogClosed() {
+	infodialog = null;
 }
 
 }

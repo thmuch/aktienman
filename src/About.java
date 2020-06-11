@@ -1,55 +1,12 @@
 /**
  @author Thomas Much
- @version 1998-11-03
+ @version 1998-11-25
 */
 
 import java.awt.*;
-import java.awt.image.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
-
-
-
-public class AboutCanvas extends Component {
-
-private static final int IMGWIDTH = 300;
-private static final int IMGHEIGHT = 255;
-
-
-
-public AboutCanvas() {
-	super();
-}
-
-
-public Dimension getMinimumSize() {
-	return new Dimension(IMGWIDTH,IMGHEIGHT);
-}
-
-
-public Dimension getMaximumSize() {
-	return new Dimension(IMGWIDTH,IMGHEIGHT);
-}
-
-
-public Dimension getPreferredSize() {
-	return new Dimension(IMGWIDTH,IMGHEIGHT);
-}
-
-
-public Dimension getSize() {
-	return new Dimension(IMGWIDTH,IMGHEIGHT);
-}
-
-
-public void paint(Graphics g)
-{
-	if (About.aboutImage != null) g.drawImage(About.aboutImage,0,-5,this);
-}
-
-}
-
 
 
 
@@ -83,10 +40,24 @@ public void setupElements() {
 	constrain(this,new Label("Copyright \u00a91998 Thomas Much",Label.CENTER),0,2,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,0,10,0,10);
 	constrain(this,new Label("Ein Programm von AktienMan&Friends.",Label.CENTER),0,3,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,0,10,0,10);
 	constrain(this,new Label("http://www.aktienman.de",Label.CENTER),0,4,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,0,10,0,10);
-//	constrain(this,new Label("Registriert auf: ***Betatester***",Label.CENTER),0,5,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,0,10,0,10);
 
-	Label l = new Label("PREVIEW-VERSION, L\u00c4UFT AM 30.11.98 AB!",Label.CENTER);
-	l.setForeground(Color.red);
+	Label l;
+	
+	String nachname = AktienMan.properties.getString("Key.Nachname");
+	String vorname = AktienMan.properties.getString("Key.Vorname");
+	
+	/* #SchlŸssel */
+	if ((nachname.length() > 1) && (vorname.length() > 1) && (AktienMan.properties.getString("Key.1").equalsIgnoreCase("AMD")))
+	{
+		l = new Label("Registriert auf: "+vorname+" "+nachname,Label.CENTER);
+	}
+	else
+	{
+		/* #Demoversion */
+		l = new Label(Lang.DEMOVERSION,Label.CENTER);
+		l.setForeground(Color.red);
+	}
+
 	constrain(this,l,0,5,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,0,10,0,10);
 	
 	Button buttonOK = new Button(Lang.OK);

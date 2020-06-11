@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-15
+ @version 1998-11-23
 */
 
 import java.awt.*;
@@ -10,8 +10,8 @@ import java.awt.image.*;
 
 public class DAXKamera extends AFrame implements ImageObserver {
 
-public static final int KAMERABREITE = 432;
-public static final int KAMERAHOEHE  = 190;
+private static final int KAMERABREITE = 404;
+private static final int KAMERAHOEHE  = 308;
 
 public static final int S_LOADING =  0;
 public static final int S_ERROR   =  1;
@@ -39,10 +39,8 @@ public void setupElements() {
 
 
 public void setupSize() {
-	int x = AktienMan.screenSize.width-KAMERABREITE;
-	int y = 50;
-	int w = KAMERABREITE-15;
-	int h = KAMERAHOEHE;
+	int x = AktienMan.screenSize.width-KAMERABREITE-50;
+	int y = 40;
 
 	int oldx = AktienMan.properties.getInt("Kamera.X");
 	int oldy = AktienMan.properties.getInt("Kamera.Y");
@@ -51,7 +49,7 @@ public void setupSize() {
 	
 	if ((oldx < 0) || (oldy < 0) || (oldwidth <= 0) || (oldheight <= 0))
 	{
-		setBounds(x,y,w,h);
+		setBounds(x,y,KAMERABREITE,KAMERAHOEHE);
 	}
 	else
 	{
@@ -121,9 +119,9 @@ public void neuZeichnen() {
 
 
 public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
-	if (((infoflags & ImageObserver.WIDTH) > 0) && ((infoflags & ImageObserver.HEIGHT) > 0))
+	if (((infoflags & WIDTH) != 0) && ((infoflags & HEIGHT) != 0))
 	{
-		setSize(12+width,(height*3)/5);
+		neuZeichnen();
 	}
 
 	return super.imageUpdate(img,infoflags,x,y,width,height);

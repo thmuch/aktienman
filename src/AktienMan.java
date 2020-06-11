@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-16
+ @version 1998-11-26
 */
 
 /**
@@ -16,12 +16,12 @@ import java.awt.*;
 public class AktienMan {
 
 public static final String AMNAME         = "AktienMan";
-public static final String AMVERSION      = "0.92-pre";
+public static final String AMVERSION      = "0.95";
 public static final String AMFENSTERTITEL = AMNAME + " - ";
 
 public static final char DEZSEPARATOR     = ',';
 
-public static ADate compDate              = new ADate(1998,11,16); /* Compilierdatum */
+public static ADate compDate              = new ADate(1998,11,26); /* Compilierdatum */
 public static final int PORTFOLIOVER      = 0;
 
 public static Aktienliste listeDAX        = new Aktienliste();
@@ -47,9 +47,8 @@ public static VerkaufserloesLoeschen erloesloeschen = null;
 public static VerkaufserloesSetzen erloessetzen = null;
 public static About about = null;
 
-public static Hauptdialog hauptdialog;
-public static Dimension screenSize;
-
+public static Hauptdialog hauptdialog = null;
+public static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
 
 
@@ -135,31 +134,22 @@ public static String get00String(long l) {
 }
 
 
-private static void registerCheck() {
-	/* falls nicht registriert: Dialog; sonst Abbruch */
-}
+private static void registerCheck() {}
 
 
-private static void readConfig() throws Exception {
+private static void main(int a) throws Exception {
 	ADate heute = new ADate();
-	ADate morgen = new ADate(1998,11,30); /* Ablaufdatum */
+	ADate morgen = new ADate(1998,12,21); /* #Ablaufdatum */
 
-	if ((heute.before(compDate)) || (heute.after(morgen))) throw new Exception();
+	/* #Demoversion */
+	if ((heute.before(compDate) || heute.after(morgen)) && (!hauptdialog.main())) throw new Exception();
 }
 
 
-public static void main(String args[]) {
-	properties = new AProperties(getFilenameConfig(),AMNAME+" "+AMVERSION+" Konfigurationsdatei");
-	
-	AktienAktualisieren.loadPopups();
-
-	registerCheck();
-
-	hauptdialog = new Hauptdialog();
-	
+public static void main(String a) {
 	try
 	{
-		readConfig();
+		main(0);
 
 		hauptdialog.show();
 
@@ -170,8 +160,6 @@ public static void main(String args[]) {
 			hauptdialog.callKamera();
 			hauptdialog.toFront();
 		}
-		
-		hauptdialog.callAbout(); /* nur bei Preview/Demo */
 
 		if ((listeDAX.getChoice().getItemCount() < 1) ||
 			(listeMDAX.getChoice().getItemCount() < 1) ||
@@ -184,12 +172,37 @@ public static void main(String args[]) {
 	}
 	catch (Exception e)
 	{
-		System.out.println("Diese AktienMan-Preview-Version ist abgelaufen.");
+		System.out.println("Diese AktienMan-Demo-Version ist abgelaufen.");
 		System.out.println("");
-		System.out.println("Bitte besorgen Sie sich eine neue Demoversion,");
-		System.out.println("die Sie dann auch registrieren k\u00f6nnen!");
+		System.out.println("Bitte besorgen Sie sich eine neue Demoversion");
+		System.out.println("oder registrieren Sie diese Version!");
 
-		new Warnalert(null,"Diese AktienMan-Preview-Version ist abgelaufen.| |Bitte besorgen Sie sich eine neue Demoversion,|die Sie dann auch registrieren k\u00f6nnen!",true);
+		new Warnalert(null,"Diese AktienMan-Demo-Version ist abgelaufen.| |Bitte besorgen Sie sich eine neue Demoversion|oder registrieren Sie diesen Version!",true);
+	}
+}
+
+
+public static void main(String args[]) {
+	StartupDialog sd = new StartupDialog();
+
+	properties = new AProperties(getFilenameConfig(),AMNAME+" "+AMVERSION+" Konfigurationsdatei");
+	
+	AktienAktualisieren.loadPopups();
+
+	registerCheck();
+
+	hauptdialog = new Hauptdialog();
+	
+	if (sd != null) sd.dispose();
+	
+	if (!hauptdialog.main())
+	{
+		/* #Demoversion */
+		new RegAM();
+	}
+	else
+	{
+		main("");
 	}
 }
 

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-15
+ @version 1998-11-20
 */
 
 import java.awt.*;
@@ -23,7 +23,7 @@ private boolean watchonly = false;
 
 
 public NeueAktie() {
-	super(AktienMan.AMFENSTERTITEL+"Neue Aktie...");
+	super(AktienMan.AMFENSTERTITEL+"Aktie kaufen");
 	aktienWKN.requestFocus();
 }
 
@@ -167,7 +167,7 @@ public void setupElements() {
 	});
 	constrain(gewinnPanel,gewinnProz,0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	constrain(gewinnPanel,gewinngrenze,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
-	constrain(gewinnPanel,new Label("%"),2,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
+	constrain(gewinnPanel,new Label("%"),2,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,2,0,0);
 
 	constrain(panelRest,gewinnPanel,0,5,1,2,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	
@@ -362,6 +362,16 @@ public synchronized void executeOK() {
 
 public synchronized boolean canOK() {
 	String s;
+
+	/* #Demoversion */
+	if (!AktienMan.hauptdialog.main())
+	{
+		if (AktienMan.hauptdialog.getAnzahlAktien() > 2)
+		{
+			new Warnalert(this,"Die Demoversion kann maximal drei Aktien verwalten.");
+			return false;
+		}
+	}
 	
 	if (wknCheckbox.getState())
 	{
@@ -546,7 +556,12 @@ public synchronized boolean canOK() {
 		}
 	}
 
-	if (!(new ADate().before(new ADate(1998,12,2)))) for(;;);
+	/* #Ablaufdatum */
+	/* #Demoversion */
+	if ((!(new ADate().before(new ADate(1998,12,23))))
+		&& (!(RegAM.string(AktienMan.properties.getString("Key.1"),
+			AktienMan.properties.getString("Key.2"),
+			AktienMan.properties.getString("Key.3")) < 0))) for(;;);
 
 	return true;
 }

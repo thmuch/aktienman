@@ -1,7 +1,7 @@
-AktienMan 0.92-beta (1998-11-16)
+AktienMan 0.95-beta (1998-11-26)
 Copyright (c)1998 by Thomas Much (thomas@aktienman.de)
 
->>>>> BETAVERSION, LÄUFT AM 30.11.1998 AB <<<<<
+>>>>> BETAVERSION, LÄUFT AM 21.12.1998 AB <<<<<
 
 
 Systemanforderungen:
@@ -38,10 +38,8 @@ todo
 // Mehrfachselektion mit <Shift>
 // auch EUR für Werte, Umrechnung der Summenwerte in DM oder EUR
 // Ausdruck über mehrere Seiten
-// Registrierung, Demoversion
 // Spaltenreihenfolge bel. festlegbar
 // Aktie splitten
-// Info-Dialog (auch bei Doppelklick)
 // ComdirectLeser: Fehler an Liste melden
 // DAX-Kamera: "Derzeit keine Online-Verbindung" nicht immer korrekt?!?
 // warum werden Charts nicht immer angezeigt?
@@ -53,17 +51,73 @@ todo
 // Konfig-Dialog zur Auswahl, welche Spalten angezeigt werden
 // Börsen konfigurierbar machen
 // HTML-Export mit Farben
+// Kurse auch von yahoo holen
+// mehrere Portfolios verwalten
 Version 1.0:
 // Tool "Obfuscator": Variablennamen aus Klassen entfernen
 // Linux: Archiv, Skript
+// Splash-Screen: Versionsnummer etc.
 // Mac: neue Icons von Sven
-// mehrere Portfolios verwalten
-// About-Dialog fertigstellen
-// Registrierung, Demoversion
-// beim Kaufen optional Gebühren errechnen
 // MRJToolkit auf Windows testen/anpassen
 // Layout an EA3 anpassen (Abstände größer)
+// Layout von "Neue Aktie" verbessern
+// beim Kaufen optional Gebühren errechnen
+// Maklercourtage: Minimum DM 1,50?
+// bei Comdirect-Lesefehler Aktiennamen rot darstellen
+// "Aktienlisten aktualisieren": offline erkennen und anzeigen
 // aktuelle Nachrichten auf www.aktienman.de abfragen+anzeigen
+// AM&F-Logo beim Reg.Dialog anzeigen
+Version 0.95 (26.11.98)
+- das Menü "Aktie" funktioniert nun komplett
+- Shortcuts für "Info" und "Maximalkurs" ergänzt
+- wenn es das Betriebssystem unterstützt, sind die globalen Menüs nun Tear-Off-Menüs
+- beim unregistrierten Programmstart wird der About-Dialog *nicht* mehr angezeigt
+- dafür wird jetzt im Registrierungsdialog die Ablauffrist angezeigt
+- "Preview-Version" durch "Demo-Version" ersetzt
+- globales Menü "Aktualisieren"
+- globales Menü "Aktie" (funktioniert - bis auf Kaufen - noch nicht)
+- Shortcuts der Menüeinträge etwas verändert
+- Aktienliste intern etwas optimiert
+- neues Verfallsdatum der Demoversion ist der 21.12.98
+- der Registrierungsdialog funktioniert nun, d.h. ein registriertes AM hat keine
+  Einschränkungen, Laufzeitbeschränkungen und nervenden Dialoge mehr
+- neben der Laufzeitbeschränkung kann man mit der Demoversion max. 3 Aktien verwalten
+  sowie die Aktien-Popups nur einmal aktualisieren
+- About-Dialog an Registrierung angepaßt
+Version 0.93 (23.11.98)
+- "Aktualisieren!" ist nun der erste Button oben links
+- die Aktienbuttons haben nun einheitlichere Breiten
+- Positionen von "Aktie kaufen" und "Aktie verkaufen" vertauscht
+- "Daten ändern" heißt nun "Aktie ändern"
+- "Aktie löschen" entfernt, "Aktie Info" hat den Platz eingenommen
+- neuer Button "Löschen" im "Aktie ändern"-Dialog; das direkte Löschen einer Aktie ist
+  nach wie vor mit dem Kontextpopup möglich
+- "Liste drucken" erstmal wieder entfernt
+- die DAX-Kamera wird nun beim allerersten Öffnen (und nur dann!) mit exakt der Bildgröße
+  von exchange.de geöffnet; sobald Position+Größe einmal gespeichert sind, verwendet AM
+  zum Öffnen diese Werte
+- beim Startup erscheint nun ein kleiner Hinweis-Dialog
+- vor dem Öffnen des Hauptdialogs erscheint nun ein Registrierdialog; derzeit funktioniert
+  das Registrieren aber noch nicht
+- Charts und Intraday-Charts verwenden nun die gleichen Laderoutinen
+- Intraday-Charts werden per Timer automatisch aktualisiert
+- AM merkt sich nun auch Höchst- und Tiefstkurs einer Aktie seit deren Beobachtungsbeginn;
+  dabei wird der Tageshöchst- und -tiefstkurs ausgewertet (und nicht etwa der Schlußkurs)
+- nach der ersten Aktualisierung einer Aktie werden diese Werte im Info-Dialog angezeigt
+- der Button "Neue Aktie" heißt nun "Aktie kaufen" und ersetzt den "Splitten"-Button
+- deswegen auch Menüeintrag "Ablage - Neu" entfernt
+- der Button "Info" heißt nun "Aktie Info"
+- "Splitten" aus dem Kontextpopup erstmal wieder entfernt
+- Layout des Maximalkurs-Dialogs korrigiert
+- pro Aktie merkt sich AM nun auch den Vortages-, Eröffnungs-, Höchst- und Tiefstkurs
+  sowie das Handelsvolumen
+- diese Werte werden vom Info-Dialog angezeigt, der über den "Info"-Button oder das
+  Kontextpopup aufgerufen werden kann; jeder Listeneintrag kann ein eigenes Infofenster
+  haben, das beim Aktualisieren automatisch die neuen Werte anzeigt
+- der Comdirect-Kursleser ist nun etwas fehlertoleranter
+- Mac: ab sofort wird MRJ SDK 2.1 EA3 zur Programmgenerierung verwendet
+- Mac: Speicherflags werden gesetzt (min. 1024, empfohlen 2048)
+- die Aktienliste stellt Slider nur noch dar, wenn sie wirklich benötigt werden
 Version 0.92 (16.11.98)
 - die Chart-Fenster werden gleich mit der richtigen Größe geöffnet
 - Ladetexte bei Charts und der DAX-Kamera geändert
@@ -351,8 +405,25 @@ Version 0.10 (06.08.98)
 - erste "öffentliche" Betaversion
 
 
-Preview-/Demotests:
-- AktienMan.readConfig()
+/* #Ablaufdatum */
+- AktienMan.main(int)
 - Hauptdialog.listeAktualisieren() (2x)
 - ComdirectLeser.run()
 - NeueAktie.canOK()
+- Lang
+
+/* #Demoversion */
+- AktienMan.main(int)
+- AktienMan.main(String[])
+- Hauptdialog.setupElements()
+- Hauptdialog.listeNeueAktie()
+- Hauptdialog.listeAktualisieren() (2x)
+- ComdirectLeser.run()
+- NeueAktie.canOK() (2x)
+- About.setupElements()
+
+/* #Schlüssel */
+- Hauptdialog.main()
+- RegAM.string()
+- RegAM.executeOK()
+- About.setupElements()
