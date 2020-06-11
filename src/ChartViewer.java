@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-12-07
+ @version 1999-01-04
 */
 
 import java.awt.*;
@@ -59,17 +59,17 @@ public void display() {
 }
 
 
-private void setStatus(int status) {
+private synchronized void setStatus(int status) {
 	this.status = status;
 }
 
 
-private int getStatus() {
+private synchronized int getStatus() {
 	return status;
 }
 
 
-public String getStatusString() {
+public synchronized String getStatusString() {
 	switch (getStatus()) {
 	case STATUS_ERROR:
 		return Lang.CHARTERROR;
@@ -81,13 +81,13 @@ public String getStatusString() {
 }
 
 
-public void setStatusError() {
+public synchronized void setStatusError() {
 	setStatus(STATUS_ERROR);
 	neuZeichnen();
 }
 
 
-public void setStatusEmpty() {
+public synchronized void setStatusEmpty() {
 	setStatus(STATUS_EMPTY);
 	neuZeichnen();
 }

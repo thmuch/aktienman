@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-10-27
+ @version 1999-01-03
 */
 
 import java.io.*;
@@ -17,7 +17,7 @@ private int waehrung;
 
 
 public Aktie(String name, String kurz, int wkn) {
-	this(name,kurz,wkn,Waehrungen.DEM);
+	this(name,kurz,wkn,Waehrungen.getOnlineWaehrung());
 }
 
 
@@ -35,11 +35,6 @@ public int getWKN() {
 
 public String getWKNString() {
 	return new Integer(getWKN()).toString();
-}
-
-
-public int getWaehrung() {
-	return waehrung;
 }
 
 

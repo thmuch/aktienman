@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-12-21
+ @version 1999-01-05
 */
 
 import java.awt.*;
@@ -63,33 +63,35 @@ public void setupElements() {
 	constrain(panelOben,spekuPanel,0,4,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
 
 	constrain(panelOben,cbSteuerfrei,0,5,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
-
-	constrain(panelStandard,new Label("Standard-B\u00f6rse:"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
-
-	plaetze = AktienMan.boersenliste.getChoice();
-	plaetze.select(AktienMan.boersenliste.getStandardBoerse());
-	constrain(panelStandard,plaetze,1,0,3,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
-
-	constrain(panelStandard,new Label("Standard-Gewinngrenze:"),0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
-	constrain(panelStandard,tfStdGewinn,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
-	constrain(panelStandard,new Label("%"),2,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,2,0,0);
-
-	constrain(panelStandard,new Label("Standard-W\u00e4hrung:"),0,2,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
-
-	waehrung = AktienMan.waehrungen.getChoice();
-	waehrung.select(Waehrungen.getStandardWaehrung());
-	constrain(panelStandard,waehrung,1,2,2,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 	
-	constrain(panelStandard,new Label("Standard-Bank:"),0,3,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
+	constrain(panelStandard,new Label("Vorgaben f\u00fcr neu zu kaufende Aktien:"),0,0,4,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 
-	bank = AktienMan.bankenliste.getChoice();
+	constrain(panelStandard,new Label("Standard-B\u00f6rse:"),0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
+
+	plaetze = AktienMan.boersenliste.getChoice(true);
+	plaetze.select(AktienMan.boersenliste.getStandardBoerse());
+	constrain(panelStandard,plaetze,1,1,3,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
+
+	constrain(panelStandard,new Label("Standard-Gewinngrenze:"),0,2,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
+	constrain(panelStandard,tfStdGewinn,1,2,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
+	constrain(panelStandard,new Label("%"),2,2,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,2,0,0);
+
+	constrain(panelStandard,new Label("Standard-Kaufw\u00e4hrung:"),0,3,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
+
+	waehrung = AktienMan.waehrungen.getChoice(true);
+	waehrung.select(Waehrungen.getStandardKaufwaehrung());
+	constrain(panelStandard,waehrung,1,3,2,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
+	
+	constrain(panelStandard,new Label("Standard-Bank:"),0,4,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
+
+	bank = AktienMan.bankenliste.getChoice(true);
 	bank.select(AktienMan.bankenliste.getStandardBank());
-	constrain(panelStandard,bank,1,3,2,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
+	constrain(panelStandard,bank,1,4,2,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 
-	constrain(panelStandard,new Label("(Stand: "+Bankenliste.STAND+")"),3,3,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
+	constrain(panelStandard,new Label("(Stand: "+Bankenliste.STAND+")"),3,4,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 
-	constrain(panelStandard,new Label("Standard-Geb\u00fchren (sonst.):"),0,4,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
-	constrain(panelStandard,tfStdGebuehren,1,4,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
+	constrain(panelStandard,new Label("Standard-Geb\u00fchren (sonst.):"),0,5,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
+	constrain(panelStandard,tfStdGebuehren,1,5,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 	
 	Button buttonOK = new Button(Lang.OK);
 	Button buttonAbbruch = new Button(Lang.CANCEL);
@@ -131,7 +133,7 @@ public void executeOK() {
 	
 	AktienMan.properties.saveParameters();
 	
-	AktienMan.hauptdialog.listeUpdate(false);
+	AktienMan.hauptdialog.listeUpdate(false,false);
 }
 
 

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-12-07
+ @version 1999-01-02
 */
 
 import java.util.*;
@@ -48,11 +48,16 @@ public void setString(String key, String value) {
 
 
 public int getInt(String key) {
+	return getInt(key,-1);
+}
+
+
+public int getInt(String key, int defval) {
 	String s = getProperty(key,"");
 
 	if (s == null)
 	{
-		return -1;
+		return defval;
 	}
 	else
 	{
@@ -62,7 +67,7 @@ public int getInt(String key) {
 		}
 		catch (NumberFormatException e)
 		{
-			return -1;
+			return defval;
 		}
 	}
 }

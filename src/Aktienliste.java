@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-10-27
+ @version 1999-01-02
 */
 
 import java.awt.*;
@@ -47,7 +47,12 @@ public synchronized boolean isMember(int wkn) {
 }
 
 
-public synchronized Choice getChoice() {
+public synchronized Choice getChoice(boolean immerNeu) {
+	if (immerNeu)
+	{
+		updateChoice();
+	}
+	
 	return choice;
 }
 

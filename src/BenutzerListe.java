@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-13
+ @version 1999-01-04
 */
 
 import java.util.*;
@@ -15,6 +15,7 @@ static final long serialVersionUID = 1972011800002L;
 private ADate letzteAktualisierung = null;
 private String festeBoerse = "";
 private long verkaufserloes = 0L;
+private int erloesWaehrung = Waehrungen.DEM;
 private int portfoliover = 0;
 
 
@@ -34,23 +35,23 @@ public synchronized BenutzerAktie getAt(int index) {
 }
 
 
-public void setDate(String boerse) {
+public synchronized void setDate(String boerse) {
 	letzteAktualisierung = new ADate();
 	festeBoerse = boerse;
 }
 
 
-public void clearDate() {
+public synchronized void clearDate() {
 	letzteAktualisierung = null;
 }
 
 
-private ADate getDate() {
+private synchronized ADate getDate() {
 	return letzteAktualisierung;
 }
 
 
-public String getFesteBoerse() {
+public synchronized String getFesteBoerse() {
 	if (festeBoerse == null)
 	{
 		return "";
@@ -66,7 +67,7 @@ public String getFesteBoerse() {
 }
 
 
-public String getDateString() {
+public synchronized String getDateString() {
 	String s;
 	ADate d = getDate();
 	
@@ -83,18 +84,29 @@ public String getDateString() {
 }
 
 
-public long getErloes() {
+public synchronized long getErloes() {
 	return verkaufserloes;
 }
 
 
-public void clearErloes() {
+public synchronized void clearErloes() {
 	verkaufserloes = 0L;
 }
 
 
-public void addToErloes(long delta) {
+public synchronized void addToErloes(long delta) {
 	verkaufserloes += delta;
+}
+
+
+public synchronized int getErloesWaehrung() {
+	return erloesWaehrung;
+}
+
+
+public synchronized void erloesToWaehrung(int neueWaehrung) {
+	verkaufserloes = Waehrungen.exchange(verkaufserloes,getErloesWaehrung(),neueWaehrung);
+	erloesWaehrung = neueWaehrung;
 }
 
 
@@ -120,17 +132,17 @@ public synchronized void sortByName(boolean kurz) {
 }
 
 
-public static boolean useShortNames() {
+public synchronized static boolean useShortNames() {
 	return AktienMan.properties.getBoolean("Konfig.Aktiennamen.kuerzen",true);
 }
 
 
-public static boolean useSteuerfrei() {
+public synchronized static boolean useSteuerfrei() {
 	return AktienMan.properties.getBoolean("Konfig.Steuerfrei",true);
 }
 
 
-public void prepare2Save() {
+public synchronized void prepare2Save() {
 	portfoliover = AktienMan.PORTFOLIOVER;
 }
 

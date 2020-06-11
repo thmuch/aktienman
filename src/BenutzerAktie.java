@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-12-21
+ @version 1999-01-05
 */
 
 import java.awt.*;
@@ -63,8 +63,10 @@ private long watchhoechst = VALUE_MISSING;
 private long watchtiefst = VALUE_MISSING;
 private String watchhdate = null;
 private String watchtdate = null;
+private int watchwaehrung = Waehrungen.DEM;
 
-private int waehrung = Waehrungen.DEM;
+private int waehrung = Waehrungen.DEM; /* Kaufwährung */
+private int kurswaehrung = Waehrungen.DEM;
 private int spekulationsfrist = 6;
 private boolean nurdiese = false;
 private boolean usegrenze = true;
@@ -100,13 +102,17 @@ public BenutzerAktie(String name, String wkn, Boersenplatz platz, boolean nurdie
 
 
 private void setupValues() {
-	gewinngrenze = (prozgrenze == 0L) ? 0L : (getKaufkurs()*(Waehrungen.PRECISION*100L+prozgrenze))/(Waehrungen.PRECISION*100L);
-
+	gewinngrenzeBerechnen();
 	steuerfreiBerechnen();
 }
 
 
-private void steuerfreiBerechnen() {
+private synchronized void gewinngrenzeBerechnen() {
+	gewinngrenze = (prozgrenze == 0L) ? 0L : (getKaufkurs()*(Waehrungen.PRECISION*100L+prozgrenze))/(Waehrungen.PRECISION*100L);
+}
+
+
+private synchronized void steuerfreiBerechnen() {
 	if (kaufdatum == null) kaufdatum = new ADate();
 	
 	int jahr,monat,tag;
@@ -158,7 +164,7 @@ private void steuerfreiBerechnen() {
 }
 
 
-private void checkSpekulationsfrist(int neu) {
+private synchronized void checkSpekulationsfrist(int neu) {
 	if (spekulationsfrist != neu)
 	{
 		spekulationsfrist = neu;
@@ -175,7 +181,7 @@ private void setColors() {
 }
 
 
-public String getProzentString() {
+public synchronized String getProzentString() {
 	return (prozgrenze == 0L) ? "" : AktienMan.get00String(prozgrenze);
 }
 
@@ -193,73 +199,73 @@ public synchronized String getKursdatumString() {
 }
 
 
-public long getHochkurs() {
+public synchronized long getHochkurs() {
 	return hochkurs;
 }
 
 
-public String getHochkursString() {
+public synchronized String getHochkursString() {
 	return (getHochkurs() == 0L) ? "" : AktienMan.get00String(getHochkurs());
 }
 
 
-public long getTiefkurs() {
+public synchronized long getTiefkurs() {
 	return tiefkurs;
 }
 
 
-public String getTiefkursString() {
+public synchronized String getTiefkursString() {
 	return (getTiefkurs() == 0L) ? "" : AktienMan.get00String(getTiefkurs());
 }
 
 
-public ADate getKaufdatum() {
+public synchronized ADate getKaufdatum() {
 	return (kaufdatum == null) ? new ADate() : kaufdatum;
 }
 
 
-public String getWKNString() {
+public synchronized String getWKNString() {
 	return wkn;
 }
 
 
-public boolean isBoerseFixed() {
+public synchronized boolean isBoerseFixed() {
 	return nurdiese;
 }
 
 
-public boolean isBoerseFondsOnly() {
+public synchronized boolean isBoerseFondsOnly() {
 	return boersenplatz.isFondsOnly();
 }
 
 
-public boolean doUseGrenze() {
+public synchronized boolean doUseGrenze() {
 	return usegrenze;
 }
 
 
-public boolean nurBeobachten() {
+public synchronized boolean nurBeobachten() {
 	return watchonly;
 }
 
 
 public synchronized String getVortageskursString() {
-	return kurs2String(vortageskurs);
+	return kurs2String(vortageskurs,getKurswaehrung());
 }
 
 
 public synchronized String getEroeffnungskursString() {
-	return kurs2String(eroeffnungskurs);
+	return kurs2String(eroeffnungskurs,getKurswaehrung());
 }
 
 
 public synchronized String getHoechstkursString() {
-	return kurs2String(hoechstkurs);
+	return kurs2String(hoechstkurs,getKurswaehrung());
 }
 
 
 public synchronized String getTiefstkursString() {
-	return kurs2String(tiefstkurs);
+	return kurs2String(tiefstkurs,getKurswaehrung());
 }
 
 
@@ -281,7 +287,7 @@ public synchronized String getWatchStartString() {
 
 
 public synchronized String getWatchHoechstString() {
-	return kurs2String(watchhoechst);
+	return kurs2String(watchhoechst,watchwaehrung);
 }
 
 
@@ -291,7 +297,7 @@ public synchronized String getWatchHoechstDatumString() {
 
 
 public synchronized String getWatchTiefstString() {
-	return kurs2String(watchtiefst);
+	return kurs2String(watchtiefst,watchwaehrung);
 }
 
 
@@ -300,7 +306,7 @@ public synchronized String getWatchTiefstDatumString() {
 }
 
 
-public int getWKN() {
+public synchronized int getWKN() {
 	int wkni = 0;
 	
 	try
@@ -313,12 +319,12 @@ public int getWKN() {
 }
 
 
-public String getBoerse() {
+public synchronized String getBoerse() {
 	return boersenplatz.getKurz();
 }
 
 
-public String getRequest(String boerse) {
+public synchronized String getRequest(String boerse) {
 	if ((isBoerseFixed()) || (boerse == null))
 	{
 		boerse = getBoerse();
@@ -449,8 +455,13 @@ public static String getKurzName(String langname) {
 }
 
 
-public int getWaehrung() {
+public synchronized int getKaufwaehrung() {
 	return waehrung;
+}
+
+
+public synchronized int getKurswaehrung() {
+	return kurswaehrung;
 }
 
 
@@ -474,30 +485,24 @@ public synchronized void decStueckzahl(long delta) {
 }
 
 
-public synchronized void splitStueckzahl(long neu) {
-	stueckzahl = (neu < 0L) ? 0L : neu;
-	kurs = VALUE_MISSING;
-}
-
-
 public synchronized long getKurs() {
 	return kurs;
 }
 
 
-public synchronized String getRawKursString() {
+public synchronized String getRawVerkaufsKursString() {
 	if (getKurs() <= 0L)
 	{
 		return "0";
 	}
 	else
 	{
-		return AktienMan.get00String(getKurs());
+		return AktienMan.get00String(Waehrungen.exchange(getKurs(),getKurswaehrung(),Waehrungen.getVerkaufsWaehrung()));
 	}
 }
 
 
-private String kurs2String(long k) {
+private String kurs2String(long k, int w) {
 	if (k == VALUE_MISSING)
 	{
 		return STR_MISSING;
@@ -512,13 +517,13 @@ private String kurs2String(long k) {
 	}
 	else
 	{
-		return Waehrungen.getString(k,Waehrungen.DEM);
+		return Waehrungen.getString(Waehrungen.exchange(k,w,Waehrungen.getListenWaehrung()),Waehrungen.getListenWaehrung());
 	}
 }
 
 
 public synchronized String getKursString() {
-	return kurs2String(getKurs());
+	return kurs2String(getKurs(),getKurswaehrung());
 }
 
 
@@ -531,32 +536,32 @@ public synchronized long getWert() {
 	{
 		if (nurBeobachten())
 		{
-			return getKurs();
+			return Waehrungen.exchange(getKurs(),getKurswaehrung(),Waehrungen.getListenWaehrung());
 		}
 		else
 		{
-			return getKurs() * getStueckzahl();
+			return Waehrungen.exchange(getKurs(),getKurswaehrung(),Waehrungen.getListenWaehrung()) * getStueckzahl();
 		}
 	}
 }
 
 
-public long getKaufkurs() {
+public synchronized long getKaufkurs() {
 	return kaufkurs;
 }
 
 
-public String getKaufkursString() {
-	return kurs2String(getKaufkurs());
+public synchronized String getKaufkursString() {
+	return kurs2String(getKaufkurs(),getKaufwaehrung());
 }
 
 
-public boolean isEqual(String wkn, String platz, boolean compPlatz) {
+public synchronized boolean isEqual(String wkn, String platz, boolean compPlatz) {
 	return isEqual(wkn,"",platz,compPlatz);
 }
 
 
-public boolean isEqual(String wkn, String kurz, String platz, boolean compPlatz) {
+public synchronized boolean isEqual(String wkn, String kurz, String platz, boolean compPlatz) {
 	if (compPlatz)
 	{
 		return isEqual(wkn,kurz,platz);
@@ -568,7 +573,7 @@ public boolean isEqual(String wkn, String kurz, String platz, boolean compPlatz)
 }
 
 
-private boolean isEqual(String wkn, String kurz, String platz) {
+private synchronized boolean isEqual(String wkn, String kurz, String platz) {
 	boolean valid;
 	
 	if (kurz.length() == 0)
@@ -584,7 +589,7 @@ private boolean isEqual(String wkn, String kurz, String platz) {
 }
 
 
-private boolean isEqual(String wkn, String kurz) {
+private synchronized boolean isEqual(String wkn, String kurz) {
 	boolean valid;
 	
 	if (kurz.length() == 0)
@@ -600,7 +605,7 @@ private boolean isEqual(String wkn, String kurz) {
 }
 
 
-public boolean istSteuerfrei() {
+public synchronized boolean istSteuerfrei() {
 	return heute.after(steuerfrei);
 }
 
@@ -611,7 +616,7 @@ public synchronized void setValues(long kurs) {
 
 
 public synchronized void setValues(String name, long kurs) {
-	setValues(name,kurs,"",VALUE_NA,VALUE_NA,VALUE_NA,VALUE_NA,0L,getWaehrung());
+	setValues(name,kurs,"",VALUE_NA,VALUE_NA,VALUE_NA,VALUE_NA,0L,getKurswaehrung());
 }
 
 
@@ -627,8 +632,7 @@ public synchronized void setValues(String name, long kurs, String kursdatum,
 		}
 	}
 
-	// kurswaehrung beachten!
-
+	this.kurswaehrung = kurswaehrung;
 	this.kurs = kurs;
 	this.kursdatum = kursdatum;
 	this.vortageskurs = vortageskurs;
@@ -647,6 +651,13 @@ public synchronized void setValues(String name, long kurs, String kursdatum,
 	if ((kurs > VALUE_MISSING) && (watchstart == null))
 	{
 		watchstart = new ADate();
+	}
+	
+	if (kurswaehrung != watchwaehrung)
+	{
+		watchhoechst = Waehrungen.exchange(watchhoechst,watchwaehrung,kurswaehrung);
+		watchtiefst = Waehrungen.exchange(watchtiefst,watchwaehrung,kurswaehrung);
+		watchwaehrung = kurswaehrung;
 	}
 
 	if ((hoechstkurs > VALUE_MISSING) && ((hoechstkurs > watchhoechst) || (watchhoechst == VALUE_MISSING)))
@@ -669,7 +680,7 @@ public synchronized void setValues(String name, long kurs, String kursdatum,
 public synchronized void changeValues(String newName, String newWKN, Boersenplatz newBp,
 								boolean newNurDiese, ADate newDate, long newKaufkurs,
 								long newAnz, long newHoch, long newTief, long newGrenze,
-								boolean newUseGrenze, boolean newWatchonly) {
+								int neueWaehrung, boolean newUseGrenze, boolean newWatchonly) {
 
 	boolean reset = ((!newWKN.equalsIgnoreCase(getWKNString())) || (!newBp.getKurz().equalsIgnoreCase(getBoerse())));
 	
@@ -685,6 +696,7 @@ public synchronized void changeValues(String newName, String newWKN, Boersenplat
 	prozgrenze = newGrenze;
 	usegrenze = newUseGrenze;
 	watchonly = newWatchonly;
+	waehrung = neueWaehrung;
 
 	setupValues();
 	
@@ -698,21 +710,21 @@ public synchronized void changeValues(String newName, String newWKN, Boersenplat
 }
 
 
-public void setStatusRequestingAndRepaint() {
+public synchronized void setStatusRequestingAndRepaint() {
 	farbeName = Color.blue;
 	l1.setForeground(farbeName);
 	l1.repaint();
 }
 
 
-public void setStatusErrorAndRepaint() {
+public synchronized void setStatusErrorAndRepaint() {
 	farbeName = Color.red;
 	l1.setForeground(farbeName);
 	l1.repaint();
 }
 
 
-public void clearStatusRequesting() {
+public synchronized void clearStatusRequesting() {
 	farbeName = Color.black;
 }
 
@@ -722,7 +734,7 @@ public synchronized boolean isSelected() {
 }
 
 
-private void setColorAndRepaint(Color c) {
+private synchronized void setColorAndRepaint(Color c) {
 	l1.setBackground(c);
 	l2.setBackground(c);
 	l11.setBackground(c);
@@ -787,88 +799,8 @@ private void readObject(ObjectInputStream in) throws IOException,ClassNotFoundEx
 }
 
 
-private static String fixHTMLSpaces(String s) {
-	int i = s.indexOf(" ");
-	
-	while (i >= 0)
-	{
-		s = s.substring(0,i) + "&nbsp;" + s.substring(i+1);
-		i = s.indexOf(" ");
-	}
-
-	return s;
-}
-
-
-private static String text2HTML(String s) {
-	int i = 0;
-	
-	while (i < s.length())
-	{
-		char c = s.charAt(i);
-		
-		if (c == '<')
-		{
-			s = s.substring(0,i) + "&lt;" + s.substring(i+1);
-			i += 4;
-		}
-		else if (c == '>')
-		{
-			s = s.substring(0,i) + "&gt;" + s.substring(i+1);
-			i += 4;
-		}
-		else if (c == '&')
-		{
-			s = s.substring(0,i) + "&amp;" + s.substring(i+1);
-			i += 5;
-		}
-		else if (c == '\u00e4')
-		{
-			s = s.substring(0,i) + "&auml;" + s.substring(i+1);
-			i += 6;
-		}
-		else if (c == '\u00f6')
-		{
-			s = s.substring(0,i) + "&ouml;" + s.substring(i+1);
-			i += 6;
-		}
-		else if (c == '\u00fc')
-		{
-			s = s.substring(0,i) + "&uuml;" + s.substring(i+1);
-			i += 6;
-		}
-		else if (c == '\u00c4')
-		{
-			s = s.substring(0,i) + "&Auml;" + s.substring(i+1);
-			i += 6;
-		}
-		else if (c == '\u00d6')
-		{
-			s = s.substring(0,i) + "&Ouml;" + s.substring(i+1);
-			i += 6;
-		}
-		else if (c == '\u00dc')
-		{
-			s = s.substring(0,i) + "&Uuml;" + s.substring(i+1);
-			i += 6;
-		}
-		else if (c == '\u00df')
-		{
-			s = s.substring(0,i) + "&szlig;" + s.substring(i+1);
-			i += 7;
-		}
-		else
-		{
-			i++;
-		}
-	}
-
-	return s;
-}
-
-
 public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean nameSteuerfrei) {
-	long   aktKurs      = getKurs();
+	long   aktKurs      = Waehrungen.exchange(getKurs(),getKurswaehrung(),Waehrungen.getListenWaehrung());
 	long   tageLaufzeit = heute.getSerialDate() - getKaufdatum().getSerialDate();
 	long   diff         = 0L;
 	String kursString   = getKursString();
@@ -881,12 +813,12 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 		out.newLine();
 
 		out.write("  <TD ALIGN=LEFT>");
-		out.write(text2HTML(getName(namenKurz)));
+		out.write(HTMLUtil.toHTML(getName(namenKurz)));
 		out.write("</TD>");
 		out.newLine();
 
 		out.write("  <TD ALIGN=RIGHT>");
-		if (!nurBeobachten()) out.write(text2HTML(getStueckzahlString()));
+		if (!nurBeobachten()) out.write(HTMLUtil.toHTML(getStueckzahlString()));
 		out.write("</TD>");
 		out.newLine();
 		
@@ -896,17 +828,17 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 		{
 			s = "(" + s + ")";
 		}
-		out.write(fixHTMLSpaces(text2HTML(s)));
+		out.write(HTMLUtil.toNbspHTML(s));
 		out.write("</TD>");
 		out.newLine();
 		if ((aktKurs > 0L) && (!nurBeobachten()))
 		{
-			diff = getKaufkurs() * getStueckzahl();
+			diff = Waehrungen.exchange(getKaufkurs(),getKaufwaehrung(),Waehrungen.getListenWaehrung()) * getStueckzahl();
 			kaufsumme += diff;
 		}
 
 		out.write("  <TD ALIGN=RIGHT>");
-		out.write(fixHTMLSpaces(text2HTML(kursString)));
+		out.write(HTMLUtil.toNbspHTML(kursString));
 		out.write("</TD>");
 		out.newLine();
 
@@ -919,7 +851,7 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 			s = "";
 		}
 		out.write("  <TD ALIGN=CENTER>");
-		out.write(text2HTML(s));
+		out.write(HTMLUtil.toHTML(s));
 		out.write("</TD>");
 		out.newLine();
 
@@ -930,7 +862,7 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 		else if (aktKurs > 0L)
 		{
 			pabs = getWert();
-			sk = Waehrungen.getString(pabs,Waehrungen.DEM);
+			sk = Waehrungen.getString(pabs,Waehrungen.getListenWaehrung());
 			
 			aktsumme += pabs;
 			diff = pabs - diff;
@@ -940,7 +872,7 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 			sk = kursString;
 		}
 		out.write("  <TD ALIGN=RIGHT>");
-		out.write(fixHTMLSpaces(text2HTML(sk)));
+		out.write(HTMLUtil.toNbspHTML(sk));
 		out.write("</TD>");
 		out.newLine();
 
@@ -948,11 +880,11 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 		{
 			if (nurBeobachten())
 			{
-				sk = "(" + Waehrungen.getString(aktKurs-getKaufkurs(),Waehrungen.DEM) + ")";
+				sk = "(" + Waehrungen.getString(aktKurs-Waehrungen.exchange(getKaufkurs(),getKaufwaehrung(),Waehrungen.getListenWaehrung()),Waehrungen.getListenWaehrung()) + ")";
 			}
 			else
 			{
-				sk = Waehrungen.getString(diff,Waehrungen.DEM);
+				sk = Waehrungen.getString(diff,Waehrungen.getListenWaehrung());
 			}
 		}
 		else
@@ -960,7 +892,7 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 			sk = kursString;
 		}
 		out.write("  <TD ALIGN=RIGHT>");
-		out.write(fixHTMLSpaces(text2HTML(sk)));
+		out.write(HTMLUtil.toNbspHTML(sk));
 		out.write("</TD>");
 		out.newLine();
 
@@ -971,14 +903,14 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 		}
 		else
 		{
-			out.write(text2HTML(getLaufzeitMonateString()));
+			out.write(HTMLUtil.toHTML(getLaufzeitMonateString()));
 		}
 		out.write("</TD>");
 		out.newLine();
 
 		if (aktKurs > 0L)
 		{
-			pabs = (aktKurs * 10000L) / getKaufkurs() - 10000L;
+			pabs = (aktKurs * 10000L) / Waehrungen.exchange(getKaufkurs(),getKaufwaehrung(),Waehrungen.getListenWaehrung()) - 10000L;
 			
 			long kabs = pabs;
 			if (kabs > 0L) kabs += 5L;
@@ -994,7 +926,7 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 			sk = kursString;
 		}
 		out.write("  <TD ALIGN=RIGHT>");
-		out.write(text2HTML(sk));
+		out.write(HTMLUtil.toHTML(sk));
 		out.write("</TD>");
 		out.newLine();
 
@@ -1017,17 +949,17 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 			}
 		}
 		out.write("  <TD ALIGN=RIGHT>");
-		out.write(text2HTML(sk));
+		out.write(HTMLUtil.toHTML(sk));
 		out.write("</TD>");
 		out.newLine();
 
 		out.write("  <TD ALIGN=RIGHT>");
-		out.write(text2HTML(getKaufdatum().toString()));
+		out.write(HTMLUtil.toHTML(getKaufdatum().toString()));
 		out.write("</TD>");
 		out.newLine();
 
 		out.write("  <TD ALIGN=CENTER>");
-		out.write(text2HTML(getWKNString())+"<BR>"+text2HTML(getBoerse()));
+		out.write(HTMLUtil.toHTML(getWKNString())+"<BR>"+HTMLUtil.toHTML(getBoerse()));
 		out.write("</TD>");
 		out.newLine();
 
@@ -1039,14 +971,14 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 }
 
 
-public static void saveHeaderHTML(BufferedWriter out, String aktualisierung) {
+public synchronized static void saveHeaderHTML(BufferedWriter out, String aktualisierung) {
 	try
 	{
 		out.write("<TR>");
 		out.newLine();
 
 		out.write("  <TD COLSPAN="+HTMLCOLS+">");
-		out.write(text2HTML(aktualisierung));
+		out.write(HTMLUtil.toHTML(aktualisierung));
 		out.write("</TD>");
 		out.newLine();
 
@@ -1124,7 +1056,7 @@ public static void saveHeaderHTML(BufferedWriter out, String aktualisierung) {
 }
 
 
-public static void saveFooterHTML(BufferedWriter out) {
+public synchronized static void saveFooterHTML(BufferedWriter out) {
 	try
 	{
 		out.write("<TR>");
@@ -1134,7 +1066,7 @@ public static void saveFooterHTML(BufferedWriter out) {
 		out.newLine();
 		
 		out.write("  <TD ALIGN=RIGHT>");
-		out.write(fixHTMLSpaces(text2HTML(Waehrungen.getString(kaufsumme,Waehrungen.DEM))));
+		out.write(HTMLUtil.toNbspHTML(Waehrungen.getString(kaufsumme,Waehrungen.getListenWaehrung())));
 		out.write("</TD>");
 		out.newLine();
 
@@ -1142,7 +1074,7 @@ public static void saveFooterHTML(BufferedWriter out) {
 		out.newLine();
 
 		out.write("  <TD ALIGN=RIGHT>");
-		out.write(fixHTMLSpaces(text2HTML(Waehrungen.getString(aktsumme,Waehrungen.DEM))));
+		out.write(HTMLUtil.toNbspHTML(Waehrungen.getString(aktsumme,Waehrungen.getListenWaehrung())));
 		out.write("</TD>");
 		out.newLine();
 
@@ -1160,7 +1092,7 @@ public static void saveFooterHTML(BufferedWriter out) {
 		out.newLine();
 
 		out.write("  <TD ALIGN=RIGHT>");
-		out.write(fixHTMLSpaces(text2HTML(Waehrungen.getString(aktsumme-kaufsumme,Waehrungen.DEM))));
+		out.write(HTMLUtil.toNbspHTML(Waehrungen.getString(aktsumme-kaufsumme,Waehrungen.getListenWaehrung())));
 		out.write("</TD>");
 		out.newLine();
 
@@ -1175,7 +1107,7 @@ public static void saveFooterHTML(BufferedWriter out) {
 }
 
 
-public static void addSummen(Panel pTxt, String akt, String dif, boolean isRed) {
+public synchronized static void addSummen(Panel pTxt, String akt, String dif, boolean isRed) {
 	AFrame.constrain(pTxt,new Label("Summe aktuell:"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	AFrame.constrain(pTxt,new Label(akt),1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,2,0,0);
 	AFrame.constrain(pTxt,new Label("Differenz zum Kaufwert:"),2,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,18,0,0);
@@ -1185,18 +1117,18 @@ public static void addSummen(Panel pTxt, String akt, String dif, boolean isRed) 
 }
 
 
-public static void addFooterToPanel(Panel p, int y, Panel pTxt) {
-	String akt = Waehrungen.getString(aktsumme,Waehrungen.DEM);
+public synchronized static void addFooterToPanel(Panel p, int y, Panel pTxt) {
+	String akt = Waehrungen.getString(aktsumme,Waehrungen.getListenWaehrung());
 	AFrame.constrain(p,new Label("Summe aktuell:",Label.RIGHT),3,y,2,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,FOOTERABSTAND,10,0,0);
 	AFrame.constrain(p,new Label(akt,Label.RIGHT),5,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,FOOTERABSTAND,10,0,0);
 
 	AFrame.constrain(p,new Label("Summe Kaufwert:",Label.RIGHT),0,y,2,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,FOOTERABSTAND,10,0,0);
-	AFrame.constrain(p,new Label(Waehrungen.getString(kaufsumme,Waehrungen.DEM),Label.RIGHT),2,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,FOOTERABSTAND,10,0,0);
+	AFrame.constrain(p,new Label(Waehrungen.getString(kaufsumme,Waehrungen.getListenWaehrung()),Label.RIGHT),2,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,FOOTERABSTAND,10,0,0);
 
 	AFrame.constrain(p,new Label("Differenz zum Kaufwert:",Label.RIGHT),3,y+1,3,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,10,0,0);
 	
 	long d = aktsumme-kaufsumme;
-	String dif = Waehrungen.getString(d,Waehrungen.DEM);
+	String dif = Waehrungen.getString(d,Waehrungen.getListenWaehrung());
 	Label l = new Label(dif,Label.RIGHT);
 	if (d < 0L)
 	{
@@ -1212,7 +1144,7 @@ public static void addFooterToPanel(Panel p, int y, Panel pTxt) {
 }
 
 
-public static void setLastUpdateAndRepaint(String aktualisierung) {
+public synchronized static void setLastUpdateAndRepaint(String aktualisierung) {
 	if (lupdate != null)
 	{
 		lupdate.setText(aktualisierung);
@@ -1221,7 +1153,7 @@ public static void setLastUpdateAndRepaint(String aktualisierung) {
 }
 
 
-public static int addHeadingsToPanel(Panel p, String aktualisierung) {
+public synchronized static int addHeadingsToPanel(Panel p, String aktualisierung) {
 	lupdate = new Label(aktualisierung);
 	AFrame.constrain(p,lupdate,0,0,9,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,0,0,2,0);
 
@@ -1247,12 +1179,12 @@ public static int addHeadingsToPanel(Panel p, String aktualisierung) {
 }
 
 
-private String getLaufzeitTageString(long tageLaufzeit) {
+private synchronized String getLaufzeitTageString(long tageLaufzeit) {
 	return new Long(tageLaufzeit).toString() + ((tageLaufzeit == 1L) ? " Tag" : " Tage");
 }
 
 
-private String getLaufzeitMonateString() {
+private synchronized String getLaufzeitMonateString() {
 	ADate kdate = getKaufdatum();
 	
 	int kaufjahr = kdate.getYear();
@@ -1270,7 +1202,7 @@ private String getLaufzeitMonateString() {
 	{
 		if (jahr-kaufjahr > 1) monate += (jahr-kaufjahr-1)*12;
 		
-		monate += monat + (ADate.DECEMBER-kaufmonat);
+		monate += (monat-1) + (ADate.DECEMBER-kaufmonat);
 	}
 	else
 	{
@@ -1302,7 +1234,7 @@ private String getLaufzeitMonateString() {
 
 
 public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean nameSteuerfrei) {
-	long   aktKurs = getKurs();
+	long   aktKurs = Waehrungen.exchange(getKurs(),getKurswaehrung(),Waehrungen.getListenWaehrung());
 	long   tageLaufzeit = heute.getSerialDate() - getKaufdatum().getSerialDate();
 	long   diff = 0L;
 	int    row = y - HEADROWS;
@@ -1338,7 +1270,7 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 	l8 = new BALabel("  "+getKaufkursString(),row);
 	if ((aktKurs > 0L) && (!nurBeobachten()))
 	{
-		diff = getKaufkurs() * getStueckzahl();
+		diff = Waehrungen.exchange(getKaufkurs(),getKaufwaehrung(),Waehrungen.getListenWaehrung()) * getStueckzahl();
 		kaufsumme += diff;
 	}
 	else
@@ -1352,15 +1284,15 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 	l2 = new BALabel("  "+kursString,row);
 	if (aktKurs > 0L)
 	{
-		if ((getTiefkurs() > 0L) && (aktKurs <= getTiefkurs()))
+		if ((getTiefkurs() > 0L) && (aktKurs <= Waehrungen.exchange(getTiefkurs(),getKaufwaehrung(),Waehrungen.getListenWaehrung())))
 		{
 			l2.setForeground(Color.red);
 		}
-		else if ((!doUseGrenze()) && (getHochkurs() > 0L) && (aktKurs >= getHochkurs()))
+		else if ((!doUseGrenze()) && (getHochkurs() > 0L) && (aktKurs >= Waehrungen.exchange(getHochkurs(),getKaufwaehrung(),Waehrungen.getListenWaehrung())))
 		{
 			l2.setForeground(Color.green.darker());
 		}
-		else if ((doUseGrenze()) && (gewinngrenze > 0L) && (aktKurs >= gewinngrenze))
+		else if ((doUseGrenze()) && (gewinngrenze > 0L) && (aktKurs >= Waehrungen.exchange(gewinngrenze,getKaufwaehrung(),Waehrungen.getListenWaehrung())))
 		{
 			l2.setForeground(Color.green.darker());
 		}
@@ -1379,7 +1311,7 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 	else if (aktKurs > 0L)
 	{
 		pabs = getWert();
-		sk = Waehrungen.getString(pabs,Waehrungen.DEM);
+		sk = Waehrungen.getString(pabs,Waehrungen.getListenWaehrung());
 		
 		aktsumme += pabs;
 		diff = pabs - diff;
@@ -1397,11 +1329,11 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 	{
 		if (nurBeobachten())
 		{
-			sk = Waehrungen.getString(aktKurs-getKaufkurs(),Waehrungen.DEM);
+			sk = Waehrungen.getString(aktKurs-Waehrungen.exchange(getKaufkurs(),getKaufwaehrung(),Waehrungen.getListenWaehrung()),Waehrungen.getListenWaehrung());
 		}
 		else
 		{
-			sk = Waehrungen.getString(diff,Waehrungen.DEM);
+			sk = Waehrungen.getString(diff,Waehrungen.getListenWaehrung());
 		}
 	}
 	else
@@ -1442,7 +1374,7 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 
 	if (aktKurs > 0L)
 	{
-		pabs = (aktKurs * 10000L) / getKaufkurs() - 10000L;
+		pabs = (aktKurs * 10000L) / Waehrungen.exchange(getKaufkurs(),getKaufwaehrung(),Waehrungen.getListenWaehrung()) - 10000L;
 		
 		long kabs = pabs;
 		if (kabs > 0L) kabs += 5L;

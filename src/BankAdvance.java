@@ -1,4 +1,7 @@
-// 1998-09-15 tm
+/**
+ @author Thomas Much
+ @version 1999-01-03
+*/
 
 
 
@@ -19,9 +22,9 @@ public boolean hasInternetTrade() {
 public long getTelefonGebuehren(long wert) {
 	long gebuehren;
 	
-	if (wert < Waehrungen.PRECISION*8000L)
+	if (wert < Waehrungen.exchange(Waehrungen.PRECISION*8000L,Waehrungen.DEM,Waehrungen.getVerkaufsWaehrung()))
 	{
-		gebuehren = Waehrungen.PRECISION*40L;
+		gebuehren = Waehrungen.exchange(Waehrungen.PRECISION*40L,Waehrungen.DEM,Waehrungen.getVerkaufsWaehrung());
 	}
 	else
 	{

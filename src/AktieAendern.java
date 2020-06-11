@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-23
+ @version 1999-01-02
 */
 
 import java.awt.*;
@@ -51,7 +51,7 @@ public void setupElements2() {
 	constrain(panelMitte,new Label("WKN:"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	constrain(panelMitte,aktienWKN,1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,2,0,0);
 	
-	plaetze = AktienMan.boersenliste.getChoice();
+	plaetze = AktienMan.boersenliste.getChoice(true);
 	plaetze.select(AktienMan.boersenliste.getBoersenIndex(ba.getBoerse()));
 	constrain(panelMitte,new Label("B\u00f6rsenplatz:"),0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	constrain(panelMitte,plaetze,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,2,0,0);
@@ -59,9 +59,9 @@ public void setupElements2() {
 	boerseNurDiese = new Checkbox("Nur an dieser B\u00f6rse",ba.isBoerseFixed());
 	constrain(panelMitte,boerseNurDiese,1,2,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,2,0,0);
 	
-	constrain(panelMitte,new Label("W\u00e4hrung:"),0,3,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,10,0,0,0);
-	waehrung = AktienMan.waehrungen.getChoice();
-	waehrung.select(Waehrungen.getStandardWaehrung()); /**/
+	constrain(panelMitte,new Label("Kaufw\u00e4hrung:"),0,3,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,10,0,0,0);
+	waehrung = AktienMan.waehrungen.getChoice(true);
+	waehrung.select(ba.getKaufwaehrung());
 	constrain(panelMitte,waehrung,1,3,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,10,2,0,0);
 
 	watchOnly = new Checkbox("nur beobachten",ba.nurBeobachten());
@@ -229,8 +229,9 @@ public synchronized void executeOK() {
 
 	boolean usegrenze = gewinnProz.getState();
 
-	ba.changeValues(name,wkn,bp,nurdiese,kdate,kkurs,anzaktien,khoch,ktief,ggrenze,usegrenze,watchonly);
-	AktienMan.hauptdialog.listeUpdate(true);
+	ba.changeValues(name,wkn,bp,nurdiese,kdate,kkurs,anzaktien,khoch,ktief,ggrenze,
+					waehrung.getSelectedIndex(),usegrenze,watchonly);
+	AktienMan.hauptdialog.listeUpdate(true,true);
 }
 
 

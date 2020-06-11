@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-25
+ @version 1999-01-04
 */
 
 import java.awt.*;
@@ -68,17 +68,17 @@ private void setupMenu() {
 }
 
 
-public void setIntraday(boolean state) {
+public synchronized void setIntraday(boolean state) {
 	popIntraday.setEnabled(state);
 }
 
 
-public void enableIntraday() {
+public synchronized void enableIntraday() {
 	setIntraday(true);
 }
 
 
-public void disableIntraday() {
+public synchronized void disableIntraday() {
 	setIntraday(false);
 }
 

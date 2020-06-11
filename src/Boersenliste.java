@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-03
+ @version 1999-01-04
 */
 
 
@@ -34,7 +34,7 @@ public synchronized Aktie getAktie(int index) {
 }
 
 
-public int getBoersenIndex(String kurz) {
+public synchronized int getBoersenIndex(String kurz) {
 	for (int i=0; i < size(); i++)
 	{
 		if (getAt(i).getKurz().equalsIgnoreCase(kurz)) return i;
@@ -44,7 +44,7 @@ public int getBoersenIndex(String kurz) {
 }
 
 
-public int getStandardBoerse() {
+public synchronized int getStandardBoerse() {
 	int stdb = AktienMan.properties.getInt("Konfig.StdBoerse");
 	
 	return ((stdb < 0) ? STANDARDBOERSE : stdb);

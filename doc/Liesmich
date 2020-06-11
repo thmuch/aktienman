@@ -1,7 +1,7 @@
-AktienMan 1.0-beta (1998-12-21)
+AktienMan 1.10-beta (1999-01-05)
 Copyright (c)1998 by Thomas Much (thomas@aktienman.de)
 
->>>>> BETAVERSION, LÄUFT AM 21.12.1998 AB <<<<<
+>>>>> BETAVERSION, LÄUFT AM 8.2.1999 AB <<<<<
 
 
 Systemanforderungen:
@@ -24,26 +24,25 @@ Bekannte Probleme:
 History
 -------
 allg. Bugs
-// 
+//
 Mac-Bugs
 //
 Win-Bugs
 // Chartfenster werden minimal zu klein geöffnet
 // Umschalten bei 6/12/24-Charts geht nicht
+// unter Win98 fehlt der erste Redraw, wenn .lst nicht vorhanden ist (?)
 Linux-Bugs
 // alle Dialoge (bis auf DAX-Kamera) werden direkt nach dem Öffnen wieder geschlossen
 todo
 // Konfigurierbarkeit der Farben
 // Test auf Online-Verbindung
 // Mehrfachselektion mit <Shift>
-// auch EUR für Werte, Umrechnung der Summenwerte in DM oder EUR
 // Ausdruck über mehrere Seiten
 // Spaltenreihenfolge bel. festlegbar
 // Aktie splitten
 // Backup der Listendaten
 // ADate: Sommerzeit beachten
 // -> Checkbox für Sommerzeit
-// Checkbox für Online-Euro-Kurse
 // Differenz zum Vortageskurs (von comdirect)
 // Konfig-Dialog zur Auswahl, welche Spalten angezeigt werden
 // Börsen konfigurierbar machen
@@ -59,12 +58,31 @@ todo
 // Layout an EA3 anpassen (Abstände größer)
 // Layout von "Neue Aktie" verbessern
 // beim Kaufen optional Gebühren errechnen
-// aktuelle Nachrichten auf www.aktienman.de abfragen+anzeigen
+// € statt EUR anzeigen (oder Zeichen[kette] einstellbar machen)
 // Verfall der Listendaten (bei Demoversion)
 // mehrere Portfolios verwalten
+// bei "Aktie kaufen" und "ändern" Währung anzeigen
 // Redraw per Thread, der alle ca. 5 Sekunden aktualisiert
+// Zeilenweise aktualisieren?
 // Konfiguration: Kurse automatisch aktualisieren alle XXX Minuten
-Version 1.0 (21.12.98)
+// Info: Button "Zurücksetzen"
+// Maximalkurs: Button "Aktualisieren"
+Version 1.10 (05.01.99)
+// README bzgl. MRJ 2.1: "Achtung MRJ 2.0"
+- AktienMan ist nun komplett Euro-fähig; die Umstellung erfolgt durch das Popupmenü
+  "Währung" im Hauptdialog; geringe Rundungsfehler sind prinzipiell nicht ganz aus-
+  zuschließen; die Bankgebühren beruhen noch auf den DM-Angaben (werden aber in Euro
+  umgerechnet)
+- IntradayCharts werden nun nur noch in EUR angefordert
+- der Maximalkurs-Dialog zeigt nun auch das Handelsvolumen an
+- nebenbei Maximalkurs-Leser etwas korrigiert
+- im Kontextpopup kann man nun auch einzelne Aktien aktualisieren
+- die "Standard-Währung" heißt nun "Kaufwährung" (im Gegensatz zur intern fest
+  codierten Onlinewährung: nur noch EUR)
+- alle "Verkaufserlös"-Texte heißen nun "Gesamtaufwand"
+- nach einem Jahreswechsel wurde die Laufzeit um einen Monat zu hoch berechnet; gefixed
+- die Demo-Version läuft bis zum 8.2.99
+Version 1.01 (21.12.98)
 - auf CW Pro 4 umgestellt
 - neues Ablaufdatum der Demoversion: 18.1.99
 - "Konfiguration": Schalter für 6/12 Monate Spekulationsfrist
@@ -428,6 +446,7 @@ Version 0.10 (06.08.98)
 /* #Ablaufdatum */
 - AktienMan.main(int)
 - Hauptdialog.listeAktualisieren() (2x)
+- Hauptdialog.listeSelektierteAktieAktualisieren()
 - ComdirectLeser.run()
 - NeueAktie.canOK()
 - Lang
@@ -438,6 +457,7 @@ Version 0.10 (06.08.98)
 - Hauptdialog.setupElements()
 - Hauptdialog.listeNeueAktie()
 - Hauptdialog.listeAktualisieren() (2x)
+- Hauptdialog.listeSelektierteAktieAktualisieren()
 - ComdirectLeser.run()
 - NeueAktie.canOK() (2x)
 - About.setupElements()

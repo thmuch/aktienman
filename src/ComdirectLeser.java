@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-12-21
+ @version 1999-01-05
 */
 
 import java.io.*;
@@ -30,7 +30,7 @@ public void run() {
 
 	/* #Ablaufdatum */
 	/* #Demoversion */
-	if (!(new ADate().before(new ADate(1999,1,19))) && !AktienMan.hauptdialog.main()) return;
+	if (!(new ADate().before(new ADate(1999,2,9))) && !AktienMan.hauptdialog.main()) return;
 
 	try
 	{
@@ -104,10 +104,12 @@ public void run() {
 					{
 						if (kurs > 0L)
 						{
+							int kurswaehrung = Waehrungen.getOnlineWaehrung();
+							
 							AktienMan.hauptdialog.listeNeuerAktienkurs(wkn,kurz,platz,name,kurs,kursdatum,
 																		vortageskurs,eroeffnungskurs,
 																		hoechstkurs,tiefstkurs,handelsvolumen,
-																		Waehrungen.getOnlineWaehrung());
+																		kurswaehrung);
 						}
 						else
 						{

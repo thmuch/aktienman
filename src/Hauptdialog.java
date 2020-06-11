@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-12-21
+ @version 1999-01-04
 */
 
 import java.awt.*;
@@ -32,7 +32,7 @@ private PopupMenu aktienpopup;
 private MenuItem menuSave,menuVerkaufen,menuAendern,menuLoeschen,menuInfo,menuMaxkurs;
 private MenuItem popVerkaufen,popMaxkurs;
 private ChartMenu menuChart,popChart;
-private Choice chErloes,buttonChart;
+private Choice chErloes,buttonChart,lwaehrung;
 private int popX,popY;
 private BALabel popParent;
 
@@ -72,7 +72,7 @@ public synchronized boolean isLocked(boolean beep) {
 }
 
 
-private void resolutionCheck() {
+private synchronized void resolutionCheck() {
 	AktienMan.screenSize = getToolkit().getScreenSize();
 	/* mind. 640x480 */
 }
@@ -157,7 +157,7 @@ public void display() {
 	addErloes(false,0L);
 	pack();
 	setupSize();
-	listeUpdate(false);
+	listeUpdate(false,false);
 	checkListButtons();
 	
 	MRJApplicationUtils.registerAboutHandler(this);
@@ -221,14 +221,23 @@ public void setupElements() {
 	constrain(panelOben,buttonAktXetra,2,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH,0.7,0.0,0,0,0,10);
 	constrain(panelOben,buttonKamera,3,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH,0.4,0.0,0,5,0,0);
 
+	constrain(panelULinks,new Label("W\u00e4hrung:"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	lwaehrung = AktienMan.waehrungen.getChoice(true);
+	lwaehrung.select(Waehrungen.getListenWaehrung());
+	lwaehrung.addItemListener(new ItemListener() {
+		public void itemStateChanged(ItemEvent e) {
+			waehrungWechseln();
+		}
+	});
+	constrain(panelULinks,lwaehrung,1,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,4,0,0);
+
 	buttonSpeichern = new Button(" Liste exportieren... ");
 	buttonSpeichern.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			listeSpeichern();
 		}
 	});
-	
-	constrain(panelULinks,buttonSpeichern,0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.SOUTHWEST,0.0,0.0,0,0,0,0);
+	constrain(panelULinks,buttonSpeichern,0,1,2,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.SOUTHWEST,1.0,0.0,4,0,0,0);
 	
 	Button buttonNeu = new Button(" Aktie kaufen... ");
 	buttonVerkaufen = new Button(" Aktie verkaufen... ");
@@ -347,6 +356,14 @@ public void setupElements() {
 		}
 	});
 	aktienpopup.add(popMaxkurs);
+
+	mi = new MenuItem("Aktualisieren");
+	mi.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			listeSelektierteAktieAktualisieren();
+		}
+	});
+	aktienpopup.add(mi);
 	
 	aktienpopup.addSeparator();
 
@@ -425,11 +442,11 @@ public void setupElements() {
 	mi.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			/* #Demoversion */
-			if (!main() && (AktienMan.listeDAX.getChoice().getItemCount() > 0)
-				&& (AktienMan.listeMDAX.getChoice().getItemCount() > 0)
-				&& (AktienMan.listeNMarkt.getChoice().getItemCount() > 0)
-				&& (AktienMan.listeEuroSTOXX.getChoice().getItemCount() > 0)
-				&& (AktienMan.listeAusland.getChoice().getItemCount() > 0))
+			if (!main() && (AktienMan.listeDAX.getChoice(false).getItemCount() > 0)
+				&& (AktienMan.listeMDAX.getChoice(false).getItemCount() > 0)
+				&& (AktienMan.listeNMarkt.getChoice(false).getItemCount() > 0)
+				&& (AktienMan.listeEuroSTOXX.getChoice(false).getItemCount() > 0)
+				&& (AktienMan.listeAusland.getChoice(false).getItemCount() > 0))
 			{
 				new Warnalert(AktienMan.hauptdialog,"Die Demoversion kann die Listen nur einmal aktualisieren.");
 			}
@@ -571,6 +588,11 @@ public long getErloes() {
 }
 
 
+public int getErloesWaehrung() {
+	return benutzerliste.getErloesWaehrung();
+}
+
+
 private void addErloes(boolean draw, long deltaErloes) {
 	if (draw) panelGewinn.removeAll();
 	
@@ -578,7 +600,7 @@ private void addErloes(boolean draw, long deltaErloes) {
 	
 	long erloes = getErloes();
 	
-	Label titel = new Label("Verkaufserl\u00f6s:",Label.RIGHT);
+	Label titel = new Label("Gesamtaufwand:",Label.RIGHT);
 	if (erloes < 0L)
 	{
 		titel.setForeground(Color.red);
@@ -586,7 +608,7 @@ private void addErloes(boolean draw, long deltaErloes) {
 	constrain(panelGewinn,titel,0,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.EAST,1.0,0.0,0,0,0,0);
 	
 	chErloes = new Choice();
-	chErloes.add(" "+Waehrungen.getString(erloes,Waehrungen.DEM));
+	chErloes.add(" "+Waehrungen.getString(erloes,getErloesWaehrung()));
 	chErloes.add("Setzen...");
 	if (erloes != 0L) chErloes.add("L\u00f6schen...");
 
@@ -636,14 +658,14 @@ private void addErloes(boolean draw, long deltaErloes) {
 }
 
 
-public void setErloes(long newVal) {
+public synchronized void setErloes(long newVal) {
 	benutzerliste.clearErloes();
 	addErloes(true,newVal);
 	saveBenutzerAktien();
 }
 
 
-public void clearErloes() {
+public synchronized void clearErloes() {
 	benutzerliste.clearErloes();
 	addErloes(true,0L);
 	saveBenutzerAktien();
@@ -711,6 +733,22 @@ private synchronized void callNeueAktie() {
 	else
 	{
 		AktienMan.neueaktie.toFront();
+	}
+}
+
+
+private synchronized void waehrungWechseln() {
+	int neu = lwaehrung.getSelectedIndex();
+	
+	if (neu != Waehrungen.getListenWaehrung())
+	{
+		Waehrungen.setListenWaehrung(neu);
+		benutzerliste.erloesToWaehrung(neu);
+
+		listeUpdate(false,true);
+		setErloes(getErloes());
+
+		AktienMan.properties.saveParameters();
 	}
 }
 
@@ -809,12 +847,12 @@ private void checkLockButtons() {
 }
 
 
-public long getAnzahlAktien() {
+public synchronized long getAnzahlAktien() {
 	return benutzerliste.size();
 }
 
 
-public BenutzerAktie getAktieNr(int index) {
+public synchronized BenutzerAktie getAktieNr(int index) {
 	return benutzerliste.getAt(index);
 }
 
@@ -823,21 +861,21 @@ private void checkListButtons() {
 	if (isLocked(false))
 	{
 		buttonSpeichern.setEnabled(false);
-		
+		lwaehrung.setEnabled(false);
 		menuSave.setEnabled(false);
 	}
 	else
 	{
+		lwaehrung.setEnabled(true);
+
 		if (getAnzahlAktien() > 0)
 		{
 			buttonSpeichern.setEnabled(true);
-
 			menuSave.setEnabled(true);
 		}
 		else
 		{
 			buttonSpeichern.setEnabled(false);
-
 			menuSave.setEnabled(false);
 
 			benutzerliste.clearDate();
@@ -872,7 +910,7 @@ public synchronized void listeAktualisieren(String boerse) {
 
 	/* #Ablaufdatum */
 	/* #Demoversion */
-	if ((new ADate().after(new ADate(1999,1,19))) && (!main())) System.exit(0);
+	if ((new ADate().after(new ADate(1999,2,9))) && (!main())) System.exit(0);
 	
 	benutzerliste.setDate(boerse);
 	
@@ -883,7 +921,7 @@ public synchronized void listeAktualisieren(String boerse) {
 
 	/* #Ablaufdatum */
 	/* #Demoversion */
-	if ((new ADate().after(new ADate(1999,1,20)))
+	if ((new ADate().after(new ADate(1999,2,10)))
 		&& (RegAM.string(AktienMan.properties.getString("Key.1"),
 			AktienMan.properties.getString("Key.2"),
 			AktienMan.properties.getString("Key.3")) >= 0)) return;
@@ -902,6 +940,26 @@ public synchronized void listeAktualisieren(String boerse) {
 	BenutzerAktie.setLastUpdateAndRepaint(benutzerliste.getDateString());
 	
 	AktienMan.doOnlineChecks();
+}
+
+
+private synchronized void listeSelektierteAktieAktualisieren() {
+	for (int i = 0; i < getAnzahlAktien(); i++)
+	{
+		BenutzerAktie ba = getAktieNr(i);
+
+		if (ba.isSelected())
+		{
+			ba.setStatusRequestingAndRepaint();
+
+			/* #Ablaufdatum */
+			/* #Demoversion */
+			if ((new ADate().after(new ADate(1999,2,9))) && (!main())) return;
+
+			new ComdirectLeser(ba.getRequest(""),ba.getWKNString(),ba.getBoerse()).start();
+			break;
+		}
+	}
 }
 
 
@@ -928,7 +986,7 @@ public synchronized void listeNeuerAktienkurs(String wkn, String kurz, String pl
 		}
 	}
 	
-	if (valid) listeUpdate(true);
+	if (valid) listeUpdate(true,false);
 }
 
 
@@ -950,7 +1008,7 @@ public synchronized void listeAktienkursNA(String wkn, String kurz, String platz
 		}
 	}
 
-	if (valid) listeUpdate(true);
+	if (valid) listeUpdate(true,false);
 }
 
 
@@ -972,7 +1030,7 @@ public synchronized void listeAnfrageFalsch(String wkn, String platz) {
 		}
 	}
 	
-	if (valid) listeUpdate(true);
+	if (valid) listeUpdate(true,false);
 }
 
 
@@ -999,7 +1057,7 @@ public synchronized void listeNeueAktie(BenutzerAktie ba) {
 	if (main() || (getAnzahlAktien() < 3))
 	{
 		benutzerliste.add(ba);
-		listeUpdate(true);
+		listeUpdate(true,false);
 		checkListButtons();
 	}
 
@@ -1013,7 +1071,7 @@ public synchronized void listeNeueAktie(BenutzerAktie ba) {
 				}
 				catch (InterruptedException e) {}
 
-				AktienMan.hauptdialog.listeUpdate(false);
+				AktienMan.hauptdialog.listeUpdate(false,false);
 			}
 		};
 
@@ -1123,7 +1181,7 @@ public synchronized void displayAktienPopup() {
 }
 
 
-public synchronized void listeUpdate(boolean save) {
+public synchronized void listeUpdate(boolean save, boolean chgInfo) {
 	disableAktienButtons();
 	panelListe.removeAll();
 	panelText.removeAll();
@@ -1143,6 +1201,14 @@ public synchronized void listeUpdate(boolean save) {
 		}
 		
 		BenutzerAktie.addFooterToPanel(panelListe,i+yoffs,panelText);
+		
+		if (chgInfo)
+		{
+			for (i = 0; i < getAnzahlAktien(); i++)
+			{
+				getAktieNr(i).infoDialogSetValues(true);
+			}
+		}
 	}
 	
 	panelText.validate();
@@ -1266,7 +1332,8 @@ private synchronized void listeSelektierteAktieVerkaufen() {
 
 
 public synchronized void listeAktieVerkaufen(int index, long anzahl, long verkaufskurs, long gebuehren) {
-	addErloes(true,anzahl*verkaufskurs-gebuehren);
+	addErloes(true,anzahl * Waehrungen.exchange(verkaufskurs,Waehrungen.getVerkaufsWaehrung(),getErloesWaehrung())
+						- Waehrungen.exchange(gebuehren,Waehrungen.getVerkaufsWaehrung(),getErloesWaehrung()));
 
 	BenutzerAktie ba = getAktieNr(index);
 	
@@ -1278,7 +1345,7 @@ public synchronized void listeAktieVerkaufen(int index, long anzahl, long verkau
 	{
 		ba.decStueckzahl(anzahl);
 
-		listeUpdate(true);
+		listeUpdate(true,false);
 		checkListButtons();
 	}
 }
@@ -1307,7 +1374,7 @@ private synchronized void listeSelektierteAktieLoeschen() {
 
 public synchronized void listeAktieLoeschen(int index) {
 	benutzerliste.removeElementAt(index);
-	listeUpdate(true);
+	listeUpdate(true,false);
 	checkListButtons();
 }
 

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-12-07
+ @version 1999-01-05
 */
 
 import java.io.*;
@@ -34,7 +34,7 @@ public void run() {
 		
 		in = new BufferedReader(new InputStreamReader(url.openStream()));
 		
-		String s;
+		String s, datum = "";
 		int status = 0;
 		long kurs = BenutzerAktie.VALUE_NA;
 		
@@ -44,7 +44,7 @@ public void run() {
 			{
 				if (s.indexOf("NAME=\"searchfor\" VALUE=") > 0)
 				{
-					parent.setKurs(index,BenutzerAktie.VALUE_NA,"");
+					parent.setKurs(index,BenutzerAktie.VALUE_NA);
 					break;
 				}
 
@@ -57,12 +57,12 @@ public void run() {
 			{
 				if (s.indexOf("</TR>") >= 0)
 				{
-					parent.setKurs(index,BenutzerAktie.VALUE_NA,"");
+					parent.setKurs(index,BenutzerAktie.VALUE_NA);
 					status = 0;
 				}
 				else
 				{
-					int i = s.indexOf("<TD>");
+					int i = s.indexOf("<TD");
 
 					if (i >= 0)
 					{
@@ -75,7 +75,7 @@ public void run() {
 							
 							if (kstr.equalsIgnoreCase("n/a"))
 							{
-								parent.setKurs(index,BenutzerAktie.VALUE_NA,"");
+								parent.setKurs(index,BenutzerAktie.VALUE_NA);
 								break;
 							}
 							
@@ -93,14 +93,33 @@ public void run() {
 							int i2 = s.indexOf(">",i+4);
 							int i3 = s.indexOf("<",i2);
 							
-							String datum = s.substring(i2+1,i3);
+							datum = s.substring(i2+1,i3);
 
 							i2 = s.indexOf(">",i3);
 							i3 = s.indexOf("<",i2);
 
 							datum = datum + " " + s.substring(i2+1,i3);
+						}
+						else if (status == 6)
+						{
+							int i2 = s.indexOf(">",s.indexOf(">",i)+1);
+							int i3 = s.indexOf("<",i2);
+
+							String volumen = s.substring(i2+1,i3).trim();
 							
-							parent.setKurs(index,kurs,datum);
+							long handelsvolumen;
+							try
+							{
+								handelsvolumen = Long.parseLong(volumen);
+							}
+							catch (NumberFormatException e)
+							{
+								handelsvolumen = 0L;
+							}
+							
+							int kurswaehrung = Waehrungen.getOnlineWaehrung();
+							
+							parent.setKurs(index,kurs,datum,kurswaehrung,handelsvolumen);
 							break;
 						}
 
@@ -113,11 +132,11 @@ public void run() {
 	catch (MalformedURLException e)
 	{
 		System.out.println("Comdirect-URL fehlerhaft.");
-		parent.setKurs(index,BenutzerAktie.VALUE_ERROR,"");
+		parent.setKurs(index,BenutzerAktie.VALUE_ERROR);
 	}
 	catch (IOException e)
 	{
-		parent.setKurs(index,BenutzerAktie.VALUE_ERROR,"");
+		parent.setKurs(index,BenutzerAktie.VALUE_ERROR);
 	}
 	finally
 	{

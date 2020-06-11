@@ -1,11 +1,11 @@
 /**
  @author Thomas Much
- @version 1998-12-21
+ @version 1999-01-05
 */
 
 /**
  AktienMan Portfolio-Management-Software
- Copyright (c)1998 by Thomas Much (thomas@snailshell.de)
+ Copyright (c)1998,99 by Thomas Much (thomas@snailshell.de)
  Hauptprogramm (main)
 */
 
@@ -16,7 +16,7 @@ import java.awt.*;
 public class AktienMan {
 
 public static final String AMNAME         = "AktienMan";
-public static final String AMVERSION      = "1.0";
+public static final String AMVERSION      = "1.10 (Euro)";
 public static final String AMFENSTERTITEL = AMNAME + " - ";
 
 public static final String OS_MAC         = "MACOS";
@@ -25,8 +25,8 @@ public static final String OS_LINUX       = "LINUX";
 
 public static final char DEZSEPARATOR     = ',';
 
-public static ADate compDate              = new ADate(1998,12,21); /* Compilierdatum */
-public static final int RELEASE           = 3; /* 1.01 21.12.98 */
+public static ADate compDate              = new ADate(1999,1,5); /* Compilierdatum */
+public static final int RELEASE           = 4; /* 1.10 05.01.99 */
 public static final int PORTFOLIOVER      = 0;
 
 public static Aktienliste listeDAX        = new Aktienliste();
@@ -169,7 +169,7 @@ private static void registerCheck() {}
 
 private static void main(int a) throws Exception {
 	ADate heute = new ADate();
-	ADate morgen = new ADate(1999,1,18); /* #Ablaufdatum */
+	ADate morgen = new ADate(1999,2,8); /* #Ablaufdatum */
 
 	/* #Demoversion */
 	if ((heute.before(compDate) || heute.after(morgen)) && (!hauptdialog.main())) throw new Exception();
@@ -191,11 +191,11 @@ public static void main(String a) {
 			hauptdialog.toFront();
 		}
 
-		if ((listeDAX.getChoice().getItemCount() < 1) ||
-			(listeMDAX.getChoice().getItemCount() < 1) ||
-			(listeNMarkt.getChoice().getItemCount() < 1) ||
-			(listeEuroSTOXX.getChoice().getItemCount() < 1) ||
-			(listeAusland.getChoice().getItemCount() < 1))
+		if ((listeDAX.getChoice(false).getItemCount() < 1) ||
+			(listeMDAX.getChoice(false).getItemCount() < 1) ||
+			(listeNMarkt.getChoice(false).getItemCount() < 1) ||
+			(listeEuroSTOXX.getChoice(false).getItemCount() < 1) ||
+			(listeAusland.getChoice(false).getItemCount() < 1))
 		{
 			new Warnalert(hauptdialog,"Bitte gehen Sie online und rufen dann den Men\u00fcpunkt|\"Aktienlisten aktualisieren\" im Men\u00fc \""+Lang.EDITMENUTITLE+"\" auf!");
 		}
@@ -214,7 +214,7 @@ public static void main(String a) {
 
 public static void main(String args[]) {
 	StartupDialog sd = new StartupDialog();
-
+	
 	properties = new AProperties(getFilenameConfig(),AMNAME+" "+AMVERSION+" Konfigurationsdatei");
 	
 	AktienAktualisieren.loadPopups();

@@ -1,4 +1,7 @@
-// 1998-09-11 tm
+/**
+ @author Thomas Much
+ @version 1999-01-02
+*/
 
 import java.awt.*;
 import java.awt.event.*;
@@ -12,12 +15,12 @@ private Button buttonJa;
 
 
 public VerkaufserloesLoeschen() {
-	super(AktienMan.AMFENSTERTITEL+"Verkaufserl\u00f6s l\u00f6schen",-1,null);
+	super(AktienMan.AMFENSTERTITEL+"Gesamtaufwand l\u00f6schen",-1,null);
 }
 
 
 public void setupElements2() {
-	Label label = new Label("Wollen Sie den Verkaufserl\u00f6s wirklich l\u00f6schen?");
+	Label label = new Label("Wollen Sie den Gesamtaufwand wirklich l\u00f6schen?");
 	label.setForeground(Color.red);
 	constrain(this,label,0,0,3,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,10,10,10,10);
 

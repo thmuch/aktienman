@@ -1,4 +1,7 @@
-// 1998-09-16 tm
+/**
+ @author Thomas Much
+ @version 1999-01-03
+*/
 
 
 
@@ -12,13 +15,15 @@ public BankConsors() {
 
 
 public long getTelefonGebuehren(long wert) {
-	long gebuehren = Waehrungen.PRECISION*13L;
+	long gebuehren = Waehrungen.exchange(Waehrungen.PRECISION*13L,Waehrungen.DEM,Waehrungen.getVerkaufsWaehrung());
+
+	long dmwert = Waehrungen.exchange(wert,Waehrungen.getVerkaufsWaehrung(),Waehrungen.DEM);
 	
-	if (wert < Waehrungen.PRECISION*100000L)
+	if (dmwert < Waehrungen.PRECISION*100000L)
 	{
 		gebuehren += (wert*21L + Waehrungen.PRECISION*50L) / (Waehrungen.PRECISION*100L);
 	}
-	else if (wert < Waehrungen.PRECISION*200000L)
+	else if (dmwert < Waehrungen.PRECISION*200000L)
 	{
 		gebuehren += (wert*15L + Waehrungen.PRECISION*50L) / (Waehrungen.PRECISION*100L);
 	}
@@ -32,13 +37,15 @@ public long getTelefonGebuehren(long wert) {
 
 
 public long getInternetGebuehren(long wert) {
-	long gebuehren = Waehrungen.PRECISION*9L;
+	long gebuehren = Waehrungen.exchange(Waehrungen.PRECISION*9L,Waehrungen.DEM,Waehrungen.getVerkaufsWaehrung());
+
+	long dmwert = Waehrungen.exchange(wert,Waehrungen.getVerkaufsWaehrung(),Waehrungen.DEM);
 	
-	if (wert < Waehrungen.PRECISION*100000L)
+	if (dmwert < Waehrungen.PRECISION*100000L)
 	{
 		gebuehren += (wert*21L + Waehrungen.PRECISION*50L) / (Waehrungen.PRECISION*100L);
 	}
-	else if (wert < Waehrungen.PRECISION*200000L)
+	else if (dmwert < Waehrungen.PRECISION*200000L)
 	{
 		gebuehren += (wert*15L + Waehrungen.PRECISION*50L) / (Waehrungen.PRECISION*100L);
 	}

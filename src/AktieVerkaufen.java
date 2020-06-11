@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-10-22
+ @version 1999-01-03
 */
 
 import java.awt.*;
@@ -51,7 +51,7 @@ public void setupElements2() {
 	
 	constrain(panelOben,new Label("Bank:"),0,3,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,5,0,0,0);
 
-	banken = AktienMan.bankenliste.getChoice();
+	banken = AktienMan.bankenliste.getChoice(true);
 	banken.select(AktienMan.bankenliste.getStandardBank());
 	banken.addItemListener(new ItemListener() {
 		public void itemStateChanged(ItemEvent e) {
@@ -63,7 +63,7 @@ public void setupElements2() {
 	
 	constrain(panelOben,new Label("Verkaufskurs:"),2,1,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,15,0,0);
 
-	verkaufskurs = new TextField(ba.getRawKursString(),10);
+	verkaufskurs = new TextField(ba.getRawVerkaufsKursString(),10);
 	verkaufskurs.addTextListener(new TextListener() {
 		public void textValueChanged(TextEvent e) {
 			checkVerkaufskurs();
@@ -108,7 +108,7 @@ public void setupElements2() {
 
 	Panel panelErloes = new Panel(gridbag);
 	
-	cbErloes = new Checkbox("Verkaufserl\u00f6s berechnen",true);
+	cbErloes = new Checkbox("Gesamtaufwand berechnen",true);
 	constrain(panelErloes,cbErloes,0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
 
 	constrain(panelOben,panelErloes,2,4,2,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,5,15,0,0);

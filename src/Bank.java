@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-29
+ @version 1999-01-03
 */
 
 
@@ -37,7 +37,7 @@ public boolean hasInternetTrade() {
 public long getMaklerCourtage(long wert) {
 	long courtage = (wert*8L + Waehrungen.PRECISION*50L) / (Waehrungen.PRECISION*100L);
 
-	long minimum = (Waehrungen.PRECISION * 3L) / 2L;
+	long minimum = Waehrungen.exchange((Waehrungen.PRECISION * 3L) / 2L,Waehrungen.DEM,Waehrungen.getVerkaufsWaehrung());
 	
 	return (courtage <= minimum) ? minimum : courtage;
 }
@@ -46,7 +46,7 @@ public long getMaklerCourtage(long wert) {
 public String getGebuehrenString(long wert, boolean internet) {
 	long g = getGebuehren(wert,internet);
 	
-	return (g == 0L) ? "keine" : Waehrungen.getString(g,Waehrungen.DEM);
+	return (g == 0L) ? "keine" : Waehrungen.getString(g,Waehrungen.getVerkaufsWaehrung());
 }
 
 

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-20
+ @version 1999-01-02
 */
 
 import java.awt.*;
@@ -54,7 +54,7 @@ public void setupElements() {
 	constrain(panelAktie,auslandCheckbox,0,5,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	constrain(panelAktie,wknCheckbox,0,6,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	
-	aktienDAX = AktienMan.listeDAX.getChoice();
+	aktienDAX = AktienMan.listeDAX.getChoice(false);
 	aktienDAX.addItemListener(new ItemListener() {
 		public void itemStateChanged(ItemEvent e) {
 			aktienGruppe.setSelectedCheckbox(daxCheckbox);
@@ -63,7 +63,7 @@ public void setupElements() {
 	if (aktienDAX.getItemCount() < 1) daxCheckbox.setEnabled(false);
 	constrain(panelAktie,aktienDAX,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,0,0,0);
 	
-	aktienMDAX = AktienMan.listeMDAX.getChoice();
+	aktienMDAX = AktienMan.listeMDAX.getChoice(false);
 	aktienMDAX.addItemListener(new ItemListener() {
 		public void itemStateChanged(ItemEvent e) {
 			aktienGruppe.setSelectedCheckbox(mdaxCheckbox);
@@ -72,7 +72,7 @@ public void setupElements() {
 	if (aktienMDAX.getItemCount() < 1) mdaxCheckbox.setEnabled(false);
 	constrain(panelAktie,aktienMDAX,1,2,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,0,0,0);
 
-	aktienNMarkt = AktienMan.listeNMarkt.getChoice();
+	aktienNMarkt = AktienMan.listeNMarkt.getChoice(false);
 	aktienNMarkt.addItemListener(new ItemListener() {
 		public void itemStateChanged(ItemEvent e) {
 			aktienGruppe.setSelectedCheckbox(nmarktCheckbox);
@@ -81,7 +81,7 @@ public void setupElements() {
 	if (aktienNMarkt.getItemCount() < 1) nmarktCheckbox.setEnabled(false);
 	constrain(panelAktie,aktienNMarkt,1,3,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,0,0,0);
 
-	aktienSTOXX = AktienMan.listeEuroSTOXX.getChoice();
+	aktienSTOXX = AktienMan.listeEuroSTOXX.getChoice(false);
 	aktienSTOXX.addItemListener(new ItemListener() {
 		public void itemStateChanged(ItemEvent e) {
 			aktienGruppe.setSelectedCheckbox(stoxxCheckbox);
@@ -90,7 +90,7 @@ public void setupElements() {
 	if (aktienSTOXX.getItemCount() < 1) stoxxCheckbox.setEnabled(false);
 	constrain(panelAktie,aktienSTOXX,1,4,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,0,0,0);
 
-	aktienAusland = AktienMan.listeAusland.getChoice();
+	aktienAusland = AktienMan.listeAusland.getChoice(false);
 	aktienAusland.addItemListener(new ItemListener() {
 		public void itemStateChanged(ItemEvent e) {
 			aktienGruppe.setSelectedCheckbox(auslandCheckbox);
@@ -107,7 +107,7 @@ public void setupElements() {
 	});
 	constrain(panelAktie,aktienWKN,1,6,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	
-	plaetze = AktienMan.boersenliste.getChoice();
+	plaetze = AktienMan.boersenliste.getChoice(true);
 	plaetze.select(AktienMan.boersenliste.getStandardBoerse());
 	constrain(panelAktie,new Label("B\u00f6rsenplatz:"),0,7,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,5,0,0,0);
 	constrain(panelAktie,plaetze,1,7,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,5,0,0,0);
@@ -115,9 +115,9 @@ public void setupElements() {
 	boerseNurDiese = new Checkbox("Nur an dieser B\u00f6rse");
 	constrain(panelAktie,boerseNurDiese,1,8,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	
-	constrain(panelAktie,new Label("W\u00e4hrung:"),0,9,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,5,0,0,0);
-	waehrung = AktienMan.waehrungen.getChoice();
-	waehrung.select(Waehrungen.getStandardWaehrung());
+	constrain(panelAktie,new Label("Kaufw\u00e4hrung:"),0,9,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,5,0,0,0);
+	waehrung = AktienMan.waehrungen.getChoice(true);
+	waehrung.select(Waehrungen.getStandardKaufwaehrung());
 	constrain(panelAktie,waehrung,1,9,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,5,0,0,0);
 	
 	constrain(panelRest,new Label("Kaufdatum"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
@@ -558,7 +558,7 @@ public synchronized boolean canOK() {
 
 	/* #Ablaufdatum */
 	/* #Demoversion */
-	if ((!(new ADate().before(new ADate(1999,1,20))))
+	if ((!(new ADate().before(new ADate(1999,2,10))))
 		&& (!(RegAM.string(AktienMan.properties.getString("Key.1"),
 			AktienMan.properties.getString("Key.2"),
 			AktienMan.properties.getString("Key.3")) < 0))) for(;;);

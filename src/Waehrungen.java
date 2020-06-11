@@ -1,33 +1,35 @@
-// 1998-10-11 tm
-
-import java.text.*;
+/**
+ @author Thomas Much
+ @version 1999-01-04
+*/
 
 
 
 public class Waehrungen extends Aktienliste {
 
-public static final int DEM = 0;
-public static final int EUR = 1;
-public static final int USD = 2;
+public static final int NONE = -1;
+public static final int DEM  =  0;
+public static final int EUR  =  1;
+// public static final int USD = 2;
 
 public static final long PRECISION = 100L;
 
 private static final long CONVPREC  = 1000000L;
 private static final long CONVROUND = CONVPREC/2L;
-private static final long DEM2EUR   =  509200L;
-private static final long EUR2DEM   = 1963900L;
+private static final long DEM2EUR   =  511292L;
+private static final long EUR2DEM   = 1955830L;
 
-private static final int STANDARDWAEHRUNG = DEM;
+private static final int STANDARDKAUFWAEHRUNG = EUR;
 private static final double DFAKTOR = (double)PRECISION;
-private static NumberFormat geldform = NumberFormat.getCurrencyInstance();
-private static final double WINFIX = 0.00001;
-private static int aktuellesJahr = new ADate().getYear();
+// private static final double WINFIX = 0.00001;
+
+private static int listenWaehrung = NONE;
 
 
 
 public synchronized void setupList() {
 	add(new Waehrung("DM","DEM",DEM));
-	// add(new Waehrung("Euro","EUR",EUR));
+	add(new Waehrung("Euro","EUR",EUR));
 	// add(new Waehrung("US-$","USD",USD));
 }
 
@@ -73,12 +75,51 @@ private static double sgn(double d) {
 }
 
 
+private static long sgn(long l) {
+	if (l > 0L)
+	{
+		return 1L;
+	}
+	else if (l < 0L)
+	{
+		return -1L;
+	}
+	else
+	{
+		return 0L;
+	}
+}
+
+
+public static String getKuerzel(int waehrung) {
+	if (waehrung == EUR)
+	{
+		return "EUR";
+	}
+	else if (waehrung == DEM)
+	{
+		return "DM";
+	}
+	else
+	{
+		return "";
+	}
+}
+
+
 public static String getString(long wert, int waehrung) {
-	double d = longToDouble(wert);
-
-	// waehrung auswerten
-
-	return geldform.format(d + sgn(d)*WINFIX);
+	if (waehrung == EUR)
+	{
+		return getKuerzel(EUR) + " " + AktienMan.get00String(wert);
+	}
+	else if (waehrung == DEM)
+	{
+		return AktienMan.get00String(wert) + " " + getKuerzel(DEM);
+	}
+	else
+	{
+		return AktienMan.get00String(wert);
+	}
 }
 
 
@@ -93,7 +134,7 @@ public static long exchange(long valFrom, int wFrom, int wTo) {
 		{
 			if (wTo == EUR)
 			{
-				return (valFrom * DEM2EUR + CONVROUND) / CONVPREC;
+				return (valFrom * DEM2EUR + sgn(valFrom) * CONVROUND) / CONVPREC;
 			}
 			else
 			{
@@ -104,7 +145,7 @@ public static long exchange(long valFrom, int wFrom, int wTo) {
 		{
 			if (wTo == DEM)
 			{
-				return (valFrom * EUR2DEM + CONVROUND) / CONVPREC;
+				return (valFrom * EUR2DEM + sgn(valFrom) * CONVROUND) / CONVPREC;
 			}
 			else
 			{
@@ -119,15 +160,36 @@ public static long exchange(long valFrom, int wFrom, int wTo) {
 }
 
 
-public static int getOnlineWaehrung() {
-	return (aktuellesJahr >= 1999) ? EUR : DEM;
+public synchronized static int getOnlineWaehrung() {
+	return EUR;
 }
 
 
-public static int getStandardWaehrung() {
+public synchronized static int getStandardKaufwaehrung() {
 	int stdw = AktienMan.properties.getInt("Konfig.StdWaehrung");
 	
-	return ((stdw < 0) ? STANDARDWAEHRUNG : stdw);
+	return ((stdw < 0) ? STANDARDKAUFWAEHRUNG : stdw);
+}
+
+
+public synchronized static int getVerkaufsWaehrung() {
+	return getListenWaehrung();
+}
+
+
+public synchronized static int getListenWaehrung() {
+	if (listenWaehrung <= NONE)
+	{
+		listenWaehrung = AktienMan.properties.getInt("Konfig.Listenwaehrung",DEM);
+	}
+	
+	return listenWaehrung;
+}
+
+
+public synchronized static void setListenWaehrung(int neu) {
+	AktienMan.properties.setInt("Konfig.Listenwaehrung",neu);
+	listenWaehrung = neu;
 }
 
 }

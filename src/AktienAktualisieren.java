@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-12-07
+ @version 1999-01-04
 */
 
 import java.awt.*;
@@ -193,7 +193,7 @@ private synchronized void savePopups() {
 }
 
 
-public static void loadPopups() {
+public synchronized static void loadPopups() {
 	ObjectInputStream in = null;
 
 	String folder = System.getProperty("user.home");

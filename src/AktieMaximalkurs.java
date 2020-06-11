@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1998-11-20
+ @version 1999-01-04
 */
 
 import java.awt.*;
@@ -10,7 +10,8 @@ import java.awt.event.*;
 
 public class AktieMaximalkurs extends AFrame {
 
-private long[] kurse;
+private long[] kurse,volumen;
+private int[] kwaehrung;
 private String[] kursdatum;
 private Panel panelKurse;
 private BenutzerAktie ba;
@@ -46,11 +47,15 @@ public synchronized void setupElements2() {
 	panelKurse = new Panel(gridbag);
 
 	kurse = new long[AktienMan.boersenliste.size()];
+	volumen = new long[AktienMan.boersenliste.size()];
+	kwaehrung = new int[AktienMan.boersenliste.size()];
 	kursdatum = new String[AktienMan.boersenliste.size()];
 	
 	for (int i = 0; i < AktienMan.boersenliste.size(); i++)
 	{
 		kurse[i] = BenutzerAktie.VALUE_MISSING;
+		volumen[i] = 0L;
+		kwaehrung[i] = Waehrungen.NONE;
 		kursdatum[i] = "";
 	}
 	
@@ -63,8 +68,8 @@ public synchronized void setupElements2() {
 		}
 	});
 	
-	constrain(this,new Label("Aktie \""+ba.getName(BenutzerListe.useShortNames())+"\":"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,10,10,0,10);
-	constrain(this,panelKurse,0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,10,10,0,10);
+	constrain(this,new Label("Aktie \""+ba.getName(BenutzerListe.useShortNames())+"\":"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,10,10,3,10);
+	constrain(this,panelKurse,0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,0,10,0,10);
 	constrain(this,buttonOK,0,2,1,1,GridBagConstraints.NONE,GridBagConstraints.SOUTHEAST,0.0,0.0,15,10,10,10);
 }
 
@@ -94,7 +99,10 @@ private synchronized void fillKursPanel(boolean draw) {
 		}
 	}
 	
-	int ypos = 0;
+	constrain(panelKurse,new Label("akt. Kurs"),2,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,2,0);
+	constrain(panelKurse,new Label("Volumen",Label.RIGHT),4,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.EAST,1.0,0.0,0,10,2,0);
+
+	int ypos = 1;
 
 	for (int i = 0; i < AktienMan.boersenliste.size(); i++)
 	{
@@ -105,7 +113,7 @@ private synchronized void fillKursPanel(boolean draw) {
 			constrain(panelKurse,new Label(b.getName()),0,ypos,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 			constrain(panelKurse,new Label("("+b.getKurz()+"):"),1,ypos,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 			
-			String s;
+			String s,svol = "";
 			long k = kurse[i];
 			
 			if (k == BenutzerAktie.VALUE_MISSING)
@@ -122,7 +130,8 @@ private synchronized void fillKursPanel(boolean draw) {
 			}
 			else
 			{
-				s = Waehrungen.getString(k,Waehrungen.DEM);
+				s = Waehrungen.getString(Waehrungen.exchange(k,kwaehrung[i],Waehrungen.getListenWaehrung()),Waehrungen.getListenWaehrung());
+				svol = new Long(volumen[i]).toString();
 			}
 			
 			Label l = new Label(s);
@@ -136,7 +145,9 @@ private synchronized void fillKursPanel(boolean draw) {
 			}
 			constrain(panelKurse,l,2,ypos,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,10,0,0);
 
-			constrain(panelKurse,new Label(kursdatum[i]),3,ypos,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,10,0,0);
+			constrain(panelKurse,new Label(kursdatum[i]),3,ypos,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,0,0);
+
+			constrain(panelKurse,new Label(svol,Label.RIGHT),4,ypos,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.EAST,1.0,0.0,0,10,0,0);
 			
 			ypos++;
 		}
@@ -151,8 +162,16 @@ private synchronized void fillKursPanel(boolean draw) {
 }
 
 
-public synchronized void setKurs(int index, long kurs, String datum) {
+public synchronized void setKurs(int index, long kurs) {
+	setKurs(index,kurs,"",Waehrungen.NONE,0L);
+}
+
+
+public synchronized void setKurs(int index, long kurs, String datum, int waehrung, long hvolumen) {
 	kurse[index] = kurs;
+	kwaehrung[index] = waehrung;
+	volumen[index] = hvolumen;
+
 	if (datum.length() > 0) kursdatum[index] = "("+datum+")";
 	
 	fillKursPanel(true);
