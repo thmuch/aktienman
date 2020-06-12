@@ -1,6 +1,10 @@
 /**
  @author Thomas Much
- @version 2001-10-30
+ @version 2002-01-14
+ 
+ 2002-01-14
+   setChartChoice kennt nun auch 5- und 10-Jahres-Charts
+   listeSelect/aktienPopup synchronisieren nicht mehr wŠhrend aktienpopup.show (dadurch hŠngt MOSX nicht mehr)
 */
 
 import java.awt.*;
@@ -21,6 +25,15 @@ public static final int MINHOEHE  = 300;
 
 public Window backWindow;
 
+private static final String CHARTSTR_INTRA	= "Intraday";
+private static final String CHARTSTR_3M		= "3 Monate";
+private static final String CHARTSTR_6M		= "6 Monate";
+private static final String CHARTSTR_1Y		= "1 Jahr";
+private static final String CHARTSTR_2Y		= "2 Jahre";
+private static final String CHARTSTR_3Y		= "3 Jahre";
+private static final String CHARTSTR_5Y		= "5 Jahre";
+private static final String CHARTSTR_10Y	= "10 Jahre";
+
 private int locked = 0;
 private boolean abenabled = false;
 
@@ -37,8 +50,6 @@ private MenuItem popVerkaufen,popMaxkurs,popSplitten,popAktualisieren,pofoRename
 private Menu menuAktAlle,menuExport;
 private ChartMenu menuChart,popChart,pofoChart;
 private Choice chErloes,buttonChart,lwaehrung,sortby,aktChoice;
-private int popX,popY;
-private Component popParent;
 private ProgressCanvas progressCanvas;
 
 
@@ -330,40 +341,58 @@ public void setupElements() {
 	buttonChart = new Choice();
 	buttonChart.addItemListener(new ItemListener() {
 		public void itemStateChanged(ItemEvent e) {
+
 			int idx = buttonChart.getSelectedIndex();
 			
-			switch(idx)
+			if (idx != 0)
 			{
-			case 1:
-				listeSelektierteAktieChart(URLs.CHART_INTRA);
-				break;
-
-			case 2:
-				listeSelektierteAktieChart(URLs.CHART_3);
-				break;
-
-			case 3:
-				listeSelektierteAktieChart(URLs.CHART_6);
-				break;
-
-			case 4:
-				listeSelektierteAktieChart(URLs.CHART_12);
-				break;
-
-			case 5:
-				listeSelektierteAktieChart(ChartQuellen.getChartQuelle().hasType24() ? URLs.CHART_24 : URLs.CHART_36);
-				break;
-
+				String selstr = buttonChart.getItem(idx);
+				
+				if (selstr.equals(CHARTSTR_INTRA))
+				{
+					listeSelektierteAktieChart(URLs.CHART_INTRA);
+				}
+				else if (selstr.equals(CHARTSTR_3M))
+				{
+					listeSelektierteAktieChart(URLs.CHART_3);
+				}
+				else if (selstr.equals(CHARTSTR_6M))
+				{
+					listeSelektierteAktieChart(URLs.CHART_6);
+				}
+				else if (selstr.equals(CHARTSTR_1Y))
+				{
+					listeSelektierteAktieChart(URLs.CHART_12);
+				}
+				else if (selstr.equals(CHARTSTR_2Y))
+				{
+					listeSelektierteAktieChart(URLs.CHART_24);
+				}
+				else if (selstr.equals(CHARTSTR_3Y))
+				{
+					listeSelektierteAktieChart(URLs.CHART_36);
+				}
+				else if (selstr.equals(CHARTSTR_5Y))
+				{
+					listeSelektierteAktieChart(URLs.CHART_60);
+				}
+				else if (selstr.equals(CHARTSTR_10Y))
+				{
+					listeSelektierteAktieChart(URLs.CHART_120);
+				}
+				
+				buttonChart.select(0);
+			}
+			
 /*			case 6:
 				listeSelektierteAktieIntradayChart("FRA");
 				break;
 
 			case 7:
 				listeSelektierteAktieIntradayChart("ETR");
-				break; */
-			}
+				break;
 
-			if (idx != 0) buttonChart.select(0);
+			if (idx != 0) buttonChart.select(0); */
 		}
 	});
 
@@ -717,23 +746,41 @@ public void setupElements() {
 
 
 private void setChartChoice(boolean intraday) {
+	
+	ChartQuelle cq = ChartQuellen.getChartQuelle();
 
 	buttonChart.removeAll();
 	
 	buttonChart.add("Chart:");
 	
-	buttonChart.add("Intraday");
-	buttonChart.add("3 Monate");
-	buttonChart.add("6 Monate");
-	buttonChart.add("1 Jahr");
-	
-	if (ChartQuellen.getChartQuelle().hasType24())
+	buttonChart.add(CHARTSTR_INTRA);
+	buttonChart.add(CHARTSTR_3M);
+
+	if (cq.hasType6())
 	{
-		buttonChart.add("2 Jahre");
+		buttonChart.add(CHARTSTR_6M);
 	}
-	else
+	
+	buttonChart.add(CHARTSTR_1Y);
+	
+	if (cq.hasType24())
 	{
-		buttonChart.add("3 Jahre");
+		buttonChart.add(CHARTSTR_2Y);
+	}
+
+	if (cq.hasType36())
+	{
+		buttonChart.add(CHARTSTR_3Y);
+	}
+
+	if (cq.hasType60())
+	{
+		buttonChart.add(CHARTSTR_5Y);
+	}
+
+	if (cq.hasType120())
+	{
+		buttonChart.add(CHARTSTR_10Y);
 	}
 	
 /*	if (intraday)
@@ -1498,114 +1545,101 @@ public synchronized void listeNeueAktie(BenutzerAktie ba) {
 
 
 
-public synchronized void listeSelect(Component bal, int row, int mX, int mY,
-												 int clicks, boolean ispop) {
+public void listeSelect(Component bal, int row, int mX, int mY,
+										int clicks, boolean ispop) {
 	if (row >= 0)
 	{
-		if (isLocked(true)) return;
+		BenutzerAktie ba;
 		
-		BenutzerAktie ba = getAktieNr(row);
-		
-		if (ba.isSelected())
+		synchronized (this)
 		{
-			if (!ispop)
+			if (isLocked(true)) return;
+			
+			ba = getAktieNr(row);
+			
+			if (ba.isSelected())
 			{
-				ba.Unselect();
-				disableAktienButtons();
+				if (!ispop)
+				{
+					ba.Unselect();
+					disableAktienButtons();
+				}
 			}
 			else
 			{
-				aktienPopup(ba,bal,mX,mY);
+				for (int i = 0; i < getAnzahlAktien(); i++)
+				{
+					getAktieNr(i).Unselect();
+				}
+				
+				ba.Select();
+				enableAktienButtons(ba);
 			}
+		}
+
+		if (ispop)
+		{
+			aktienPopup(ba,bal,mX,mY);
+		}
+	}
+}
+
+
+
+private void aktienPopup(BenutzerAktie ba, Component bal, int mX, int mY) {
+
+	synchronized (this)
+	{
+		if ((ba.getStueckzahl() > 0L) && (ba.getKurs() > 0L) && (!ba.nurBeobachten()))
+		{
+			popVerkaufen.setEnabled(true);
 		}
 		else
 		{
-			for (int i = 0; i < getAnzahlAktien(); i++)
-			{
-				getAktieNr(i).Unselect();
-			}
+			popVerkaufen.setEnabled(false);
+		}
+		
+		if (ba.getKurs() > 0L)
+		{
+			popChart.setEnabled(true);
 			
-			ba.Select();
-			enableAktienButtons(ba);
-
-			if (ispop)
+			popChart.checkTypes();
+			
+			if (AktienMan.listeDAX.isMember(ba.getWKN()))
 			{
-				aktienPopup(ba,bal,mX,mY);
+				popChart.enableIntraday();
 			}
-		}
-	}
-}
-
-
-
-private synchronized void aktienPopup(BenutzerAktie ba, Component bal, int mX, int mY) {
-
-	if ((ba.getStueckzahl() > 0L) && (ba.getKurs() > 0L) && (!ba.nurBeobachten()))
-	{
-		popVerkaufen.setEnabled(true);
-	}
-	else
-	{
-		popVerkaufen.setEnabled(false);
-	}
-	
-	if (ba.getKurs() > 0L)
-	{
-		popChart.setEnabled(true);
-		
-		popChart.checkTypes();
-		
-		if (AktienMan.listeDAX.isMember(ba.getWKN()))
-		{
-			popChart.enableIntraday();
+			else
+			{
+				popChart.disableIntraday();
+			}
 		}
 		else
 		{
-			popChart.disableIntraday();
+			popChart.setEnabled(false);
 		}
-	}
-	else
-	{
-		popChart.setEnabled(false);
-	}
-	
-	if (ba.isFonds())
-	{
-		popMaxkurs.setEnabled(false);
-		popSplitten.setEnabled(false);
-	}
-	else
-	{
-		popMaxkurs.setEnabled(true);
-		popSplitten.setEnabled(true);
-	}
-	
-	popAktualisieren.setEnabled(!ba.doNotUpdate());
-
-	popParent = bal;
-	popX = mX;
-	popY = mY;
-
-	Thread t = new Thread() {
-		public synchronized void run() {
-			try
-			{
-				wait(200);
-			}
-			catch (InterruptedException e) {}
-
-			AktienMan.hauptdialog.displayAktienPopup();
+		
+		if (ba.isFonds())
+		{
+			popMaxkurs.setEnabled(false);
+			popSplitten.setEnabled(false);
 		}
-	};
+		else
+		{
+			popMaxkurs.setEnabled(true);
+			popSplitten.setEnabled(true);
+		}
+		
+		popAktualisieren.setEnabled(!ba.doNotUpdate());
 
-	t.start();
-}
+		try
+		{
+			wait(200);
+		}
+		catch (InterruptedException e) {}
+	}
 
-
-
-public synchronized void displayAktienPopup() {
-
-	aktienpopup.show(popParent,popX,popY);
+	aktienpopup.show(bal,mX,mY);
 }
 
 

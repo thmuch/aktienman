@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-08-09
+ @version 2002-01-13
 */
 
 import java.awt.*;
@@ -116,6 +116,7 @@ public void setupElements() {
 	buttonDemo.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			AktienMan.main("");
+			setVisible(false);
 			dispose();
 		}
 	});

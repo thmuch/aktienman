@@ -1,6 +1,9 @@
 /**
  @author Thomas Much
- @version 1999-06-27
+ @version 2002-01-13
+ 
+ 2002-01-13
+   hasType36 wird nicht mehr überschrieben, dafür hasType60 und hasType120
 */
 
 
@@ -17,18 +20,21 @@ public ComdirectChartQuelle() {
 
 
 
-public boolean hasType36() {
+public boolean hasType60() {
+
+	return true;
+}
+
+
+
+public boolean hasType120() {
+
 	return true;
 }
 
 
 
 public void displayChart(String wkn, String boerse, int type, boolean isFonds, boolean firstCall) {
-
-	if (type == URLs.CHART_24)
-	{
-		type = URLs.CHART_36;
-	}
 
 	new ComdirectChartLeser(wkn,boerse,isFonds,type,getNextID(firstCall)).start();
 }

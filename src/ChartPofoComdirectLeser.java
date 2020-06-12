@@ -1,6 +1,10 @@
 /**
  @author Thomas Much
- @version 2000-11-11
+ @version 2002-01-14
+
+ 2002-01-14
+   readChartURL findet nun wieder die Chart-URL; das URL-Ende wird mit dem letzten
+     Zeichen von str_chartsrc gesucht
 */
 
 import java.net.*;
@@ -42,6 +46,8 @@ private String readChartURL(String kursURL) {
 	boolean valid = false;
 	String imgURL = "";
 	
+	/* €nderungen mit ComdirectChartLoader.run abgleichen! */
+
 	try
 	{
 		URL url = new URL(kursURL);
@@ -52,6 +58,8 @@ private String readChartURL(String kursURL) {
 
 		String str_chartimage = AktienMan.url.getString(URLs.STR_CD_CHARTIMAGE);
 		String str_chartsrc   = AktienMan.url.getString(URLs.STR_CD_CHARTSRC);
+
+		char urlende = (str_chartsrc.length() > 0) ? str_chartsrc.charAt(str_chartsrc.length()-1) : '"';
 		
 		while ((s = in.readLine()) != null)
 		{
@@ -61,7 +69,7 @@ private String readChartURL(String kursURL) {
 				
 				if (i > 0)
 				{
-					int i2 = s.indexOf("\"", i + str_chartsrc.length());
+					int i2 = s.indexOf(urlende, i + str_chartsrc.length());
 					
 					if (i2 > i)
 					{

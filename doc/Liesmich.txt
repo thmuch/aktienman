@@ -8,6 +8,7 @@ allg. Bugs
 // Absturz, wenn Maxkursdialog vor Ende geschlossen wird ... (?)
 MOSX-Bugs
 // MOSX Fenstertoppen schlägt ab und zu fehl...
+// Umschalten nach Chart-Fehler führt zu Absturz/Hänger
 Mac-Bugs
 // 
 Win-Bugs
@@ -76,7 +77,7 @@ Version 2.00 (.12.00)
 // Top/Flop-Liste im Extra-Fenster, Kopie per Klick ins aktuelle Portfolio
 // SMS/E-Mails verschicken
 // 
-Version 1.97 (.12.00)
+Version 1.98 (.02.02)
 // RELEASE erhöhen, DEBUG entfernen
 // neue Bankkonditionen (easytrade)
 // UpdateLoader: ProgessBar, längere Kommentare zum Update, Messages an alle Kunden
@@ -92,6 +93,16 @@ Version 1.97 (.12.00)
 // US$ als Währung zulassen, Kurs aus dem Web ermitteln
 // bei unbekannten Währungen: Fehler!!!
 //
+Version 1.97 (14.01.02)
+- Comdirect-Charts werden wieder geladen
+- in der Portfolio-Chartübersicht werden nun auch Fonds angezeigt
+- diverse Probleme mit dem Rechtsklick-Popup auf einen Listeneintrag behoben; allerdings kann es
+  dadurch nun passieren, dass eine Zeile erst nach dem Verlassen des Popups selektiert wird
+- [MOSX] Hardware-Beschleunigung für Grafikausgaben eingeschaltet
+- [MOSX] Fenster können nun problemlos aus dem Hintergrund nach vorne geholt werden
+- [MOSX] kann eine Chartgrafik von einem Server nicht geladen werden, funktioniert die
+  Weiterschaltung nun (es kommt nicht mehr zu einem Programmstillstand)
+- [Bugfix] Nullreferenzzugriff und Redrawfehler in der Portfolio-Chartübersicht beseitigt
 Version 1.96 (07.11.01)
 - Comdirect-Kurse werden wieder aktualisiert
 - Comdirect-Kurslisten werden wieder aktualisiert

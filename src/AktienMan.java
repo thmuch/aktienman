@@ -1,11 +1,11 @@
 /**
  @author Thomas Much
- @version 2001-11-07
+ @version 2002-01-14
 */
 
 /**
  AktienMan Portfolio-Management-Software
- Copyright (c)1998-2001 by Thomas Much (thomas@snailshell.de)
+ Copyright (c)1998-2002 by Thomas Much (thomas@snailshell.de)
  Hauptprogramm (main)
 */
 
@@ -16,11 +16,11 @@ import java.awt.*;
 public final class AktienMan {
 
 public static final String AMNAME         = "AktienMan";
-public static final String AMVERSION      = "1.96";
+public static final String AMVERSION      = "1.97";
 public static final String AMFENSTERTITEL = AMNAME + " - ";
 
-public static ADate compDate              = new ADate(2001,11,7); /* Compilierdatum */
-public static final int RELEASE           = 21; /* 1.96 (2001-11-07) */
+public static ADate compDate              = new ADate(2002,1,14); /* Compilierdatum */
+public static final int RELEASE           = 22; /* 1.97 (2002-01-14) */
 public static final boolean DEBUG         = false; /**/
 
 public static Aktienliste listeDAX        = new Aktienliste();
@@ -160,7 +160,11 @@ public static void main(String args[]) {
 
 	hauptdialog = new Hauptdialog();
 	
-	if (sd != null) sd.dispose();
+	if (sd != null)
+	{
+		sd.setVisible(false);
+		sd.dispose();
+	}
 	
 	if (!hauptdialog.main())
 	{

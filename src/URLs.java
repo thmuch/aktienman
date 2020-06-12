@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2001-08-27
+ @version 2002-01-14
 */
 
 
@@ -57,9 +57,11 @@ public static final int CHART_6              =  2;
 public static final int CHART_12             =  3;
 public static final int CHART_24             =  4;
 public static final int CHART_36             =  5;
+public static final int CHART_60             =  6;
+public static final int CHART_120            =  7;
 
+public static final int CHART_COUNT          =  8;
 public static final int CHART_NONE           = -1;
-public static final int CHART_COUNT          =  6;
 
 
 public static final int STR_CD_KURSFEHLER    = 10;
@@ -214,10 +216,12 @@ public String getString(int strNr) {
 		return " href=\""; */
 	
 	case STR_CD_CHARTIMAGE:
-		return "cdcharttcl";
+//		return "cdcharttcl";
+		return "cdchart";
 
 	case STR_CD_CHARTSRC:
-		return " src=\"";
+//		return " src=\"";
+		return " src='";
 	
 	case STR_DEUBA_KURSFEHLER:
 		return " keine Ergebnisse ";
@@ -326,22 +330,22 @@ public int getNumber(int nnr) {
 		return 24;
 	
 	case NUM_ICCOM_PIXWIDTH:
-		return 413;
+		return 400/*413*/;
 
 	case NUM_ICCOM_PIXHEIGHT:
-		return 461;
+		return 365/*461*/;
 
 	case NUM_ICCOM_YOFFSET:
-		return 27;
+		return 0/*27*/;
 
 	case NUM_ICCOM_YEND:
-		return 232;
+		return 255/*232*/;
 
 	case NUM_ICCOM_XOFFSET:
 		return 0;
 
 	case NUM_ICCOM_XEND:
-		return 405;
+		return 400/*405*/;
 
 	case NUM_ICDB_PIXWIDTH:
 		return 400;
@@ -552,7 +556,7 @@ public String getComdirectKursURL(String wkn, String boerse) {
 
 
 
-protected String getComdirectChartType(int charttype) {
+/*protected String getComdirectChartType(int charttype) {
 
 	switch (charttype)
 	{
@@ -567,7 +571,7 @@ protected String getComdirectChartType(int charttype) {
 	}
 	
 	return "4";
-}
+}*/
 
 
 
@@ -576,19 +580,19 @@ public String getComdirectChartMonths(int type) {
 	switch (type)
 	{
 	case CHART_INTRA:
-		return "1";
+		return "iD";
 
 	case CHART_3:
-		return "2";
+		return "3M";
 
-	case CHART_6:
-		return "3";
+	case CHART_60:
+		return "5Y";
 
-	case CHART_12:
-		return "4";
+	case CHART_120:
+		return "10Y";
 	}
 	
-	return "5";
+	return "1Y";
 }
 
 
@@ -602,7 +606,7 @@ public String getComdirectChartURL(String rel, int type, int charttype) {
 		rel = rel.substring(0,i);
 	}
 	
-	return getBase(BASE_COMDIRECT) + rel + "&sRange=" + getComdirectChartMonths(type) + "&charttype=" + getComdirectChartType(charttype) + "&dbrushwidth=1&gd1=38&gd2=200&" + /*benchmark=DAX.ETR&*/ "infos=3&indtype1=40&indtype2=0&volumen=2";
+	return getBase(BASE_COMDIRECT) + rel + "&sTimeframe=" + getComdirectChartMonths(type);
 }
 
 
@@ -630,6 +634,7 @@ public boolean isValidNr(long nr) {
 	case 595:
 	case 613:
 	case 619:
+	case 675:
 
 		return false;
 	}

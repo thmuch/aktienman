@@ -1,6 +1,9 @@
 /**
  @author Thomas Much
- @version 1999-06-20
+ @version 2002-01-13
+ 
+ 2002-01-13
+   hasType6, hasType60, hasType120
 */
 
 
@@ -15,6 +18,7 @@ private int id, nextID;
 
 
 public ChartQuelle(String name, int id, int nextID) {
+
 	this.name = name;
 	this.id = id;
 	this.nextID = nextID;
@@ -23,30 +27,56 @@ public ChartQuelle(String name, int id, int nextID) {
 
 
 public String getName() {
+
 	return name;
 }
 
 
 
 public int getID() {
+
 	return id;
 }
 
 
 
 public int getNextID(boolean firstCall) {
+
 	return (firstCall ? nextID : ChartQuellen.CHARTQUELLE_NONE);
 }
 
 
 
+public boolean hasType6() {
+
+	return false;
+}
+
+
+
 public boolean hasType24() {
+
 	return false;
 }
 
 
 
 public boolean hasType36() {
+
+	return false;
+}
+
+
+
+public boolean hasType60() {
+
+	return false;
+}
+
+
+
+public boolean hasType120() {
+
 	return false;
 }
 

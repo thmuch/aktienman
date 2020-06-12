@@ -1,6 +1,9 @@
 /**
  @author Thomas Much
- @version 2000-08-09
+ @version 2002-01-13
+
+ 2002-01-13
+    doDelete ruft vor dispose nun setVisible(false) auf
 */
 
 import java.awt.*;
@@ -675,6 +678,7 @@ private void doDelete() {
 	
 	AktienMan.hauptdialog.listeAktieLoeschen(index);
 
+	setVisible(false);
 	dispose();
 }
 

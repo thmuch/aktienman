@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2001-08-27
+ @version 2002-01-13
 */
 
 
@@ -48,7 +48,7 @@ public class NewURLs extends URLs {
 
 
 
-public String getString(int strNr) {
+/*public String getString(int strNr) {
 
 	switch (strNr)
 	{
@@ -66,7 +66,7 @@ public String getString(int strNr) {
 	}
 
 	return super.getString(strNr);
-}
+} */
 
 
 
@@ -105,6 +105,7 @@ public boolean isValidNr(long nr) {
 	case 595:
 	case 613:
 	case 619:
+	case 675:
 
 		return false;
 	}

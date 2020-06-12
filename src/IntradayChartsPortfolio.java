@@ -1,6 +1,13 @@
 /**
  @author Thomas Much
- @version 2000-11-11
+ @version 2002-01-14
+ 
+ 2002-01-14
+   auch Fonds werden nun angezeigt
+   MOSX_Y_CORRECTION
+   ChartPofoCanvas.paint gegen uninitialisierte Instanzvariablen geschützt
+   display überschrieben, damit show später aufgerufen werden kann
+   getType kennt nun auch 5- und 10-Jahres-Charts
 */
 
 import java.awt.*;
@@ -11,6 +18,8 @@ import java.awt.event.*;
 
 
 public class IntradayChartsPortfolio extends AFrame implements ComponentListener,MouseListener,MouseMotionListener,ImageObserver {
+
+private static final int MOSXFIX_Y = 26;
 
 private int chartCount, chartQuelle;
 
@@ -43,10 +52,19 @@ public IntradayChartsPortfolio(int type) {
 	this.type = type;
 	
 	// RM-Popup: Neu laden (Thread neu starten) etc.
+
+	show();
 	
 	calculateChartSizes();
 
-	startThreads();
+	startThreads();	
+}
+
+
+
+public void display() {
+
+	setupSize();
 }
 
 
@@ -69,6 +87,12 @@ private static String getType(int type) {
 
 	case URLs.CHART_36:
 		return "3 Jahre";
+
+	case URLs.CHART_60:
+		return "5 Jahre";
+
+	case URLs.CHART_120:
+		return "10 Jahre";
 
 	default:
 		return "Intraday";
@@ -211,7 +235,7 @@ private void repaintByIndex(int index) {
 
 private void repaintBigIndex() {
 
-	repaint(0,0,chartPixWidth+6,chartPixHeight+6);
+	repaint(0,0,chartPixWidth + 6,chartPixHeight + 6 + (SysUtil.isMacOSX() ? MOSXFIX_Y : 0));
 }
 
 
@@ -327,10 +351,10 @@ private boolean schonVorhandenOderFonds(int index) {
 
 	BenutzerAktie bi = AktienMan.hauptdialog.getAktieNr(index);
 	
-	if (bi.isFonds())
+/*	if (bi.isFonds())
 	{
 		return true;
-	}
+	} */
 	
 	for (int i = 0; i < index; i++)
 	{
@@ -413,7 +437,7 @@ public void setupElements() {
 
 public void setupSize() {
 
-	setBounds(0,0,AktienMan.screenSize.width,AktienMan.screenSize.height);
+	setBounds(0,0,AktienMan.screenSize.width,AktienMan.screenSize.height - (SysUtil.isMacOSX() ? MOSXFIX_Y : 0));
 }
 
 
@@ -522,6 +546,8 @@ public void mouseReleased(MouseEvent e) {}
 		Dimension d = getSize();
 
 		g.clearRect(0,0,d.width,d.height);
+		
+		if ((container == null) || (container.chartColumns == 0)) return;
 
 		if ((d.width >= 2 * container.chartColumns) && (d.height >= 2 * container.chartRows))
 		{
@@ -544,12 +570,15 @@ public void mouseReleased(MouseEvent e) {}
 					showError(g,isError[idx],px,py,container.chartScaleWidth-1,container.chartScaleHeight-1);
 				}
 				
-				g.setColor(namebg);
-				g.fillRect(px,py,metrics.stringWidth(shortnames[idx])+3*XOFFSET,bgheight);
-				
-				g.setColor(Color.black);
-				g.setFont(font);
-				g.drawString(shortnames[idx],px+XOFFSET,py+yoffset);
+				if (shortnames[idx] != null)
+				{
+					g.setColor(namebg);
+					g.fillRect(px,py,metrics.stringWidth(shortnames[idx])+3*XOFFSET,bgheight);
+					
+					g.setColor(Color.black);
+					g.setFont(font);
+					g.drawString(shortnames[idx],px+XOFFSET,py+yoffset);
+				}
 				
 				idx++;
 				
@@ -570,13 +599,13 @@ public void mouseReleased(MouseEvent e) {}
 
 				if (img != null)
 				{
+					g.drawImage(img,3,3,this);
+
 					g.setColor(Color.blue);
 					
 					g.drawRect(0,0,container.chartPixWidth+5,container.chartPixHeight+5);
 					g.drawRect(1,1,container.chartPixWidth+3,container.chartPixHeight+3);
-					g.drawRect(2,2,container.chartPixWidth+1,container.chartPixHeight+1);
-					
-					g.drawImage(img,3,3,this);
+					g.drawRect(2,2,container.chartPixWidth+1,container.chartPixHeight+1);					
 				}
 			}
 		}

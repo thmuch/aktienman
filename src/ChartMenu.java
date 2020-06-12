@@ -1,6 +1,10 @@
 /**
  @author Thomas Much
- @version 2000-11-11
+ @version 2002-01-14
+ 
+ 2002-01-14
+   3-Jahres-Charts entfernt
+   setupMenu und checkTypes kennen nun auch 5- und 10-Jahres-Charts
 */
 
 import java.awt.*;
@@ -11,7 +15,7 @@ import java.awt.event.*;
 
 public class ChartMenu extends Menu {
 
-private MenuItem item24,item36;
+private MenuItem item6,item24,/*item36,*/item60,item120;
 //private Menu popIntraday;
 
 
@@ -51,13 +55,13 @@ private void setupMenu() {
 	});
 	add(mi);
 
-	mi = new MenuItem("6 Monate");
-	mi.addActionListener(new ActionListener() {
+	item6 = new MenuItem("6 Monate");
+	item6.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			action(URLs.CHART_6);
 		}
 	});
-	add(mi);
+	add(item6);
 
 	mi = new MenuItem("1 Jahr");
 	mi.addActionListener(new ActionListener() {
@@ -75,13 +79,29 @@ private void setupMenu() {
 	});
 	add(item24);
 
-	item36 = new MenuItem("3 Jahre");
+/*	item36 = new MenuItem("3 Jahre");
 	item36.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			action(URLs.CHART_36);
 		}
 	});
-	add(item36);
+	add(item36); */
+	
+	item60 = new MenuItem("5 Jahre");
+	item60.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			action(URLs.CHART_60);
+		}
+	});
+	add(item60);
+
+	item120 = new MenuItem("10 Jahre");
+	item120.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			action(URLs.CHART_120);
+		}
+	});
+	add(item120);
 	
 /*	addSeparator();
 
@@ -116,25 +136,13 @@ protected void action(int type) {
 
 public synchronized void checkTypes() {
 
-	ChartQuelle quelle = ChartQuellen.getChartQuelle();
+	ChartQuelle cq = ChartQuellen.getChartQuelle();
 	
-	if (quelle.hasType24())
-	{
-		item24.setEnabled(true);
-	}
-	else
-	{
-		item24.setEnabled(false);
-	}
-	
-	if (quelle.hasType36())
-	{
-		item36.setEnabled(true);
-	}
-	else
-	{
-		item36.setEnabled(false);
-	}
+	item6.setEnabled(   cq.hasType6()   );
+	item24.setEnabled(  cq.hasType24()  );
+//	item36.setEnabled(  cq.hasType36()  );
+	item60.setEnabled(  cq.hasType60()  );
+	item120.setEnabled( cq.hasType120() );	
 }
 
 

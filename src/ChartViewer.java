@@ -1,6 +1,10 @@
 /**
  @author Thomas Much
- @version 2000-11-13
+ @version 2002-01-14
+ 
+ 2002-01-14
+   setupTimeframeButtons
+   setStatusError fŸhrt dispose() nicht mehr synchronized aus (sonst hŠngt MOSX)
 */
 
 import java.awt.*;
@@ -66,11 +70,15 @@ public ChartViewer(Image chartImage, String titel, String wknboerse, int type, S
 	addMouseListener(this);
 	
 	add(BorderLayout.CENTER,new ChartCanvas(this,canScale));
+	
+	setupTimeframeButtons();
 
 	pack();
-	setupSize();
 
 	setBounds((AktienMan.screenSize.width-initWidth)/2,(AktienMan.screenSize.height-initHeight)/2,initWidth,initHeight);
+
+	setupSize();
+
 	show();
 
 	AktienMan.hauptdialog.windowToFront(this);
@@ -79,6 +87,10 @@ public ChartViewer(Image chartImage, String titel, String wknboerse, int type, S
 
 
 public void display() {}
+
+
+
+protected void setupTimeframeButtons() {}
 
 
 
@@ -142,22 +154,25 @@ protected synchronized void setStatusFinished() {
 
 
 
-public synchronized void setStatusError() {
+public void setStatusError() {
 
-	if (getImage() == null)
+	synchronized(this)
 	{
-		setStatus(STATUS_ERROR);
-	}
-	else
-	{
-		setStatusFinished();
-	}
-	
-	neuZeichnen();
+		if (getImage() == null)
+		{
+			setStatus(STATUS_ERROR);
+		}
+		else
+		{
+			setStatusFinished();
+		}
+		
+		neuZeichnen();
 
-	if (AktienMan.DEBUG)
-	{
-		System.out.println("Fehler beim Einlesen von Chart " + wknboerse + "  -> " + nextID);
+		if (AktienMan.DEBUG)
+		{
+			System.out.println("Fehler beim Einlesen von Chart " + wknboerse + "  -> " + nextID);
+		}
 	}
 	
 	if (nextID != ChartQuellen.CHARTQUELLE_NONE)
@@ -171,6 +186,7 @@ public synchronized void setStatusError() {
 			
 			ChartQuellen.getChartQuelle(nextID).displayChart(wkn,boerse,getType(),isFonds(),false);
 
+			setVisible(false);
 			dispose();
 		}
 	}

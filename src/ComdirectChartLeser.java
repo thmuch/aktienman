@@ -84,9 +84,12 @@ public void run() {
 	}
 	catch (MalformedURLException e)
 	{
-		System.out.println("Comdirect-Chart-URL fehlerhaft.");
+		System.err.println("Comdirect-Chart-URL fehlerhaft.");
 	}
-	catch (Exception e) {}
+	catch (Exception e)
+	{
+		System.err.println("FEHLER (ComdirectChartLeser): " + e);
+	}
 	finally
 	{
 		if (!valid)

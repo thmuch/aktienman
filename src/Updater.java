@@ -8,6 +8,7 @@ import java.awt.event.*;
 
 
 
+
 public final class Updater extends AFrame {
 
 private String archiv,text;
@@ -15,7 +16,9 @@ private Button buttonDownload;
 
 
 
+
 public Updater(int newrelease, String archiv, String text) {
+
 	super(AktienMan.AMNAME);
 	
 	this.archiv = archiv;
@@ -31,9 +34,12 @@ public Updater(int newrelease, String archiv, String text) {
 }
 
 
+
 public void setupElements() {
+
 	setLayout(gridbag);
 }
+
 
 
 public void display() {}
@@ -41,6 +47,7 @@ public void display() {}
 
 
 public void setupElements2() {
+
 	Panel panelOben = new Panel(gridbag);
 	Panel panelButtons = new Panel(gridbag);
 	
@@ -77,7 +84,9 @@ public void setupElements2() {
 }
 
 
+
 public void executeOK() {
+
 	buttonDownload.setEnabled(false);
 
 	FileDialog fd = new FileDialog(this,AktienMan.AMFENSTERTITEL+"Update herunterladen...",FileDialog.SAVE);

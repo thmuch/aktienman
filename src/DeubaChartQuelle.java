@@ -1,6 +1,9 @@
 /**
  @author Thomas Much
- @version 1999-06-27
+ @version 2002-01-13
+ 
+ 2002-01-13
+   hasType6 wird Ÿberschrieben
 */
 
 
@@ -17,18 +20,21 @@ public DeubaChartQuelle() {
 
 
 
+public boolean hasType6() {
+
+	return true;
+}
+
+
+
 public boolean hasType24() {
+
 	return true;
 }
 
 
 
 public void displayChart(String wkn, String boerse, int type, boolean isFonds, boolean firstCall) {
-
-	if (type == URLs.CHART_36)
-	{
-		type = URLs.CHART_24;
-	}
 
 	new DeubaChartLeser(wkn,boerse,isFonds,type,getNextID(firstCall)).start();
 }

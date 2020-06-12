@@ -1,7 +1,11 @@
 /**
  @author Thomas Much
- @version 2000-11-12
+ @version 2002-01-13
+ 
+ 2002-01-13
+    doOK und doCancel rufen vor dispose nun setVisible(false) auf
 */
+
 
 import java.awt.*;
 import java.awt.event.*;
@@ -90,7 +94,11 @@ public void executeOK() {}
 
 public void doCancel() {
 
-	if (canCancel()) dispose();
+	if (canCancel())
+	{
+		setVisible(false);
+		dispose();
+	}
 }
 
 
@@ -100,6 +108,8 @@ public void doOK() {
 	if (canOK())
 	{
 		executeOK();
+
+		setVisible(false);
 		dispose();
 	}
 }

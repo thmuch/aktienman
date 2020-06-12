@@ -1,6 +1,10 @@
 /**
  @author Thomas Much
- @version 2000-03-14
+ @version 2002-01-13
+ 
+ 2002-01-13
+   run findet nun wieder die Chart-URL; das URL-Ende wird mit dem letzten Zeichen
+     von str_chartsrc gesucht
 */
 
 import java.net.*;
@@ -35,6 +39,8 @@ public void run() {
 	BufferedReader in = null;
 	boolean valid = false;
 	
+	/* €nderungen mit ChartPofoComdirectLeser.readChartURL abgleichen! */
+	
 	try
 	{
 		URL url = new URL(filename);
@@ -45,7 +51,9 @@ public void run() {
 
 		String str_chartimage = AktienMan.url.getString(URLs.STR_CD_CHARTIMAGE);
 		String str_chartsrc   = AktienMan.url.getString(URLs.STR_CD_CHARTSRC);
-		
+
+		char urlende = (str_chartsrc.length() > 0) ? str_chartsrc.charAt(str_chartsrc.length()-1) : '"';
+
 		while ((s = in.readLine()) != null)
 		{
 			if (s.indexOf(str_chartimage) > 0)
@@ -54,7 +62,7 @@ public void run() {
 				
 				if (i > 0)
 				{
-					int i2 = s.indexOf("\"", i + str_chartsrc.length());
+					int i2 = s.indexOf(urlende, i + str_chartsrc.length());
 					
 					if (i2 > i)
 					{
@@ -71,9 +79,12 @@ public void run() {
 	}
 	catch (MalformedURLException e)
 	{
-		System.out.println("Comdirect-Netchart-URL fehlerhaft.");
+		System.err.println("Comdirect-Netchart-URL fehlerhaft.");
 	}
-	catch (Exception e) {}
+	catch (Exception e)
+	{
+		System.err.println("FEHLER (ComdirectChartLoader): " + e);
+	}
 	finally
 	{
 		if (!valid)
