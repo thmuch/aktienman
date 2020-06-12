@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-07-18
+ @version 1999-12-12
 */
 
 
@@ -301,6 +301,10 @@ public String checkWKN(String wkn) {
 	{
 		return "GMC";
 	}
+	else if (wkn.equals("871111"))
+	{
+		return "SSY";
+	}
 	else if (wkn.equals("920578"))
 	{
 		return "LYLX";
@@ -442,6 +446,12 @@ public String getComdirectChartURL(String rel, int type, int charttype) {
 	return getBase(BASE_COMDIRECT) + rel + "&sRange=" + getComdirectChartMonths(type) + "&charttype=" + getComdirectChartType(charttype) + "&dbrushwidth=1&gd1=38&gd2=200&" + /*benchmark=DAX.ETR&*/ "infos=3&indtype1=40&indtype2=0&volumen=2";
 }
 
+
+
+public boolean isValidNr(long nr) {
+
+	return true;
+}
 
 
 // http://www.oanda.com/converter/classic?lang=de&value=1&date=15.03.1999&date_fmt=normal&exch2=USD&expr2=EUR&margin_fixed=0

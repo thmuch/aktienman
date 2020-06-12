@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-07-16
+ @version 1999-12-12
 */
 
 import java.awt.*;
@@ -64,6 +64,7 @@ private long hoechstkurs = VALUE_MISSING;
 private long tiefstkurs = VALUE_MISSING;
 private long handelsvolumen = 0L;
 
+private ADate fixDate = null;
 private ADate watchstart = null;
 private long watchhoechst = VALUE_MISSING;
 private long watchtiefst = VALUE_MISSING;
@@ -112,12 +113,14 @@ public BenutzerAktie(String name, String wkn, Boersenplatz platz, boolean nurdie
 
 
 public synchronized void destroy() {
+
 	infoDialogClose();
 }
 
 
 
 private void setupValues() {
+
 	gewinngrenzeBerechnen();
 	steuerfreiBerechnen();
 }
@@ -125,12 +128,14 @@ private void setupValues() {
 
 
 private synchronized void gewinngrenzeBerechnen() {
+
 	gewinngrenze = (prozgrenze == 0L) ? 0L : (getKaufkurs()*(Waehrungen.PRECISION*100L+prozgrenze))/(Waehrungen.PRECISION*100L);
 }
 
 
 
 private synchronized void steuerfreiBerechnen() {
+
 	if (kaufdatum == null) kaufdatum = new ADate();
 	
 	int jahr,monat,tag;
@@ -240,6 +245,20 @@ public synchronized String getKursdatumRawString() {
 
 
 
+public synchronized String getFixedDateString() {
+
+	if (fixDate == null)
+	{
+		return kursdatum;
+	}
+	else
+	{
+		return fixDate.toString();
+	}
+}
+
+
+
 public synchronized long getHochkurs() {
 
 	return hochkurs;
@@ -269,18 +288,21 @@ public synchronized String getTiefkursString() {
 
 
 public synchronized ADate getKaufdatum() {
+
 	return (kaufdatum == null) ? new ADate() : kaufdatum;
 }
 
 
 
 public synchronized String getWKNString() {
+
 	return wkn;
 }
 
 
 
 public synchronized boolean isBoerseFixed() {
+
 	return nurdiese;
 }
 
@@ -518,6 +540,7 @@ public synchronized String getRawVerkaufsKursString() {
 
 
 private String kurs2String(long k, int w) {
+
 	if (k == VALUE_MISSING)
 	{
 		return STR_MISSING;
@@ -539,12 +562,14 @@ private String kurs2String(long k, int w) {
 
 
 public synchronized String getKursString() {
+
 	return kurs2String(getKurs(),getKurswaehrung());
 }
 
 
 
 public synchronized long getWert() {
+
 	if (getKurs() < 0L)
 	{
 		return 0L;
@@ -565,24 +590,28 @@ public synchronized long getWert() {
 
 
 public synchronized long getKaufkurs() {
+
 	return kaufkurs;
 }
 
 
 
 public synchronized String getKaufkursString() {
+
 	return kurs2String(getKaufkurs(),getKaufwaehrung());
 }
 
 
 
 public synchronized boolean isEqual(String wkn, String platz, boolean compPlatz) {
+
 	return isEqual(wkn,"",platz,compPlatz);
 }
 
 
 
 public synchronized boolean isEqual(String wkn, String kurz, String platz, boolean compPlatz) {
+
 	if (compPlatz)
 	{
 		return isEqual(wkn,kurz,platz);
@@ -596,6 +625,7 @@ public synchronized boolean isEqual(String wkn, String kurz, String platz, boole
 
 
 private synchronized boolean isEqual(String wkn, String kurz, String platz) {
+
 	boolean valid;
 	
 	if (kurz.length() == 0)
@@ -613,6 +643,7 @@ private synchronized boolean isEqual(String wkn, String kurz, String platz) {
 
 
 private synchronized boolean isEqual(String wkn, String kurz) {
+
 	boolean valid;
 	
 	if (kurz.length() == 0)
@@ -630,18 +661,28 @@ private synchronized boolean isEqual(String wkn, String kurz) {
 
 
 public synchronized boolean istSteuerfrei() {
-	return heute.after(steuerfrei);
+
+	if ((doNotUpdate()) && (fixDate != null))
+	{
+		return fixDate.after(steuerfrei);
+	}
+	else
+	{
+		return heute.after(steuerfrei);
+	}
 }
 
 
 
 public synchronized void setValues(long kurs) {
+
 	setValues("",kurs);
 }
 
 
 
 public synchronized void setValues(String name, long kurs) {
+
 	setValues(name,kurs,"",VALUE_NA,VALUE_NA,VALUE_NA,VALUE_NA,0L,getKurswaehrung());
 }
 
@@ -715,7 +756,7 @@ public synchronized void changeValues(String newName, String newWKN, Boersenplat
 								boolean newNurDiese, ADate newDate, long newKaufkurs,
 								long newAnz, long newHoch, long newTief, long newGrenze,
 								int neueWaehrung, boolean newUseGrenze, boolean newWatchonly,
-								boolean newDontUpdate, long newAktKurs, String newAktDate) {
+								boolean newDontUpdate, long newAktKurs, ADate newAktDate) {
 
 	boolean reset = ((!newWKN.equalsIgnoreCase(getWKNString())) || (!newBp.getKurz().equalsIgnoreCase(getBoerse())));
 	
@@ -733,6 +774,7 @@ public synchronized void changeValues(String newName, String newWKN, Boersenplat
 	watchonly = newWatchonly;
 	dontUpdate = newDontUpdate;
 	waehrung = neueWaehrung;
+	fixDate = newAktDate;
 
 	setupValues();
 	
@@ -741,7 +783,15 @@ public synchronized void changeValues(String newName, String newWKN, Boersenplat
 		if (newAktKurs > VALUE_MISSING)
 		{
 			kurs = Waehrungen.exchange(newAktKurs,getKaufwaehrung(),getKurswaehrung());
-			kursdatum = newAktDate;
+			
+			if (newAktDate != null)
+			{
+				kursdatum = newAktDate.toString();
+			}
+			else
+			{
+				kursdatum = "";
+			}
 		}
 	}
 	else if (reset)
@@ -754,14 +804,18 @@ public synchronized void changeValues(String newName, String newWKN, Boersenplat
 }
 
 
+
 public synchronized void setStatusRequestingAndRepaint() {
+
 	farbeName = Color.blue;
 	l1.setForeground(farbeName);
 	l1.repaint();
 }
 
 
+
 public synchronized void setStatusErrorAndRepaint() {
+
 	farbeName = Color.red;
 	l1.setForeground(farbeName);
 	l1.repaint();
@@ -770,18 +824,21 @@ public synchronized void setStatusErrorAndRepaint() {
 
 
 public synchronized void clearStatusRequesting() {
+
 	farbeName = Color.black;
 }
 
 
 
 public synchronized boolean isSelected() {
+
 	return selected;
 }
 
 
 
 private synchronized void setColorAndRepaint(Color c) {
+
 	l1.setBackground(c);
 	l2.setBackground(c);
 	l11.setBackground(c);
@@ -814,6 +871,7 @@ private synchronized void setColorAndRepaint(Color c) {
 
 
 public synchronized void Select() {
+
 	if (!isSelected())
 	{
 		selected = true;
@@ -824,6 +882,7 @@ public synchronized void Select() {
 
 
 public synchronized void Unselect() {
+
 	if (isSelected())
 	{
 		selected = false;
@@ -834,6 +893,7 @@ public synchronized void Unselect() {
 
 
 public synchronized void Toggle() {
+
 	if (isSelected())
 	{
 		Unselect();
@@ -847,19 +907,132 @@ public synchronized void Toggle() {
 
 
 private void readObject(ObjectInputStream in) throws IOException,ClassNotFoundException {
+
 	in.defaultReadObject();
 	this.setColors();
 }
 
 
 
+public synchronized void saveCSV(BufferedWriter out, boolean namenKurz, boolean calcJahr) {
+
+	long aktKurs = Waehrungen.exchange(getKurs(),getKurswaehrung(),Waehrungen.getListenWaehrung());
+	long tageLaufzeit;
+	
+	if ((doNotUpdate()) && (fixDate != null))
+	{
+		tageLaufzeit = fixDate.getSerialDate() - getKaufdatum().getSerialDate();
+	}
+	else
+	{
+		tageLaufzeit = heute.getSerialDate() - getKaufdatum().getSerialDate();
+	}
+
+	try
+	{
+		out.write("\"" + getName(namenKurz) + "\";");
+
+		if (!nurBeobachten())
+		{
+			out.write(getStueckzahlString());
+		}
+		out.write(";");
+		
+		long kaufkurs = Waehrungen.exchange(getKaufkurs(),getKaufwaehrung(),Waehrungen.getListenWaehrung());
+		if (kaufkurs > 0L)
+		{
+			out.write(("" + (kaufkurs / 100.0)).replace('.',','));
+		}
+		out.write(";");
+
+		if (aktKurs > 0L)
+		{
+			out.write(("" + (aktKurs / 100.0)).replace('.',','));
+		}
+		out.write(";");
+		
+		if ((kursdatum != null) && (kursdatum.length() > 0))
+		{
+			out.write("\"(" + kursdatum + ")\"");
+		}
+		out.write(";");
+
+		if ((kaufkurs > 0L) && (aktKurs > 0L) && (!nurBeobachten()))
+		{
+			out.write(("" + (getWert() / 100.0)).replace('.',','));
+		}
+		out.write(";");
+
+		if ((kaufkurs > 0L) && (aktKurs > 0L))
+		{
+			long stueck = nurBeobachten() ? 1L : getStueckzahl();
+			
+			long diff = getWert() - stueck * Waehrungen.exchange(getKaufkurs(),getKaufwaehrung(),Waehrungen.getListenWaehrung());
+
+			out.write(("" + (diff / 100.0)).replace('.',','));
+		}
+		out.write(";");
+		
+		long pabs = 0L;
+
+		if (aktKurs > 0L)
+		{
+			try
+			{
+				pabs = (aktKurs * 10000L) / Waehrungen.exchange(getKaufkurs(),getKaufwaehrung(),Waehrungen.getListenWaehrung()) - 10000L;
+				
+				long kabs = pabs;
+				if (kabs > 0L) kabs += 5L;
+				else if (kabs < 0L) kabs -= 5L;
+				kabs /= 10L;
+
+				out.write(("" + (kabs / 10.0)).replace('.',','));
+			}
+			catch (ArithmeticException e) {}
+		}
+		out.write(";");
+
+		if (calcJahr || (tageLaufzeit >= 360L))
+		{
+			if (aktKurs > 0L)
+			{
+				pabs = (pabs * 360L) / (tageLaufzeit+1L);
+				if (pabs > 0L) pabs += 5L;
+				else if (pabs < 0L) pabs -= 5L;
+				pabs /= 10L;
+				
+				out.write(("" + (pabs / 10.0)).replace('.',','));
+			}
+		}
+		out.write(";");
+
+		out.write(getKaufdatum().toString() + ";");
+
+		out.write("\"" + getWKNString() + "." + getBoerse() + "\"");
+		
+		out.newLine();
+	}
+	catch (IOException e) {}
+}
+
+
+
 public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean nameSteuerfrei, boolean calcJahr) {
+
 	long   aktKurs      = Waehrungen.exchange(getKurs(),getKurswaehrung(),Waehrungen.getListenWaehrung());
-	long   tageLaufzeit = heute.getSerialDate() - getKaufdatum().getSerialDate();
 	long   diff         = 0L;
 	String kursString   = getKursString();
 	String s,sk;
-	long   pabs;
+	long   pabs,tageLaufzeit;
+	
+	if ((doNotUpdate()) && (fixDate != null))
+	{
+		tageLaufzeit = fixDate.getSerialDate() - getKaufdatum().getSerialDate();
+	}
+	else
+	{
+		tageLaufzeit = heute.getSerialDate() - getKaufdatum().getSerialDate();
+	}
 
 	try
 	{
@@ -1041,7 +1214,7 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 		out.newLine();
 
 		out.write("  <TD ALIGN=\"center\">");
-		out.write(HTMLUtil.toHTML(getWKNString())+"<BR>"+HTMLUtil.toHTML(getBoerse()));
+		out.write(HTMLUtil.toHTML(getWKNString())+" "+HTMLUtil.toHTML(getBoerse()));
 		out.write("</TD>");
 		out.newLine();
 
@@ -1055,6 +1228,7 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 
 
 public synchronized static void saveHeaderHTML(BufferedWriter out, String aktualisierung) {
+
 	try
 	{
 		out.write("<TR>");
@@ -1123,7 +1297,7 @@ public synchronized static void saveHeaderHTML(BufferedWriter out, String aktual
 		out.newLine();
 
 		out.write("  <TH ALIGN=\"center\">");
-		out.write("WKN<BR>B&ouml;rse");
+		out.write("WKN B&ouml;rse");
 		out.write("</TH>");
 		out.newLine();
 
@@ -1143,6 +1317,7 @@ public synchronized static void saveHeaderHTML(BufferedWriter out, String aktual
 
 
 public synchronized static void saveFooterHTML(BufferedWriter out) {
+
 	try
 	{
 		out.write("<TR>");
@@ -1213,7 +1388,7 @@ public synchronized static void saveFooterHTML(BufferedWriter out) {
 		out.write("<TR>");
 		out.newLine();
 
-		out.write("  <TD COLSPAN=\"6\" ALIGN=\"right\">davon steuerfrei:</TD>");
+		out.write("  <TD COLSPAN=\"6\" ALIGN=\"right\">davon steuerfrei (*):</TD>");
 		out.newLine();
 
 		out.write("  <TD ALIGN=\"right\">");
@@ -1278,7 +1453,7 @@ public synchronized static void addFooterToPanel(Panel p, int y, Panel pTxt) {
 
 	AFrame.constrain(p,new Label("Differenz zum Kaufwert:",Label.RIGHT),3,y+1,4,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,10,0,0);
 
-	AFrame.constrain(p,new Label("davon steuerfrei:",Label.RIGHT),3,y+2,4,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,10,0,0);
+	AFrame.constrain(p,new Label("davon steuerfrei (*):",Label.RIGHT),3,y+2,4,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,10,0,0);
 	AFrame.constrain(p,new Label("davon zu versteuern:",Label.RIGHT),3,y+3,4,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,10,0,0);
 	
 	long d = aktsumme-kaufsumme;
@@ -1357,6 +1532,7 @@ public synchronized static void setLastUpdateAndRepaint(String aktualisierung) {
 
 
 public synchronized static int addHeadingsToPanel(Panel p, String aktualisierung) {
+
 	lupdate = new Label(aktualisierung);
 	AFrame.constrain(p,lupdate,0,0,9,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,0,0,2,0);
 
@@ -1388,21 +1564,34 @@ public synchronized static int addHeadingsToPanel(Panel p, String aktualisierung
 
 
 private synchronized String getLaufzeitTageString(long tageLaufzeit) {
+
 	return "" + tageLaufzeit + ((tageLaufzeit == 1L) ? " Tag" : " Tage");
 }
 
 
 
 private synchronized String getLaufzeitMonateString() {
+
 	ADate kdate = getKaufdatum();
 	
 	int kaufjahr = kdate.getYear();
 	int kaufmonat = kdate.getMonth();
 	int kauftag = kdate.getDay();
+	
+	int jahr,monat,tag;
 
-	int jahr = heute.getYear();
-	int monat = heute.getMonth();
-	int tag = heute.getDay();
+	if ((doNotUpdate()) && (fixDate != null))
+	{
+		jahr = fixDate.getYear();
+		monat = fixDate.getMonth();
+		tag = fixDate.getDay();
+	}
+	else
+	{
+		jahr = heute.getYear();
+		monat = heute.getMonth();
+		tag = heute.getDay();
+	}
 
 	int monate = 0;
 	int tage = 0;
@@ -1440,28 +1629,70 @@ private synchronized String getLaufzeitMonateString() {
 	
 	String tstr = "" + tage + ((tage==1)?" Tag":" Tage");
 	
-	if (monate == 0)
+	if (monate > 0)
 	{
-		return tstr;
+		tstr = "" + monate + ((monate==1)?" Monat ":" Monate ") + tstr;
+	}
+	
+	if (istSteuerfrei() && (!nurBeobachten()))
+	{
+		tstr += " (*)";
+	}
+	
+	return tstr;
+}
+
+
+
+public synchronized long getAbsPercent() {
+
+	long aktKurs = getKurs();
+	long pabs;
+
+	if (aktKurs > 0L)
+	{
+		try
+		{
+			pabs = (aktKurs * 10000L) / Waehrungen.exchange(getKaufkurs(),getKaufwaehrung(),getKurswaehrung()) - 10000L;
+			
+			if (pabs > 0L) pabs += 5L;
+			else if (pabs < 0L) pabs -= 5L;
+			pabs /= 10L;
+		}
+		catch (ArithmeticException e)
+		{
+			pabs = 0L;
+		}
 	}
 	else
 	{
-		return "" + monate + ((monate==1)?" Monat ":" Monate ") + tstr;
+		pabs = 0L;
 	}
+	
+	return pabs;
 }
 
 
 
 public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean nameSteuerfrei, boolean calcJahr) {
+
 	long   aktKurs = Waehrungen.exchange(getKurs(),getKurswaehrung(),Waehrungen.getListenWaehrung());
-	long   tageLaufzeit = heute.getSerialDate() - getKaufdatum().getSerialDate();
 	long   diff = 0L;
 	int    row = y - HEADROWS;
 	String kursString = getKursString();
 
 	String s,sk;
 	Label l;
-	long pabs;
+	long pabs,tageLaufzeit;
+	
+	if ((doNotUpdate()) && (fixDate != null))
+	{
+		tageLaufzeit = fixDate.getSerialDate() - getKaufdatum().getSerialDate();
+	}
+	else
+	{
+		tageLaufzeit = heute.getSerialDate() - getKaufdatum().getSerialDate();
+	}
 	
 	checkSpekulationsfrist(konfigspekfrist);
 	

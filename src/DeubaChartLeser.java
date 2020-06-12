@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-27
+ @version 1999-12-09
 */
 
 import java.net.*;
@@ -35,6 +35,8 @@ public void run() {
 	boolean valid = false;
 	
 	AktienMan.checkURLs();
+
+	if (!AktienMan.hauptdialog.mainr()) return;
 
 	chartviewer = new DeubaChartViewer(wkn+"."+boerse,isFonds,type,nextID);
 	

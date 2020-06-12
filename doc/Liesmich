@@ -1,4 +1,4 @@
-AktienMan 1.50-beta (1999-07-19)
+AktienMan 1.60-beta (1999-12-13)
 Copyright (c)1998,99 by Thomas Much (thomas@aktienman.de)
 
 
@@ -36,15 +36,13 @@ todo
 // Konfiguration: Allgemein, Anzeige, Spezial (Browser etc.)
 // S-DAX-Popup (im Sommer)
 // FSE-Abschaffung vorbereiten
-// separate Quelle für Charts: Comdirect, Deutsche Bank (incl. Intraday!)
-// separate Quelle für Fonds: derzeit nur Comdirect
+// separate Quelle für Fonds
 // KursQuelle incl. Abfrage der verfügbaren Börsenplätze
-// Online-Währung -> KursQuelle
+// Online-Währung -> KursQuelle+Börsenplatz (?!)
 // PoFo-Umschalten beim allerersten Start nicht möglich (wenn AktienMan.lst fehlt) (?)
 // Suche nach WKN (via Comdirect) -> Liste der Ergebnisse anzeigen
 // Anzeige unwichtiger Spalten ausschaltbar
 // Voreinstellungen: CardLayout
-// öS
 // bei jedem Aktualisieren Thread starten, der aktuelle Umtauschkurse ermittelt
 // nach HTML-Export Browser (derzeit nur Netscape) nachstarten (nur Mac, ab MRJ 2.1)
 // Aktien sofort nach Kauf bei Kaufwert-Summe berücksichtigen
@@ -53,12 +51,10 @@ todo
 // auch Maximalskurs per Timer anzeigen
 // Liste/Portfolio mit Verkäufen
 // DAX-Kamera optional im Hauptfenster darstellen
-// Aktien verwalten, die keine WKN haben, d.h. deren Kurs manuell eingetragen werden muß
+// Hidden Feature: akt. Kurse als Kaufkurse umkopieren
 // Backupfunktion für Listen
 // Kurse+Charts auch von bbbank.de, http://www.consors.de, http://www.fimatex.de
 // Kurs- und Chartklassen bei Bedarf von aktienman.de laden
-Version 1.51 (.07.99)
-// RELEASE erhöhen, DEBUG entfernen
 // Aktienlisten etc. in XML speichern (Strings als UTF8)
 // Kopieren+Verschieben zwischen Portfolios
 // Prozentualer Anteil der einzelnen Aktien am Gesamtportfolio
@@ -67,10 +63,29 @@ Version 1.51 (.07.99)
 // Splashscreen für alle Systeme
 // WKN-Listen bei der Comdirect erkennen und Wert mit der passenden WKN auswählen (Achtung, wenn WKN fehlt)
 // SMAX-Liste einlesen (http://charts.smax.de/smax/kurseumsaetze_d.htm)
-// Win98 + neuerster IE5: nach Registrierung klappt Kaufen, Pofo-Wechsel + Neustart nicht mehr ...
 // bei einem Fehler liefert der Comdirect-Leser nur noch "n/a" ...
 // Chartfenstergrößen für Win noch etwas optimieren (ebenso Karteireiter)
+// CSV-Im- und -Export
+// E-Mails verschicken
+// Kommentarfeld pro Aktie
+// Lange "WKNs" zulassen
+// Listeneinträge gleicher WKN farblich unterlegen (grau/weiß)
 //
+Version 1.61 (.1.00)
+// RELEASE erhöhen, DEBUG entfernen
+//
+Version 1.60 (13.12.99)
+- der Export kann nur noch im Menü ausgewählt werden, der Button unten links wurde entfernt
+- dort kann man nun die Sortierung der Liste (alphabetisch bzw. nach abs. Prozentdifferenzen) auswählen
+- der HTML-Export speichert nun einen weissen Dokumenthintergrund und setzt den Creator auf iCab
+- Export auch als CSV-Datei möglich; der Creator wird auf Excel-Text gesetzt
+- wenn bei "Aktie ändern" ein Wert fixiert wird, muss nun ein korrektes Kursdatum eingegeben werden;
+  dadurch wird auch die Laufzeit korrekt fixiert; bereits fixierte Werte müssen noch einmal geändert werden
+- steuerfreie Aktien zeigen hinter der Laufzeit "*" an (falls nicht "steuerfrei" ausgegeben wird)
+- der HTML-Export trennt WKN und Börse nicht mehr mit einem <BR>
+- Comdirect-Kurse mit Tausender-Punkt werden korrekt erkannt
+- Workaround für WKN 871111 (Sun) eingebaut
+- auf dem Server können nun einzelne Seriennummern gesperrt werden
 Version 1.50 (19.07.99)
 - wenn ein Aktienname nicht sinnvoll gekürzt werden kann, wird der Name nach 30 Zeichen abgeschnitten
 - Korrektur für die Deuba-Charts

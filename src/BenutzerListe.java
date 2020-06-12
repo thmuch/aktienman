@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-07-16
+ @version 1999-12-09
 */
 
 import java.util.*;
@@ -14,6 +14,10 @@ public final class BenutzerListe extends Vector implements Serializable {
 
 static final long serialVersionUID = 1972011800002L;
 
+private static final int SORT_NONE    = -1;
+private static final int SORT_NAME    =  0;
+private static final int SORT_ABSPERC =  1;
+
 private ADate letzteAktualisierung = null;
 private String festeBoerse = "";
 private long verkaufserloes = 0L;
@@ -21,6 +25,7 @@ private int erloesWaehrung = Waehrungen.DEM;
 private int portfoliover = 0;
 
 private transient String portfolioFile = "";
+private transient static int listeSortBy = SORT_NONE;
 
 
 
@@ -175,25 +180,73 @@ public synchronized void erloesToWaehrung(int neueWaehrung) {
 
 
 
-public synchronized void sortByName(boolean kurz) {
+public synchronized void sort(boolean kurz) {
 
-	for (int i = size(); --i >= 0; )
+	if (getListeSortBy() == SORT_ABSPERC)
 	{
-		boolean swapped = false;
+		sortByAbsPercent();
+	}
+	else
+	{
+		sortByName(kurz);
+	}
+}
+
+
+
+private synchronized void sortByAbsPercent() {
+
+	/* selection sort */
+	
+	int size = size();
+
+	for (int i = 0; i < size - 1; i++)
+	{
+		int max = i;
 		
-		for (int j = 0; j<i; j++)
+		for (int j = i+1; j < size; j++)
 		{
-			if (getAt(j).getName(kurz).trim().toUpperCase().compareTo(getAt(j+1).getName(kurz).trim().toUpperCase()) > 0)
+			if (getAt(j).getAbsPercent() > getAt(max).getAbsPercent())
 			{
-				BenutzerAktie temp = getAt(j);
-				setElementAt(getAt(j+1),j);
-				setElementAt(temp,j+1);
-				
-				swapped = true;
+				max = j;
 			}
 		}
 		
-		if (!swapped) return;
+		if (max != i)
+		{
+			BenutzerAktie temp = getAt(i);
+			setElementAt(getAt(max),i);
+			setElementAt(temp,max);
+		}
+	}
+}
+
+
+
+private synchronized void sortByName(boolean kurz) {
+
+	/* selection sort */
+	
+	int size = size();
+
+	for (int i = 0; i < size - 1; i++)
+	{
+		int min = i;
+		
+		for (int j = i+1; j < size; j++)
+		{
+			if (getAt(min).getName(kurz).trim().toUpperCase().compareTo(getAt(j).getName(kurz).trim().toUpperCase()) > 0)
+			{
+				min = j;
+			}
+		}
+		
+		if (min != i)
+		{
+			BenutzerAktie temp = getAt(i);
+			setElementAt(getAt(min),i);
+			setElementAt(temp,min);
+		}
 	}
 }
 
@@ -303,6 +356,26 @@ public static BenutzerListe restore(String datei) {
 	benutzerliste.setPortfolioFile(datei);
 	
 	return benutzerliste;
+}
+
+
+
+public synchronized static int getListeSortBy() {
+
+	if (listeSortBy <= SORT_NONE)
+	{
+		listeSortBy = AktienMan.properties.getInt("Konfig.ListeSortBy",SORT_NAME);
+	}
+	
+	return listeSortBy;
+}
+
+
+
+public synchronized static void setListeSortBy(int neu) {
+
+	AktienMan.properties.setInt("Konfig.ListeSortBy",neu);
+	listeSortBy = neu;
 }
 
 }

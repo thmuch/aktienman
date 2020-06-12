@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-30
+ @version 1999-12-12
 */
 
 import java.io.*;
@@ -34,12 +34,16 @@ private int nextID;
 
 
 
+
 public ComdirectLeser(KursReceiver receiver, String request, String baWKN, String baBoerse, int nextID) {
+
 	this(receiver,request,baWKN,baBoerse,false,nextID);
 }
 
 
+
 public ComdirectLeser(KursReceiver receiver, String request, String baWKN, String baBoerse, boolean sofortZeichnen, int nextID) {
+
 	super();
 
 	this.receiver = receiver;
@@ -68,15 +72,23 @@ private String fixKurs(String kstr) {
 		kstr = kstr.substring(0,i);
 	}
 	
+	while (((i = kstr.indexOf(".")) > 0) && (i < kstr.indexOf(",")))
+	{
+		kstr = kstr.substring(0,i) + kstr.substring(i+1);
+	}
+	
 	return kstr;
 }
 
 
 
 public void run() {
+
 	BufferedReader in = null;
 	
 	AktienMan.checkURLs();
+
+	if (!AktienMan.hauptdialog.mainr()) return;
 
 	try
 	{

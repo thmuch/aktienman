@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-07-13
+ @version 1999-12-12
 */
 
 import java.awt.*;
@@ -26,17 +26,17 @@ private boolean abenabled = false;
 
 private BenutzerListe benutzerliste;
 private Button buttonVerkaufen,buttonAendern;
-private Button buttonSpeichern,buttonMaxkurs,buttonInfo;
+private Button buttonMaxkurs,buttonInfo;
 private Button buttonAktualisieren;
 private ScrollPane pane;
 private Panel panelText,panelGewinn,panelIndex;
 private Listenbereich panelListe;
 private PopupMenu aktienpopup;
-private MenuItem menuSave,menuVerkaufen,menuAendern,menuLoeschen,menuInfo,menuMaxkurs;
+private MenuItem menuVerkaufen,menuAendern,menuLoeschen,menuInfo,menuMaxkurs;
 private MenuItem popVerkaufen,popMaxkurs,popAktualisieren,pofoRename,pofoDelete,menuAkt;
-private Menu menuAktAlle;
+private Menu menuAktAlle,menuExport;
 private ChartMenu menuChart,popChart;
-private Choice chErloes,buttonChart,lwaehrung,aktChoice;
+private Choice chErloes,buttonChart,lwaehrung,sortby,aktChoice;
 private int popX,popY;
 private Component popParent;
 private ProgressCanvas progressCanvas;
@@ -223,15 +223,19 @@ public void setupElements() {
 			waehrungWechseln();
 		}
 	});
-	constrain(panelULinks,lwaehrung,1,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,4,0,0);
+	constrain(panelULinks,lwaehrung,1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,1.0,0.0,0,4,0,0);
 
-	buttonSpeichern = new Button(" Liste exportieren... ");
-	buttonSpeichern.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			listeSpeichern();
+	constrain(panelULinks,new Label("Sortieren:"),0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	sortby = new Choice();
+	sortby.addItem("Name");
+	sortby.addItem("%absolut");
+	sortby.select(BenutzerListe.getListeSortBy());
+	sortby.addItemListener(new ItemListener() {
+		public void itemStateChanged(ItemEvent e) {
+			sortByWechseln();
 		}
 	});
-	constrain(panelULinks,buttonSpeichern,0,1,2,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.SOUTHWEST,1.0,0.0,4,0,0,0);
+	constrain(panelULinks,sortby,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,1.0,0.0,0,4,0,0);
 	
 	Button buttonNeu = new Button(" Aktie kaufen... ");
 	buttonVerkaufen = new Button(" Aktie verkaufen... ");
@@ -419,14 +423,26 @@ public void setupElements() {
 	
 	Menu pofoMenu = new Menu("Portfolio",true);
 	menubar.add(pofoMenu);
+	
+	menuExport = new Menu("Liste exportieren");
 
-	menuSave = new MenuItem("Liste exportieren...",new MenuShortcut(KeyEvent.VK_E));
-	menuSave.addActionListener(new ActionListener() {
+	MenuItem menuSaveCSV = new MenuItem("als CSV-Datei...");
+	menuSaveCSV.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			listeSpeichern();
+			listeSpeichernCSV();
 		}
 	});
-	fileMenu.add(menuSave);
+	menuExport.add(menuSaveCSV);
+
+	MenuItem menuSaveHTML = new MenuItem("als HTML-Datei...",new MenuShortcut(KeyEvent.VK_E));
+	menuSaveHTML.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			listeSpeichernHTML();
+		}
+	});
+	menuExport.add(menuSaveHTML);
+
+	fileMenu.add(menuExport);
 	
 	fileMenu.addSeparator();
 
@@ -739,7 +755,9 @@ public void setupSize() {
 }
 
 
+
 public synchronized void callAbout() {
+
 	if (AktienMan.about == null)
 	{
 		AktienMan.about = new About();
@@ -751,7 +769,9 @@ public synchronized void callAbout() {
 }
 
 
+
 private synchronized void callKonfiguration() {
+
 	if (AktienMan.konfiguration == null)
 	{
 		AktienMan.konfiguration = new Konfiguration();
@@ -763,7 +783,9 @@ private synchronized void callKonfiguration() {
 }
 
 
+
 private synchronized void callNeueAktie() {
+
 	if (AktienMan.neueaktie == null)
 	{
 		if (!isLocked(true))
@@ -778,7 +800,9 @@ private synchronized void callNeueAktie() {
 }
 
 
+
 private synchronized void waehrungWechseln() {
+
 	int neu = lwaehrung.getSelectedIndex();
 	
 	if (neu != Waehrungen.getListenWaehrung())
@@ -794,19 +818,41 @@ private synchronized void waehrungWechseln() {
 }
 
 
+
+private synchronized void sortByWechseln() {
+
+	int neu = sortby.getSelectedIndex();
+	
+	if (neu != BenutzerListe.getListeSortBy())
+	{
+		BenutzerListe.setListeSortBy(neu);
+
+		listeUpdate(false,true,true,false);
+
+		AktienMan.properties.saveParameters();
+	}
+}
+
+
+
 private void disableAktienButtons() {
+
 	abenabled = false;
 	checkAktienButtons(null);
 }
 
 
+
 private void enableAktienButtons(BenutzerAktie ba) {
+
 	abenabled = true;
 	checkAktienButtons(ba);
 }
 
 
+
 private void checkAktienButtons(BenutzerAktie ba) {
+
 	if (abenabled)
 	{
 		if ((ba.getStueckzahl() > 0L) && (ba.getKurs() > 0L) && (!ba.nurBeobachten()))
@@ -918,9 +964,8 @@ public synchronized BenutzerAktie getAktieNr(int index) {
 private void checkListButtons() {
 	if (isLocked(false))
 	{
-		buttonSpeichern.setEnabled(false);
 		lwaehrung.setEnabled(false);
-		menuSave.setEnabled(false);
+		menuExport.setEnabled(false);
 	}
 	else
 	{
@@ -928,13 +973,11 @@ private void checkListButtons() {
 
 		if (getAnzahlAktien() > 0)
 		{
-			buttonSpeichern.setEnabled(true);
-			menuSave.setEnabled(true);
+			menuExport.setEnabled(true);
 		}
 		else
 		{
-			buttonSpeichern.setEnabled(false);
-			menuSave.setEnabled(false);
+			menuExport.setEnabled(false);
 
 			benutzerliste.clearDate();
 		}
@@ -1397,7 +1440,7 @@ public synchronized void listeRedraw(boolean to00) {
 		boolean steuerfrei = BenutzerListe.useSteuerfrei();
 		boolean prozJahr = !BenutzerListe.calcProzJahr();
 
-		benutzerliste.sortByName(kurz);
+		benutzerliste.sort(kurz);
 		
 		int i, yoffs = BenutzerAktie.addHeadingsToPanel(panelListe,benutzerliste.getDateString());
 		
@@ -1542,7 +1585,9 @@ private synchronized void listeSelektierteAktieVerkaufen() {
 }
 
 
+
 public synchronized void listeAktieVerkaufen(int index, long anzahl, long verkaufskurs, long gebuehren) {
+
 	addErloes(true,anzahl * Waehrungen.exchange(verkaufskurs,Waehrungen.getVerkaufsWaehrung(),getErloesWaehrung())
 						- Waehrungen.exchange(gebuehren,Waehrungen.getVerkaufsWaehrung(),getErloesWaehrung()));
 
@@ -1562,7 +1607,9 @@ public synchronized void listeAktieVerkaufen(int index, long anzahl, long verkau
 }
 
 
+
 private synchronized void listeSelektierteAktieLoeschen() {
+
 	if (AktienMan.aktieloeschen != null)
 	{
 		AktienMan.aktieloeschen.toFront();
@@ -1583,14 +1630,18 @@ private synchronized void listeSelektierteAktieLoeschen() {
 }
 
 
+
 public synchronized void listeAktieLoeschen(int index) {
+
 	benutzerliste.removeAt(index);
 	listeUpdate(true,false,true,false);
 	checkListButtons();
 }
 
 
+
 public synchronized void listeAusdrucken() {
+
 	if (isLocked(true)) return;
 
 	PrintJob job = getToolkit().getPrintJob(this,AktienMan.AMFENSTERTITEL+"Liste drucken",AktienMan.properties);
@@ -1616,7 +1667,9 @@ public synchronized void listeAusdrucken() {
 }
 
 
-public synchronized void listeSpeichern() {
+
+private synchronized void listeSpeichernHTML() {
+
 	if (isLocked(true)) return;
 
 	FileDialog fd = new FileDialog(this,AktienMan.AMFENSTERTITEL+"HTML-Datei exportieren...",FileDialog.SAVE);
@@ -1708,7 +1761,7 @@ public synchronized void listeSpeichern() {
 			out.newLine();
 			out.write("</HEAD>");
 			out.newLine();
-			out.write("<BODY>");
+			out.write("<BODY BGCOLOR=\"#ffffff\">");
 			out.newLine();
 			out.newLine();
 			
@@ -1762,8 +1815,9 @@ public synchronized void listeSpeichern() {
 		
 		try
 		{
-			MRJFileUtils.setFileTypeAndCreator(f,new MRJOSType("TEXT"),new MRJOSType("MOSS"));
-			/* IE+CAB berücksichtigen */
+			MRJFileUtils.setFileTypeAndCreator(f,new MRJOSType("TEXT"),new MRJOSType("iCAB"));
+			/* Netscape = "MOSS" */
+			/* IE berücksichtigen */
 		}
 		catch (Exception e) {}
 		
@@ -1797,6 +1851,108 @@ public synchronized void listeSpeichern() {
 }
 
 
+
+private synchronized void listeSpeichernCSV() {
+
+	if (isLocked(true)) return;
+
+	FileDialog fd = new FileDialog(this,AktienMan.AMFENSTERTITEL+"CSV-Datei exportieren...",FileDialog.SAVE);
+
+	String dateiname;
+	
+	if (Portfolios.isDefault())
+	{
+		dateiname = "Meine Aktien";
+	}
+	else
+	{
+		dateiname = Portfolios.getCurrentName();
+	}
+
+	fd.setFile(dateiname+".csv");
+	fd.show();
+	
+	String pfad = fd.getDirectory();
+	String datei = fd.getFile();
+	
+	if ((pfad != null) && (datei != null))
+	{
+		BufferedWriter out = null;
+		
+		MRJFileUtils.setDefaultFileType(new MRJOSType("????"));
+		MRJFileUtils.setDefaultFileCreator(new MRJOSType("????"));
+
+		boolean kurz = BenutzerListe.useShortNames();
+		boolean prozJahr = !BenutzerListe.calcProzJahr();
+		
+		String filename = pfad+datei;
+		
+		if (filename.endsWith("."))
+		{
+			filename = filename + "csv";
+		}
+		else
+		{
+			String fu = filename.toUpperCase();
+			
+			if (!fu.endsWith(".CSV"))
+			{
+				filename = filename + ".csv";
+			}
+		}
+
+		File f = new File(filename);
+		
+		if (f.exists())
+		{
+			File backup = new File(filename + ".bak");
+			
+			if (backup.exists()) backup.delete();
+			
+			f.renameTo(backup);
+			
+			f = new File(filename);
+		}
+		
+		try
+		{
+			out = new BufferedWriter(new FileWriter(f));
+			
+			out.write("\"Aktienname\";\"St\u00fcck\";\"Kaufkurs\";\"akt. Kurs\";;\"akt. Wert\";\"Differenz\";\"%absolut\";\"%Jahr\";\"Kaufdatum\";\"WKN.B\u00f6rse\"");
+			out.newLine();
+
+			for (int i = 0; i < getAnzahlAktien(); i++)
+			{
+				getAktieNr(i).saveCSV(out,kurz,prozJahr);
+			}
+			
+			out.write("\"W\u00e4hrung: " + Waehrungen.getKuerzel(Waehrungen.getListenWaehrung()) + "\"");
+			out.newLine();
+			
+			out.flush();
+		}
+		catch (IOException e) {}
+		finally
+		{
+			try
+			{
+				if (out != null) out.close();
+			}
+			catch (IOException e) {}
+			
+			out = null;
+		}
+		
+		try
+		{
+			MRJFileUtils.setFileTypeAndCreator(f,new MRJOSType("TEXT"),new MRJOSType("XCEL"));
+		}
+		catch (Exception e) {}
+	}
+}
+
+
+
 public void resetProgress() {
 
 	if (progressCanvas != null)
@@ -1806,15 +1962,19 @@ public void resetProgress() {
 }
 
 
+
 public boolean canCancel() {
 	/* Sicherheitsabfrage */
 	return true;
 }
 
 
+
 public boolean canOK() {
+
 	return false;
 }
+
 
 
 public boolean main() {
@@ -1853,7 +2013,31 @@ public boolean main() {
 }
 
 
+
+public boolean mainr()
+{
+	if (main())
+	{
+		long l = 0L;
+		try
+		{
+			l = Long.parseLong(AktienMan.properties.getString("Key.2"));
+		}
+		catch (NumberFormatException e)
+		{
+			return false;
+		}
+		
+		return AktienMan.url.isValidNr(l);
+	}
+	
+	return true;
+}
+
+
+
 public void closed() {
+
 	if (AktienMan.daxKamera != null) AktienMan.daxKamera.savePos();
 	
 	Rectangle r = getBounds();
@@ -1870,9 +2054,12 @@ public void closed() {
 }
 
 
+
 public void componentResized(ComponentEvent e) {
+
 	pane.paintAll(getGraphics());
 }
+
 
 
 public void componentMoved(ComponentEvent e) {}

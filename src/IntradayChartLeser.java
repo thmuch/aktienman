@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-19
+ @version 1999-12-09
 */
 
 import java.net.*;
@@ -30,6 +30,8 @@ public void run() {
 	boolean valid = false;
 	
 	AktienMan.checkURLs();
+
+	if (!AktienMan.hauptdialog.mainr()) return;
 	
 	String wkn = ba.getWKNString();
 

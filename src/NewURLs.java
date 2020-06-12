@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-07-18
+ @version 1999-12-12
 */
 
 
@@ -11,7 +11,19 @@ public class NewURLs extends URLs {
 
 
 
-public String getString(int strNr) {
+/*public String get(int urlNr) {
+	
+	if (urlNr == URL_KAMERA)
+	{
+		return getBase(BASE_EXCHANGE) + "parkett/parkett.jpg";
+	}
+	
+	return super.get(urlNr);
+}*/
+
+
+
+/*public String getString(int strNr) {
 
 	if (strNr == STR_DEUBA_CHARTSRC)
 	{
@@ -35,6 +47,6 @@ public String checkWKN(String wkn) {
 	}
 
 	return super.checkWKN(wkn);
-}
+}*/
 
 }

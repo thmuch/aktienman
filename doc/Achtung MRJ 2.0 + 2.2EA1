@@ -1,5 +1,0 @@
-AktienMan/Mac setzt ab sofort "Macintosh Runtime for Java" (MRJ) in der Version 2.1 (oder höher) voraus. Grund dafür sind Fehler in MRJ 2.0, die zu falschen Berechnungen führen können. Apple bietet MRJ 2.1.2 unter http://www.apple.com/java/ zum kostenlosen Download an. Ebenso finden Sie auf der AktienMan-Homepage Verweise auf die entsprechenden Archive.
-
-Wichtig: MRJ 2.2 EA1 (eine öffentliche Vorabversion von Apple) sollte nicht zusammen mit AktienMan verwendet werden, da diese Version offenbar noch einige Fehler enthält. AktienMan wird erst die endgültige Version 2.2 unterstützen.
-
-support@aktienman.de

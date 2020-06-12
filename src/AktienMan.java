@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-07-19
+ @version 1999-12-13
 */
 
 /**
@@ -16,11 +16,11 @@ import java.awt.*;
 public final class AktienMan {
 
 public static final String AMNAME         = "AktienMan";
-public static final String AMVERSION      = "1.50";
+public static final String AMVERSION      = "1.60";
 public static final String AMFENSTERTITEL = AMNAME + " - ";
 
-public static ADate compDate              = new ADate(1999,7,19); /* Compilierdatum */
-public static final int RELEASE           = 15; /* 1.50 19.07.1999 */
+public static ADate compDate              = new ADate(1999,12,13); /* Compilierdatum */
+public static final int RELEASE           = 16; /* 1.60 13.12.1999 */
 public static final boolean DEBUG         = false; /**/
 
 public static Aktienliste listeDAX        = new Aktienliste();
@@ -58,6 +58,7 @@ public static URLs url = null;
 
 
 public synchronized static void checkURLs() {
+
 	if (url == null)
 	{
 		NetUtil.loadRawURL(URLs.MC_WORKAROUND);
@@ -80,12 +81,16 @@ public synchronized static void checkURLs() {
 }
 
 
+
 public static void doOnlineChecks() {
+
 	UpdateChecker.check();
 }
 
 
+
 private static void registerCheck() {}
+
 
 
 private static void main(int a) throws Exception {
@@ -94,7 +99,9 @@ private static void main(int a) throws Exception {
 }
 
 
+
 public static void main(String a) {
+
 	try
 	{
 		main(0);
@@ -123,7 +130,9 @@ public static void main(String a) {
 }
 
 
+
 public static void main(String args[]) {
+
 	StartupDialog sd = new StartupDialog();
 	
 	FileUtil.createAMDirectory();

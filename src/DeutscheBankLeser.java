@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-30
+ @version 1999-12-09
 */
 
 import java.io.*;
@@ -42,6 +42,8 @@ public void run() {
 	BufferedReader in = null;
 	
 	AktienMan.checkURLs();
+
+	if (!AktienMan.hauptdialog.mainr()) return;
 
 	try
 	{

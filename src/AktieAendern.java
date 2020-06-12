@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-07-16
+ @version 1999-12-12
 */
 
 import java.awt.*;
@@ -23,6 +23,7 @@ private Button buttonChange,buttonDelete;
 
 
 public AktieAendern(int index, BenutzerAktie ba) {
+
 	super(AktienMan.AMFENSTERTITEL+"Aktiendaten \u00e4ndern",index,ba);
 	kaufkurs.requestFocus();
 }
@@ -30,6 +31,7 @@ public AktieAendern(int index, BenutzerAktie ba) {
 
 
 public void setupElements2() {
+
 	Panel panelOben = new Panel(gridbag);
 	Panel panelMitte = new Panel(gridbag);
 	Panel panelRest = new Panel(gridbag);
@@ -94,8 +96,8 @@ public void setupElements2() {
 	}
 	aktkurs = new TextField(astr,8);
 	constrain(panelMitte,aktkurs,1,7,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
-
-	aktdatum = new TextField(ba.getKursdatumRawString(),10);
+	
+	aktdatum = new TextField(ba.getFixedDateString(),10);
 	constrain(panelMitte,aktdatum,2,7,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 
 	constrain(panelRest,new Label("Kaufdatum"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
@@ -233,6 +235,7 @@ public void checkAktKurs() {
 
 
 public synchronized void executeOK() {
+
 	String s;
 	
 	buttonDelete.setEnabled(false);
@@ -304,7 +307,7 @@ public synchronized void executeOK() {
 	boolean usegrenze = gewinnProz.getState();
 	
 	long aktKurs = BenutzerAktie.VALUE_MISSING;
-	String aktDate = "";
+	ADate aktDate = null;
 
 	if (dontupdate)
 	{
@@ -318,7 +321,13 @@ public synchronized void executeOK() {
 			catch (NumberFormatException e) {}
 		}
 		
-		aktDate = aktdatum.getText().trim();
+		String aktdate = aktdatum.getText().trim();
+
+		try
+		{
+			aktDate = ADate.parse(aktdate);
+		}
+		catch (Exception e) {}
 	}
 
 	ba.changeValues(name,wkn,bp,nurdiese,kdate,kkurs,anzaktien,khoch,ktief,ggrenze,
@@ -330,6 +339,7 @@ public synchronized void executeOK() {
 
 
 public synchronized boolean canOK() {
+
 	boolean watchonly = watchOnly.getState();
 
 	if (neuername.getText().trim().length() == 0)
@@ -453,15 +463,15 @@ public synchronized boolean canOK() {
 		}
 	}
 	
+	ADate kaufd = null;
 	s = kaufdatum.getText().trim();
 	if ((!watchonly) || (s.length() > 0))
 	{
-		ADate d;
 		try
 		{
-			d = ADate.parse(s);
+			kaufd = ADate.parse(s);
 			
-			if (d.after(new ADate()))
+			if (kaufd.after(new ADate()))
 			{
 				new Warnalert(this,"Ein Kaufdatum in der Zukunft ist nicht erlaubt.");
 				return false;
@@ -470,6 +480,35 @@ public synchronized boolean canOK() {
 		catch (Exception e)
 		{
 			new Warnalert(this,"Bitte geben Sie ein g\u00fcltiges Kaufdatum ein.");
+			return false;
+		}
+	}
+	
+	if (dontUpdate.getState())
+	{
+		s = aktdatum.getText().trim();
+		
+		if (s.length() > 0)
+		{
+			try
+			{
+				ADate aktd = ADate.parse(s);
+				
+				if (kaufd.after(aktd))
+				{
+					new Warnalert(this,"Das Kursdatum muss nach dem Kaufdatum liegen.");
+					return false;
+				}
+			}
+			catch (Exception e)
+			{
+				new Warnalert(this,"Bitte geben Sie ein g\u00fcltiges Kursdatum ein.");
+				return false;
+			}
+		}
+		else
+		{
+			new Warnalert(this,"Bitte geben Sie ein g\u00fcltiges Kursdatum ein.");
 			return false;
 		}
 	}
@@ -549,6 +588,7 @@ public synchronized boolean canOK() {
 
 
 private void doDelete() {
+
 	buttonDelete.setEnabled(false);
 	buttonChange.setEnabled(false);
 	
@@ -560,6 +600,7 @@ private void doDelete() {
 
 
 public void closed() {
+
 	AktienMan.aktieaendern = null;
 }
 
