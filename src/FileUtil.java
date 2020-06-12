@@ -1,10 +1,11 @@
 /**
  @author Thomas Much
- @version 1999-02-17
+ @version 2000-01-05
 */
 
 import java.io.*;
 import java.util.*;
+
 
 
 
@@ -17,24 +18,45 @@ public static final String EXT_CONFIG    = ".cfg";
 private static final String pathsep = System.getProperty("path.separator");
 private static final String filesep = System.getProperty("file.separator");
 
+private static final String userDir  = System.getProperty("user.dir") + filesep;
+
 private static String lastFindPath = "";
+private static String homeDir = "";
+
+
+
+static {
+
+	String einstr = getWorkingDirectory() + Lang.CONFIGDIR;
+
+	File einst = new File(einstr);
+	
+	homeDir = ((einst.exists()) ? einstr : System.getProperty("user.home")) + filesep;
+}
+
 
 
 
 private FileUtil() {}
 
 
+
 private static String getHomeDirectory() {
-	return System.getProperty("user.home") + filesep;
+
+	return homeDir;
 }
+
 
 
 public static String getWorkingDirectory() {
-	return System.getProperty("user.dir") + filesep;
+
+	return userDir;
 }
 
 
+
 private static String getDefaultFile() {
+
 	String s = AktienMan.AMNAME;
 
 	if (SysUtil.isLinux())
@@ -46,7 +68,9 @@ private static String getDefaultFile() {
 }
 
 
+
 public static String getAMDirectory(boolean addFilesep) {
+
 	String s = getDefaultFile();
 	
 	if (addFilesep) s += filesep;
@@ -55,29 +79,39 @@ public static String getAMDirectory(boolean addFilesep) {
 }
 
 
+
 public static void createAMDirectory() {
+
 	File amd = new File(getAMDirectory(false));
 
 	if (!amd.exists()) amd.mkdir();
 }
 
 
+
 public static String getConfigFile() {
+
 	return getDefaultFile() + EXT_CONFIG;
 }
 
 
+
 public static String getPopupFile() {
+
 	return getDefaultFile() + EXT_POPUP;
 }
 
 
+
 public static String getDefaultPortfolioFile() {
+
 	return getDefaultFile() + EXT_PORTFOLIO;
 }
 
 
+
 public static String findLocalFile(String filename) {
+
 	if (lastFindPath.length() > 0)
 	{
 		File f = new File(lastFindPath+filename);

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-05-07
+ @version 2000-01-05
 */
 
 
@@ -24,5 +24,7 @@ public static final String FILEMENUTITLE = SysUtil.isMacOS() ? "Ablage" : "Datei
 public static final String EDITMENUTITLE = "Bearbeiten";
 
 public static final String DEMOVERSION = "D E M O - V E R S I O N";
+
+public static final String CONFIGDIR = "Einstellungen";
 
 }

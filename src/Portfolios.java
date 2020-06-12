@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-15
+ @version 2000-03-14
 */
 
 import java.awt.*;
@@ -10,13 +10,22 @@ import java.io.*;
 
 public final class Portfolios {
 
+public static final int INDEX_NONE = -1;
+
 private static final String NAME_DEFAULT = "Standard";
 private static final int NAME_MAXLEN = 27;
 
 private static final int INDEX_DEFAULT = 0;
 private static final int INDEX_OFFSET  = 2;
 
-private static Menu menu = new Menu("\u00d6ffnen");
+private static Menu menu      = new Menu("\u00d6ffnen");
+private static Menu menuCopy  = new Menu("Kopieren nach");
+private static Menu menuMove  = new Menu("Verschieben nach");
+private static Menu popupCopy = new Menu("Kopieren nach");
+private static Menu popupMove = new Menu("Verschieben nach");
+
+private static boolean menuEnabled = false;
+
 private static int index = INDEX_DEFAULT;
 private static boolean indexValid = false;
 
@@ -25,7 +34,9 @@ private static Hauptdialog hauptdialog = null;
 
 
 
+
 public synchronized static Menu getMenu(Hauptdialog hd) {
+
 	menu.setEnabled(false);
 	
 	hauptdialog = hd;
@@ -34,9 +45,88 @@ public synchronized static Menu getMenu(Hauptdialog hd) {
 }
 
 
-public synchronized static void updateMenu(boolean chgIndex) {
-	menu.setEnabled(false);
 
+public synchronized static Menu getMenuCopy(Hauptdialog hd) {
+
+	menuCopy.setEnabled(false);
+	
+	hauptdialog = hd;
+	
+	return menuCopy;
+}
+
+
+
+public synchronized static Menu getMenuMove(Hauptdialog hd) {
+
+	menuMove.setEnabled(false);
+	
+	hauptdialog = hd;
+	
+	return menuMove;
+}
+
+
+
+public synchronized static Menu getPopupCopy(Hauptdialog hd) {
+
+	popupCopy.setEnabled(false);
+	
+	hauptdialog = hd;
+	
+	return popupCopy;
+}
+
+
+
+public synchronized static Menu getPopupMove(Hauptdialog hd) {
+
+	popupMove.setEnabled(false);
+	
+	hauptdialog = hd;
+	
+	return popupMove;
+}
+
+
+
+public static void enableMoveCopyMenus() {
+
+	menuEnabled = true;
+	
+	checkMoveCopyMenus();
+}
+
+
+
+public static void disableMoveCopyMenus() {
+
+	menuEnabled = false;
+	
+	checkMoveCopyMenus();
+}
+
+
+
+private static void checkMoveCopyMenus() {
+
+	if (menuEnabled)
+	{
+		menuCopy.setEnabled(true);
+		menuMove.setEnabled(true);
+	}
+	else
+	{
+		menuCopy.setEnabled(false);
+		menuMove.setEnabled(false);
+	}
+}
+
+
+
+public synchronized static void updateMenu(boolean chgIndex) {
+
+	menu.setEnabled(false);
 	menu.removeAll();
 
 	CheckboxMenuItem mi = new CheckboxMenuItem(NAME_DEFAULT);
@@ -50,7 +140,7 @@ public synchronized static void updateMenu(boolean chgIndex) {
 		initIndex();
 		indexValid = true;
 	}
-	
+		
 	if (getAnzahlDateien() > 0)
 	{
 		menu.addSeparator();
@@ -69,19 +159,96 @@ public synchronized static void updateMenu(boolean chgIndex) {
 }
 
 
+
 public synchronized static void updateMenu() {
+
 	updateMenu(true);
 }
 
 
-private synchronized static int getAnzahlDateien() {
-	if (dateien == null) return 0;
+
+private synchronized static void updateCopyMove() {
+
+	menuCopy.setEnabled(false);
+	menuMove.setEnabled(false);
+	popupCopy.setEnabled(false);
+	popupMove.setEnabled(false);
+
+	menuCopy.removeAll();
+	menuMove.removeAll();
+	popupCopy.removeAll();
+	popupMove.removeAll();
 	
-	return dateien.length;
+	if (getAnzahlDateien() > 0)
+	{
+		CheckboxMenuItem mi;
+
+		boolean one = false;
+		
+		for (int i = 0; i < getAnzahlDateien(); i++)
+		{
+			int actIdx = INDEX_OFFSET + i;
+			
+			if (getIndex() != actIdx)
+			{
+				mi = new CheckboxMenuItem(dateien[i]);
+				mi.addItemListener(new PortfolioCopyMoveListener(actIdx,hauptdialog,false));
+				menuCopy.add(mi);
+
+				mi = new CheckboxMenuItem(dateien[i]);
+				mi.addItemListener(new PortfolioCopyMoveListener(actIdx,hauptdialog,false));
+				popupCopy.add(mi);
+
+				mi = new CheckboxMenuItem(dateien[i]);
+				mi.addItemListener(new PortfolioCopyMoveListener(actIdx,hauptdialog,true));
+				menuMove.add(mi);
+
+				mi = new CheckboxMenuItem(dateien[i]);
+				mi.addItemListener(new PortfolioCopyMoveListener(actIdx,hauptdialog,true));
+				popupMove.add(mi);
+
+				one = true;
+			}
+		}
+
+		if (one)
+		{
+			popupCopy.setEnabled(true);
+			popupMove.setEnabled(true);
+
+			checkMoveCopyMenus();
+		}
+	}
 }
 
 
+
+public synchronized static Choice getChoiceMove() {
+
+	Choice choice = new Choice();
+
+	for (int i = 0; i < getAnzahlDateien(); i++)
+	{
+		if (getIndex() != INDEX_OFFSET + i)
+		{
+			choice.add(dateien[i]);
+		}
+	}
+
+	return choice;
+}
+
+
+
+private synchronized static int getAnzahlDateien() {
+
+	return (dateien == null) ? 0 : dateien.length;
+}
+
+
+
 private synchronized static void leseDateien() {
+
 	File amd = new File(FileUtil.getAMDirectory(false));
 	
 	dateien = amd.list(new PortfolioFilter(FileUtil.EXT_PORTFOLIO));
@@ -98,32 +265,40 @@ private synchronized static void leseDateien() {
 }
 
 
+
 private synchronized static void sortiereDateien() {
-	if (getAnzahlDateien() > 0)
+
+	/* selection sort */
+
+	int size = getAnzahlDateien();
+
+	for (int i = 0; i < size - 1; i++)
 	{
-		for (int i = getAnzahlDateien(); --i >= 0; )
+		int min = i;
+		String minval = dateien[min].trim().toUpperCase();
+		
+		for (int j = i+1; j < size; j++)
 		{
-			boolean swapped = false;
-			
-			for (int j = 0; j<i; j++)
+			if (minval.compareTo(dateien[j].trim().toUpperCase()) > 0)
 			{
-				if (dateien[j].trim().toUpperCase().compareTo(dateien[j+1].trim().toUpperCase()) > 0)
-				{
-					String temp = dateien[j];
-					dateien[j] = dateien[j+1];
-					dateien[j+1] = temp;
-					
-					swapped = true;
-				}
+				min = j;
+				minval = dateien[min].trim().toUpperCase();
 			}
-			
-			if (!swapped) return;
+		}
+		
+		if (min != i)
+		{
+			String temp = dateien[i];
+			dateien[i] = dateien[min];
+			dateien[min] = temp;
 		}
 	}
 }
 
 
+
 private synchronized static void initIndex() {
+
 	String pofoname = AktienMan.properties.getString("Portfolio.StartName").trim();
 	
 	index = INDEX_DEFAULT;
@@ -142,7 +317,9 @@ private synchronized static void initIndex() {
 }
 
 
+
 private synchronized static void setIndex(int i, boolean doSave, boolean doLoad) {
+
 	if ((i < INDEX_OFFSET) || (i >= INDEX_OFFSET + getAnzahlDateien()))
 	{
 		i = INDEX_DEFAULT;
@@ -174,6 +351,8 @@ private synchronized static void setIndex(int i, boolean doSave, boolean doLoad)
 				hauptdialog.loadPortfolio(doSave);
 			}
 		}
+
+		updateCopyMove();
 	}
 
 	((CheckboxMenuItem)menu.getItem(getIndex())).setState(true);
@@ -185,61 +364,87 @@ private synchronized static void setIndex(int i, boolean doSave, boolean doLoad)
 }
 
 
+
 public synchronized static void setIndex(int i) {
+
 	setIndex(i,true,true);
 }
 
 
+
 public synchronized static void setDefaultIndexDontSave() {
+
 	setIndex(INDEX_DEFAULT,false,true);
 }
 
 
+
 public synchronized static void setIndexByName(String name) {
+
+	int idx = getIndexByName(name);
+	
+	if (idx == INDEX_NONE)
+	{
+		setIndex(INDEX_DEFAULT);
+	}
+	else
+	{
+		setIndex(idx);
+	}
+}
+
+
+
+public synchronized static void changeIndexByName(String name) {
+
+	int idx = getIndexByName(name);
+	
+	if (idx == INDEX_NONE)
+	{
+		setIndex(INDEX_DEFAULT,false,false);
+	}
+	else
+	{
+		setIndex(idx,false,false);
+	}
+}
+
+
+
+public synchronized static int getIndexByName(String name) {
+
 	if (name.length() > 0)
 	{
 		for (int i = 0; i < getAnzahlDateien(); i++)
 		{
 			if (name.equalsIgnoreCase(dateien[i]))
 			{
-				setIndex(INDEX_OFFSET + i);
-				return;
+				return INDEX_OFFSET + i;
 			}
 		}
 	}
 	
-	setIndex(INDEX_DEFAULT);
+	return INDEX_NONE;
 }
 
-
-public synchronized static void changeIndexByName(String name) {
-	if (name.length() > 0)
-	{
-		for (int i = 0; i < getAnzahlDateien(); i++)
-		{
-			if (name.equalsIgnoreCase(dateien[i]))
-			{
-				setIndex(INDEX_OFFSET + i,false,false);
-				return;
-			}
-		}
-	}
-
-	setIndex(INDEX_DEFAULT,false,false);
-}
 
 
 private synchronized static int getIndex() {
+
 	return index;
 }
 
 
+
 public synchronized static boolean isDefault() {
+
 	return (getIndex() == INDEX_DEFAULT);
 }
 
 
+
 private synchronized static String getName(int i) {
+
 	if ((i >= INDEX_OFFSET) && (i < INDEX_OFFSET + getAnzahlDateien()))
 	{
 		return dateien[i - INDEX_OFFSET].trim();
@@ -251,7 +456,9 @@ private synchronized static String getName(int i) {
 }
 
 
+
 public static String fixFilename(String name) {
+
 	name = name.trim();
 	
 	if (name.length() > NAME_MAXLEN)
@@ -285,24 +492,37 @@ public static String fixFilename(String name) {
 }
 
 
+
 public static String getNewFile(String name) {
+
 	return FileUtil.getAMDirectory(true) + name + FileUtil.EXT_PORTFOLIO;
 }
 
 
-public synchronized static String getCurrentFile() {
-	if (getIndex() == INDEX_DEFAULT)
+
+public synchronized static String getFileByIndex(int idx) {
+
+	if (idx == INDEX_DEFAULT)
 	{
 		return FileUtil.getDefaultPortfolioFile();
 	}
 	else
 	{
-		return FileUtil.getAMDirectory(true) + getName(getIndex()) + FileUtil.EXT_PORTFOLIO;
+		return FileUtil.getAMDirectory(true) + getName(idx) + FileUtil.EXT_PORTFOLIO;
 	}
 }
 
 
+
+public synchronized static String getCurrentFile() {
+
+	return getFileByIndex(getIndex());
+}
+
+
+
 public synchronized static String getCurrentName() {
+
 	if (getIndex() == INDEX_DEFAULT)
 	{
 		return NAME_DEFAULT;
@@ -314,7 +534,9 @@ public synchronized static String getCurrentName() {
 }
 
 
+
 public synchronized static String getCurrentWindowTitle() {
+
 	if (getIndex() == INDEX_DEFAULT)
 	{
 		return "";

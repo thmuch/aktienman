@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-28
+ @version 2000-03-14
 */
 
 
@@ -19,7 +19,7 @@ public void listeNeuerAktienkurs(String wkn, String kurz, String platz,
 public void listeAktienkursNA(String wkn, String kurz, String platz, String name,
 									boolean sofortZeichnen);
 
-public void listeAnfrageFalsch(String wkn, String platz, boolean sofortZeichnen);
+//public void listeAnfrageFalsch(String wkn, String platz, boolean sofortZeichnen);
 
 public void listeAnfrageFehler(String request, String wkn, String platz,
 									boolean sofortZeichnen, int nextID);

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-12-09
+ @version 2000-03-06
 */
 
 import java.util.*;
@@ -14,9 +14,12 @@ public final class BenutzerListe extends Vector implements Serializable {
 
 static final long serialVersionUID = 1972011800002L;
 
-private static final int SORT_NONE    = -1;
-private static final int SORT_NAME    =  0;
-private static final int SORT_ABSPERC =  1;
+private static final int SORT_NONE      = -1;
+private static final int SORT_NAME      =  0;
+private static final int SORT_ABSPERC   =  1;
+private static final int SORT_ABSDIFF   =  2;
+private static final int SORT_KAUFDATUM =  3;
+private static final int SORT_FIXDATUM  =  4;
 
 private ADate letzteAktualisierung = null;
 private String festeBoerse = "";
@@ -182,13 +185,124 @@ public synchronized void erloesToWaehrung(int neueWaehrung) {
 
 public synchronized void sort(boolean kurz) {
 
-	if (getListeSortBy() == SORT_ABSPERC)
+	switch (getListeSortBy())
 	{
+	case SORT_ABSPERC:
+
 		sortByAbsPercent();
-	}
-	else
-	{
+		break;
+	
+	case SORT_KAUFDATUM:
+	
+		sortByKaufdatum();
+		break;
+
+	case SORT_FIXDATUM:
+	
+		sortByFixDatum();
+		break;
+
+	case SORT_ABSDIFF:
+	
+		sortByAbsDiff();
+		break;
+	
+	default:
+
 		sortByName(kurz);
+	}
+}
+
+
+
+private synchronized void sortByFixDatum() {
+
+	/* selection sort */
+	
+	int size = size();
+
+	for (int i = 0; i < size - 1; i++)
+	{
+		int max = i;
+		int maxval = getAt(max).getFixedDate().getSerialDate();
+		
+		for (int j = i+1; j < size; j++)
+		{
+			if (getAt(j).getFixedDate().getSerialDate() < maxval)
+			{
+				max = j;
+				maxval = getAt(max).getFixedDate().getSerialDate();
+			}
+		}
+		
+		if (max != i)
+		{
+			BenutzerAktie temp = getAt(i);
+			setElementAt(getAt(max),i);
+			setElementAt(temp,max);
+		}
+	}
+}
+
+
+
+private synchronized void sortByKaufdatum() {
+
+	/* selection sort */
+	
+	int size = size();
+
+	for (int i = 0; i < size - 1; i++)
+	{
+		int max = i;
+		int maxval = getAt(max).getKaufdatum().getSerialDate();
+		
+		for (int j = i+1; j < size; j++)
+		{
+			if (getAt(j).getKaufdatum().getSerialDate() < maxval)
+			{
+				max = j;
+				maxval = getAt(max).getKaufdatum().getSerialDate();
+			}
+		}
+		
+		if (max != i)
+		{
+			BenutzerAktie temp = getAt(i);
+			setElementAt(getAt(max),i);
+			setElementAt(temp,max);
+		}
+	}
+}
+
+
+
+private synchronized void sortByAbsDiff() {
+
+	/* selection sort */
+	
+	int size = size();
+
+	for (int i = 0; i < size - 1; i++)
+	{
+		int max = i;
+		long maxval = getAt(max).getAbsDiff();
+		
+		for (int j = i+1; j < size; j++)
+		{
+			if (getAt(j).getAbsDiff() > maxval)
+			{
+				max = j;
+				maxval = getAt(max).getAbsDiff();
+			}
+		}
+		
+		if (max != i)
+		{
+			BenutzerAktie temp = getAt(i);
+			setElementAt(getAt(max),i);
+			setElementAt(temp,max);
+		}
 	}
 }
 
@@ -203,12 +317,14 @@ private synchronized void sortByAbsPercent() {
 	for (int i = 0; i < size - 1; i++)
 	{
 		int max = i;
+		long maxval = getAt(max).getAbsPercent();
 		
 		for (int j = i+1; j < size; j++)
 		{
-			if (getAt(j).getAbsPercent() > getAt(max).getAbsPercent())
+			if (getAt(j).getAbsPercent() > maxval)
 			{
 				max = j;
+				maxval = getAt(max).getAbsPercent();
 			}
 		}
 		
@@ -232,12 +348,14 @@ private synchronized void sortByName(boolean kurz) {
 	for (int i = 0; i < size - 1; i++)
 	{
 		int min = i;
+		String minval = getAt(min).getName(kurz).trim().toUpperCase();
 		
 		for (int j = i+1; j < size; j++)
 		{
-			if (getAt(min).getName(kurz).trim().toUpperCase().compareTo(getAt(j).getName(kurz).trim().toUpperCase()) > 0)
+			if (minval.compareTo(getAt(j).getName(kurz).trim().toUpperCase()) > 0)
 			{
 				min = j;
+				minval = getAt(min).getName(kurz).trim().toUpperCase();
 			}
 		}
 		
@@ -288,13 +406,30 @@ public synchronized static boolean calcProzJahr() {
 
 
 
-public static void store(BenutzerListe benutzerliste){
+public static boolean store(BenutzerListe benutzerliste){
 
 	ObjectOutputStream out = null;
 
+	boolean error = false;
+	
+	String filename = benutzerliste.getPortfolioFile();
+
+	File f = new File(filename);
+	
+	if (f.exists())
+	{
+		File backup = new File(filename + ".bak");
+		
+		if (backup.exists()) backup.delete();
+		
+		f.renameTo(backup);
+	}
+	
+	f = null;
+
 	try
 	{
-		FileOutputStream fos = new FileOutputStream(benutzerliste.getPortfolioFile());
+		FileOutputStream fos = new FileOutputStream(filename);
 		GZIPOutputStream gzos = new GZIPOutputStream(fos);
 		out = new ObjectOutputStream(fos);
 		out.writeObject(benutzerliste);
@@ -302,6 +437,7 @@ public static void store(BenutzerListe benutzerliste){
 	}
 	catch (IOException e)
 	{
+		error = true;
 		System.out.println("Fehler beim Speichern der Aktienliste.");
 	}
 	finally
@@ -312,11 +448,16 @@ public static void store(BenutzerListe benutzerliste){
 			{
 				out.close();
 			}
-			catch (IOException e) {}
+			catch (IOException e)
+			{
+				error = true;
+			}
 		
 			out = null;
 		}
 	}
+	
+	return error;
 }
 
 

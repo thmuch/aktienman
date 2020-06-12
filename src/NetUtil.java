@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-05-25
+ @version 2000-03-12
 */
 
 import java.io.*;
@@ -46,9 +46,11 @@ public static byte[] loadRawURL(String urlname) {
 			{
 				in.close();
 			}
-			catch (IOException e) {}
-		
-			in = null;
+			catch (Exception e) {}
+			finally
+			{
+				in = null;
+			}
 		}
 	}
 }

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-07-16
+ @version 2000-03-13
 */
 
 import java.awt.*;
@@ -11,7 +11,7 @@ import java.awt.event.*;
 
 public final class Konfiguration extends AFrame {
 
-private Choice plaetze,waehrung,bank,quelle,charts;
+private Choice plaetze,waehrung,bank,quelle,charts,connections;
 private Checkbox cbAktualisieren,cbKamera,cbAktiennamen,cbKuerzen,cbSteuerfrei,cbTimeout,cbJahr,cbIndex;
 //private Checkbox rb6Monate,rb12Monate;
 private TextField tfStdGewinn,tfStdGebuehren,tfMinuten;
@@ -20,12 +20,14 @@ private TextField tfStdGewinn,tfStdGebuehren,tfMinuten;
 
 
 public Konfiguration() {
+
 	super(AktienMan.AMFENSTERTITEL+"Voreinstellungen");
 }
 
 
 
 public void setupElements() {
+
 	setLayout(gridbag);
 
 	Panel panelOben = new Panel(gridbag);
@@ -70,8 +72,17 @@ public void setupElements() {
 	
 	constrain(panelOben,quellePanel,0,4,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
 	
-	constrain(panelOben,cbAktiennamen,0,5,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
-	constrain(panelOben,cbKuerzen,0,6,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	Panel connPanel = new Panel(gridbag);
+	
+	connections = Connections.getPopup();
+
+	constrain(connPanel,new Label("Gleichzeitige Kursanfragen:"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(connPanel,connections,1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
+
+	constrain(panelOben,connPanel,0,5,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
+	
+	constrain(panelOben,cbAktiennamen,0,6,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
+	constrain(panelOben,cbKuerzen,0,7,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 
 /*	Panel spekuPanel = new Panel(gridbag);
 	CheckboxGroup spekuGroup = new CheckboxGroup();
@@ -92,8 +103,8 @@ public void setupElements() {
 	constrain(spekuPanel,rb12Monate,2,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 	constrain(panelOben,spekuPanel,0,6,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0); */
 
-	constrain(panelOben,cbSteuerfrei,0,7,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
-	constrain(panelOben,cbJahr,0,8,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(panelOben,cbSteuerfrei,0,8,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
+	constrain(panelOben,cbJahr,0,9,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	
 	constrain(panelStandard,new Label("Vorgaben f\u00fcr neu zu kaufende Aktien:"),0,0,4,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	constrain(panelStandard,new Label("Standard-B\u00f6rse:"),0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
@@ -149,6 +160,7 @@ public void setupElements() {
 
 
 public boolean canOK() {
+
 	String s = tfMinuten.getText().trim();
 
 	int i;
@@ -174,6 +186,7 @@ public boolean canOK() {
 
 
 public void executeOK() {
+
 	AktienMan.properties.setBoolean("Konfig.Aktualisieren",cbAktualisieren.getState());
 	AktienMan.properties.setBoolean("Konfig.Kamera",cbKamera.getState());
 	AktienMan.properties.setBoolean("Konfig.Aktiennamen",cbAktiennamen.getState());
@@ -190,6 +203,8 @@ public void executeOK() {
 	
 	KursQuellen.setKursQuelleIndex(quelle.getSelectedIndex());
 	ChartQuellen.setChartQuelleIndex(charts.getSelectedIndex());
+	
+	Connections.setMaxConnections(connections.getSelectedIndex());
 	
 	boolean timeoutAktiv = cbTimeout.getState();
 	AktienMan.properties.setBoolean("Konfig.KursTimeout",timeoutAktiv);
@@ -211,6 +226,7 @@ public void executeOK() {
 
 
 public void closed() {
+
 	AktienMan.konfiguration = null;
 }
 

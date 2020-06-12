@@ -1,5 +1,5 @@
-AktienMan 1.60-beta (1999-12-13)
-Copyright (c)1998,99 by Thomas Much (thomas@aktienman.de)
+AktienMan 1.70-beta (2000-03-17)
+Copyright ©1998-2000 by Thomas Much (thomas@aktienman.de)
 
 
 History
@@ -7,10 +7,9 @@ History
 allg. Bugs
 // Absturz, wenn Maxkursdialog vor Ende geschlossen wird ...
 Mac-Bugs
-// "Aktie kaufen": Choices alle auf die gleiche breite bringen
+// 
 Win-Bugs
 // RM-Popups: Bei Klick+Loslassen erscheint Popup 2x
-// unter Win98 fehlt der erste Redraw, wenn .lst nicht vorhanden ist (?)
 Linux-Bugs
 // 
 todo
@@ -19,7 +18,6 @@ todo
 // Mehrfachselektion mit <Shift>
 // Spaltenreihenfolge bel. festlegbar
 // Aktie splitten
-// Backup der Listendaten
 // Konfig-Dialog zur Auswahl, welche Spalten angezeigt werden
 // Börsen konfigurierbar machen
 // HTML-Export mit Farben
@@ -32,14 +30,12 @@ todo
 // Info: Button "Zurücksetzen"
 // Maximalkurs: Button "Aktualisieren"
 // Speicherung von x Börsentagen incl. Mini-Chart (gleitender Durchschnitt)
-// Kontextpopup: "Duplizieren, Kopieren nach, Verschieben nach" vor Löschen
 // Konfiguration: Allgemein, Anzeige, Spezial (Browser etc.)
 // S-DAX-Popup (im Sommer)
 // FSE-Abschaffung vorbereiten
 // separate Quelle für Fonds
 // KursQuelle incl. Abfrage der verfügbaren Börsenplätze
-// Online-Währung -> KursQuelle+Börsenplatz (?!)
-// PoFo-Umschalten beim allerersten Start nicht möglich (wenn AktienMan.lst fehlt) (?)
+// Online-Währung aus den Kursdaten ermitteln (jeder Kurs hat eigene Währung)
 // Suche nach WKN (via Comdirect) -> Liste der Ergebnisse anzeigen
 // Anzeige unwichtiger Spalten ausschaltbar
 // Voreinstellungen: CardLayout
@@ -49,31 +45,44 @@ todo
 // Yahoo-Kursleser
 // beim Kaufen optional Gebühren errechnen
 // auch Maximalskurs per Timer anzeigen
-// Liste/Portfolio mit Verkäufen
 // DAX-Kamera optional im Hauptfenster darstellen
 // Hidden Feature: akt. Kurse als Kaufkurse umkopieren
-// Backupfunktion für Listen
 // Kurse+Charts auch von bbbank.de, http://www.consors.de, http://www.fimatex.de
 // Kurs- und Chartklassen bei Bedarf von aktienman.de laden
 // Aktienlisten etc. in XML speichern (Strings als UTF8)
-// Kopieren+Verschieben zwischen Portfolios
 // Prozentualer Anteil der einzelnen Aktien am Gesamtportfolio
 // Charts optional (?) preloaden und auf Platte speichern
 // wenn ein Chart nicht geladen werden konnte, auf letzten verfügbaren (intern merken!) umschalten
 // Splashscreen für alle Systeme
-// WKN-Listen bei der Comdirect erkennen und Wert mit der passenden WKN auswählen (Achtung, wenn WKN fehlt)
 // SMAX-Liste einlesen (http://charts.smax.de/smax/kurseumsaetze_d.htm)
-// bei einem Fehler liefert der Comdirect-Leser nur noch "n/a" ...
 // Chartfenstergrößen für Win noch etwas optimieren (ebenso Karteireiter)
-// CSV-Im- und -Export
-// E-Mails verschicken
+// CSV-Import
 // Kommentarfeld pro Aktie
-// Lange "WKNs" zulassen
+// Lange "WKNs" (ISINs) zulassen
 // Listeneinträge gleicher WKN farblich unterlegen (grau/weiß)
+// SMS/E-Mails verschicken
+// bei Über-/Unterschreiten optional Warndialog (mit Ton)
+// auch Chartleser teilw. neu programmieren
+// Aktie Info: Höchst-/Tiefstkurs mit Jahresangabe
 //
-Version 1.61 (.1.00)
+Version 1.71 (.03.00)
 // RELEASE erhöhen, DEBUG entfernen
-//
+// 
+Version 1.70 (17.03.00)
+- "Voreinstellungen": Gleichzeitige Kursanfragen
+- "Aktienmenüs aktualisieren" vom "Bearbeiten"-Menü in den "Aktie kaufen"-Dialog verschoben
+- "Aktie verkaufen" kann die Aktie (bzw. die verkaufte Stückzahl) nicht nur löschen, sondern auch in
+  ein anderes Portfolio verschieben
+- Comdirect- und Deuba-Kursleser neu geschrieben
+- das Kontextpopup in der Aktienliste bietet nun zwei Optionen zum Kopieren und Verschieben eines Wertes
+  in ein anderes Portfolio (auch im "Aktie"-Menü verfügbar)
+- von den Portfoliodateien wird beim Speichern ein Backup angelegt
+- Sortierung ist nun auch nach abs. Differenz, Kaufdatum und fixiertem Datum möglich
+- die Namen von fixierten Werten werden grau dargestellt
+- wenn sich im AM-Verzeichnis ein "Einstellungen"-Ordner befindet, werden alle Konfigurationsdateien
+  von dort gelesen und dort gespeichert
+- ein fixierter Wert hat die Aktualisierung eines anderen Wertes mit gleicher WKN und gleichem Börsenplatz
+  verhindert; gefixed
 Version 1.60 (13.12.99)
 - der Export kann nur noch im Menü ausgewählt werden, der Button unten links wurde entfernt
 - dort kann man nun die Sortierung der Liste (alphabetisch bzw. nach abs. Prozentdifferenzen) auswählen

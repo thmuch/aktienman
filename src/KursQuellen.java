@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-07-06
+ @version 2000-03-13
 */
 
 import java.util.*;
@@ -26,6 +26,7 @@ private static int kursquelle = QUELLE_NONE;
 
 
 public KursQuellen() {
+
 	super(5);
 	setupList();
 }
@@ -33,6 +34,7 @@ public KursQuellen() {
 
 
 public synchronized void setupList() {
+
 	add(new ComdirectQuelle());
 	add(new DeutscheBankQuelle());
 	//add(new YahooDeQuelle());
@@ -41,18 +43,21 @@ public synchronized void setupList() {
 
 
 public synchronized void add(KursQuelle eintrag) {
+
 	addElement(eintrag);
 }
 
 
 
 public synchronized KursQuelle getAt(int index) {
+
 	return (KursQuelle)elementAt(index);
 }
 
 
 
 public synchronized static Choice getChoice() {
+
 	Choice choice = new Choice();
 	
 	for (int i=0; i < quellen.size(); i++)
@@ -66,24 +71,28 @@ public synchronized static Choice getChoice() {
 
 
 public synchronized static KursQuelle getKursQuelle(int index) {
+
 	return quellen.getAt(index);
 }
 
 
 
 public synchronized static KursQuelle getKursQuelle() {
+
 	return getKursQuelle(getKursQuelleIndex());
 }
 
 
 
 public synchronized static KursQuelle getFondsQuelle() {
+
 	return getKursQuelle();
 }
 
 
 
 public synchronized static int getKursQuelleIndex() {
+
 	if (kursquelle <= QUELLE_NONE)
 	{
 		kursquelle = AktienMan.properties.getInt("Konfig.Kursquelle",STANDARDQUELLE);
@@ -95,6 +104,7 @@ public synchronized static int getKursQuelleIndex() {
 
 
 public synchronized static void setKursQuelleIndex(int neu) {
+
 	AktienMan.properties.setInt("Konfig.Kursquelle",neu);
 	kursquelle = neu;
 }

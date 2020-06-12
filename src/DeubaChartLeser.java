@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-12-09
+ @version 2000-03-14
 */
 
 import java.net.*;
@@ -20,7 +20,9 @@ private DeubaChartViewer chartviewer;
 
 
 public DeubaChartLeser(String wkn, String boerse, boolean isFonds, int type, int nextID) {
+
 	super();
+
 	this.wkn = wkn;
 	this.boerse = boerse;
 	this.type = type;
@@ -31,6 +33,7 @@ public DeubaChartLeser(String wkn, String boerse, boolean isFonds, int type, int
 
 
 public void run() {
+
 	BufferedReader in = null;
 	boolean valid = false;
 	
@@ -80,7 +83,7 @@ public void run() {
 	{
 		System.out.println("Deuba-Chart-URL fehlerhaft.");
 	}
-	catch (IOException e) {}
+	catch (Exception e) {}
 	finally
 	{
 		if (!valid)
@@ -94,9 +97,11 @@ public void run() {
 			{
 				in.close();
 			}
-			catch (IOException e) {}
-		
-			in = null;
+			catch (Exception e) {}
+			finally
+			{
+				in = null;
+			}
 		}
 	}
 }

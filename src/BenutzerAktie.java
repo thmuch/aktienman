@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-12-12
+ @version 2000-03-13
 */
 
 import java.awt.*;
@@ -11,7 +11,7 @@ import java.io.*;
 
 
 
-public final class BenutzerAktie implements Serializable {
+public final class BenutzerAktie implements Serializable,Cloneable {
 
 static final long serialVersionUID = 1997061300002L;
 
@@ -71,6 +71,7 @@ private long watchtiefst = VALUE_MISSING;
 private String watchhdate = null;
 private String watchtdate = null;
 private int watchwaehrung = Waehrungen.DEM;
+private String symbol = null;
 
 private int waehrung = Waehrungen.DEM; /* Kaufwährung */
 private int kurswaehrung = Waehrungen.DEM;
@@ -92,7 +93,6 @@ public BenutzerAktie(String name, String wkn, Boersenplatz platz, boolean nurdie
 	this.wkn = wkn;
 	this.kaufdatum = kaufdatum;
 	this.kaufkurs = kaufkurs;
-	this.stueckzahl = stueckzahl;
 	this.hochkurs = hochkurs;
 	this.tiefkurs = tiefkurs;
 	this.waehrung = waehrung;
@@ -101,6 +101,9 @@ public BenutzerAktie(String name, String wkn, Boersenplatz platz, boolean nurdie
 	this.watchonly = watchonly;
 	prozgrenze = grenze;
 	boersenplatz = platz;
+	
+	setStueckzahl(stueckzahl);
+	setSymbol(null);
 
 	kursdatum = "";
 
@@ -108,6 +111,26 @@ public BenutzerAktie(String name, String wkn, Boersenplatz platz, boolean nurdie
 	
 	setupValues();
 	setColors();
+}
+
+
+
+public synchronized Object clone() {
+
+	/* Achtung, derzeit nur "shallow copy", da clone nur von listeSelektierteAktieCopyMove verwendet wird */
+
+	BenutzerAktie ba;
+
+	try
+	{
+		ba = (BenutzerAktie)super.clone();
+	}
+	catch (Exception e)
+	{
+		ba = null;
+	}
+
+	return ba;
 }
 
 
@@ -247,14 +270,14 @@ public synchronized String getKursdatumRawString() {
 
 public synchronized String getFixedDateString() {
 
-	if (fixDate == null)
-	{
-		return kursdatum;
-	}
-	else
-	{
-		return fixDate.toString();
-	}
+	return (fixDate == null) ? kursdatum : fixDate.toString();
+}
+
+
+
+public synchronized ADate getFixedDate() {
+
+	return (fixDate == null) ? heute : fixDate;
 }
 
 
@@ -297,6 +320,41 @@ public synchronized ADate getKaufdatum() {
 public synchronized String getWKNString() {
 
 	return wkn;
+}
+
+
+
+public synchronized boolean hasWKN(String cmp) {
+
+	return wkn.equalsIgnoreCase(cmp);
+}
+
+
+
+public synchronized void setSymbol(String sym) {
+
+	if (sym == null)
+	{
+		symbol = null;
+		return;
+	}
+	
+	sym = sym.trim();
+	
+	if (sym.length() == 0)
+	{
+		symbol = null;
+		return;
+	}
+	
+	symbol = sym;
+}
+
+
+
+public synchronized String getSymbol() {
+
+	return (symbol == null) ? "" : symbol;
 }
 
 
@@ -428,7 +486,7 @@ public synchronized int getWKN() {
 	{
 		wkni = Integer.parseInt(getWKNString());
 	}
-	catch (NumberFormatException e) {}
+	catch (Exception e) {}
 
 	return wkni;
 }
@@ -467,12 +525,27 @@ public synchronized String getRequest() {
 
 public synchronized String getRequest(String boerse) {
 
-	return getWKNString() + "." + getBoerse(boerse);
+	return getRequestWKN() + getBoerse(boerse);
+}
+
+
+
+public synchronized String getRequestWKN() {
+
+	String req = getSymbol();
+	
+	if (req.length() == 0)
+	{
+		req = getWKNString();
+	}
+
+	return req + ".";
 }
 
 
 
 public synchronized String getName(boolean kurz) {
+
 	if (name.length() == 0)
 	{
 		return (getKurs() < 0L) ? STR_ERROR : STR_MISSING;
@@ -486,41 +559,52 @@ public synchronized String getName(boolean kurz) {
 
 
 public synchronized int getKaufwaehrung() {
+
 	return waehrung;
 }
 
 
 
 public synchronized int getKurswaehrung() {
+
 	return kurswaehrung;
 }
 
 
 
 public synchronized long getStueckzahl() {
+
 	return stueckzahl;
 }
 
 
 
 public synchronized String getStueckzahlString() {
+
 	return "" + getStueckzahl();
 }
 
 
 
 public synchronized void decStueckzahl(long delta) {
+
 	if (delta > 0L)
 	{
-		stueckzahl -= delta;
-
-		if (stueckzahl < 0L) stueckzahl = 0L;
+		setStueckzahl(getStueckzahl() - delta);
 	}
 }
 
 
 
+public synchronized void setStueckzahl(long stueckzahl) {
+
+	this.stueckzahl = (stueckzahl < 0L) ? 0L : stueckzahl;
+}
+
+
+
 public synchronized long getKurs() {
+
 	return kurs;
 }
 
@@ -766,7 +850,6 @@ public synchronized void changeValues(String newName, String newWKN, Boersenplat
 	nurdiese = newNurDiese;
 	kaufdatum = newDate;
 	kaufkurs = newKaufkurs;
-	stueckzahl = newAnz;
 	hochkurs = newHoch;
 	tiefkurs = newTief;
 	prozgrenze = newGrenze;
@@ -775,24 +858,15 @@ public synchronized void changeValues(String newName, String newWKN, Boersenplat
 	dontUpdate = newDontUpdate;
 	waehrung = neueWaehrung;
 	fixDate = newAktDate;
+	
+	setStueckzahl(newAnz);
+	setSymbol(null);
 
 	setupValues();
 	
 	if (dontUpdate)
 	{
-		if (newAktKurs > VALUE_MISSING)
-		{
-			kurs = Waehrungen.exchange(newAktKurs,getKaufwaehrung(),getKurswaehrung());
-			
-			if (newAktDate != null)
-			{
-				kursdatum = newAktDate.toString();
-			}
-			else
-			{
-				kursdatum = "";
-			}
-		}
+		fixAktie(fixDate,newAktKurs,getKaufwaehrung());
 	}
 	else if (reset)
 	{
@@ -801,6 +875,28 @@ public synchronized void changeValues(String newName, String newWKN, Boersenplat
 	}
 	
 	infoDialogSetValues(true);
+}
+
+
+
+public synchronized void fixAktie(ADate fixDatum, long fixKurs, int fixWaehrung) {
+
+	dontUpdate = true;
+	fixDate = fixDatum;
+
+	if (fixKurs > VALUE_MISSING)
+	{
+		kurs = Waehrungen.exchange(fixKurs,fixWaehrung,getKurswaehrung());
+		
+		if (fixDate != null)
+		{
+			kursdatum = fixDate.toString();
+		}
+		else
+		{
+			kursdatum = "";
+		}
+	}
 }
 
 
@@ -988,7 +1084,7 @@ public synchronized void saveCSV(BufferedWriter out, boolean namenKurz, boolean 
 
 				out.write(("" + (kabs / 10.0)).replace('.',','));
 			}
-			catch (ArithmeticException e) {}
+			catch (Exception e) {}
 		}
 		out.write(";");
 
@@ -1012,7 +1108,7 @@ public synchronized void saveCSV(BufferedWriter out, boolean namenKurz, boolean 
 		
 		out.newLine();
 	}
-	catch (IOException e) {}
+	catch (Exception e) {}
 }
 
 
@@ -1165,7 +1261,7 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 
 				if (pabs > 0L) sk = "+" + sk;
 			}
-			catch (ArithmeticException e)
+			catch (Exception e)
 			{
 				pabs = 0L;
 				sk = STR_NA;
@@ -1222,7 +1318,7 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 		out.newLine();
 		out.newLine();
 	}
-	catch (IOException e) {}
+	catch (Exception e) {}
 }
 
 
@@ -1305,7 +1401,7 @@ public synchronized static void saveHeaderHTML(BufferedWriter out, String aktual
 		out.newLine();
 		out.newLine();
 	}
-	catch (IOException e) {}
+	catch (Exception e) {}
 
 	heute = new ADate();
 	kaufsumme = 0L;
@@ -1421,7 +1517,7 @@ public synchronized static void saveFooterHTML(BufferedWriter out) {
 		out.newLine();
 		out.newLine();
 	}
-	catch (IOException e) {}
+	catch (Exception e) {}
 }
 
 
@@ -1659,7 +1755,7 @@ public synchronized long getAbsPercent() {
 			else if (pabs < 0L) pabs -= 5L;
 			pabs /= 10L;
 		}
-		catch (ArithmeticException e)
+		catch (Exception e)
 		{
 			pabs = 0L;
 		}
@@ -1670,6 +1766,27 @@ public synchronized long getAbsPercent() {
 	}
 	
 	return pabs;
+}
+
+
+
+public synchronized long getAbsDiff() {
+
+	if (getKurs() > 0L)
+	{
+		if (nurBeobachten())
+		{
+			return (getKurs() - Waehrungen.exchange(getKaufkurs(),getKaufwaehrung(),Waehrungen.getListenWaehrung()));
+		}
+		else
+		{
+			return (getWert() - Waehrungen.exchange(getKaufkurs(),getKaufwaehrung(),Waehrungen.getListenWaehrung()) * getStueckzahl());
+		}
+	}
+	else
+	{
+		return 0L;
+	}
 }
 
 
@@ -1699,7 +1816,14 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 	/* (0) Aktienname: */
 	
 	l1 = new BALabel(" "+getName(namenKurz),row,Label.LEFT);
-	l1.setForeground(farbeName);
+	if (doNotUpdate())
+	{
+		l1.setForeground(Color.gray);
+	}
+	else
+	{
+		l1.setForeground(farbeName);
+	}
 	AFrame.constrain(p,l1,0,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,ZEILENABSTAND,0,0,0);
 	
 	/* (1) Stückzahl: */
@@ -1848,7 +1972,7 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 
 			if (pabs > 0L) sk = "+" + sk;
 		}
-		catch (ArithmeticException e)
+		catch (Exception e)
 		{
 			pabs = 0L;
 			sk = STR_NA;

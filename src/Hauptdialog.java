@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-12-12
+ @version 2000-03-14
 */
 
 import java.awt.*;
@@ -45,21 +45,28 @@ private ProgressCanvas progressCanvas;
 
 
 public Hauptdialog() {
+
 	super(FENSTERTITEL);
 }
 
 
+
 public synchronized void setPortfolioTitle(String title) {
+
 	setTitle(FENSTERTITEL + title);
 }
 
 
+
 public synchronized void setPortfolioFile(String datei) {
+
 	benutzerliste.setPortfolioFile(datei);
 }
 
 
+
 public synchronized void Lock () {
+
 	locked++;
 
 	checkLockButtons();
@@ -67,7 +74,9 @@ public synchronized void Lock () {
 }
 
 
+
 public synchronized void Unlock () {
+
 	locked--;
 
 	checkLockButtons();
@@ -75,7 +84,9 @@ public synchronized void Unlock () {
 }
 
 
+
 public synchronized boolean isLocked(boolean beep) {
+
 	if (locked > 0)
 	{
 		if (beep) getToolkit().beep();
@@ -88,13 +99,17 @@ public synchronized boolean isLocked(boolean beep) {
 }
 
 
+
 private synchronized void resolutionCheck() {
+
 	AktienMan.screenSize = getToolkit().getScreenSize();
 	/* mind. 640x480 */
 }
 
 
+
 public synchronized void loadPortfolio(boolean doSave) {
+
 	if (isLocked(true)) return;
 
 	KursDemon.deleteKursDemon();
@@ -120,17 +135,23 @@ public synchronized void loadPortfolio(boolean doSave) {
 }
 
 
+
 public synchronized void saveBenutzerAktien() {
+
 	BenutzerListe.store(benutzerliste);
 }
 
 
+
 private synchronized void loadBenutzerAktien() {
+
 	benutzerliste = BenutzerListe.restore(Portfolios.getCurrentFile());
 }
 
 
+
 public void display() {
+
 	loadBenutzerAktien();
 	addErloes(false,0L);
 	pack();
@@ -142,19 +163,25 @@ public void display() {
 }
 
 
+
 public void handleAbout() {
+
 	callAbout();
 }
 
 
+
 public void setupFrame() {
+
 	resolutionCheck();
 	addComponentListener(this);
 	setResizable(true);
 }
 
 
+
 public void setupElements() {
+
 	setLayout(gridbag);
 	
 	Panel panelOben = new Panel(gridbag);
@@ -229,6 +256,9 @@ public void setupElements() {
 	sortby = new Choice();
 	sortby.addItem("Name");
 	sortby.addItem("%absolut");
+	sortby.addItem("Differenz");
+	sortby.addItem("Kaufdatum");
+	sortby.addItem("fix. Datum");
 	sortby.select(BenutzerListe.getListeSortBy());
 	sortby.addItemListener(new ItemListener() {
 		public void itemStateChanged(ItemEvent e) {
@@ -377,6 +407,11 @@ public void setupElements() {
 	aktienpopup.add(popAktualisieren);
 	
 	aktienpopup.addSeparator();
+	
+	aktienpopup.add(Portfolios.getPopupCopy(this));
+	aktienpopup.add(Portfolios.getPopupMove(this));
+	
+	aktienpopup.addSeparator();
 
 	popVerkaufen = new MenuItem("Verkaufen...");	
 	popVerkaufen.addActionListener(new ActionListener() {
@@ -454,7 +489,7 @@ public void setupElements() {
 	});
 	fileMenu.add(mi);
 	
-	mi = new MenuItem("Aktienmen\u00fcs aktualisieren...");
+/*	mi = new MenuItem("Aktienmen\u00fcs aktualisieren...");
 	mi.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			new AktienAktualisieren();
@@ -462,7 +497,7 @@ public void setupElements() {
 	});
 	amMenu.add(mi);
 
-	amMenu.addSeparator();
+	amMenu.addSeparator(); */
 
 	mi = new MenuItem("Voreinstellungen...");
 	mi.addActionListener(new ActionListener() {
@@ -556,6 +591,11 @@ public void setupElements() {
 		}
 	});
 	aktieMenu.add(menuMaxkurs);
+
+	aktieMenu.addSeparator();
+	
+	aktieMenu.add(Portfolios.getMenuCopy(this));
+	aktieMenu.add(Portfolios.getMenuMove(this));
 	
 	mi = new MenuItem("Neu...");
 	mi.addActionListener(new ActionListener() {
@@ -607,7 +647,9 @@ public void setupElements() {
 }
 
 
+
 private void setChartChoice(boolean intraday) {
+
 	buttonChart.removeAll();
 	
 	buttonChart.add("Chart:");
@@ -634,17 +676,23 @@ private void setChartChoice(boolean intraday) {
 }
 
 
+
 public long getErloes() {
+
 	return benutzerliste.getErloes();
 }
 
 
+
 public int getErloesWaehrung() {
+
 	return benutzerliste.getErloesWaehrung();
 }
 
 
+
 private void addErloes(boolean draw, long deltaErloes) {
+
 	if (draw) panelGewinn.removeAll();
 	
 	benutzerliste.addToErloes(deltaErloes);
@@ -709,7 +757,9 @@ private void addErloes(boolean draw, long deltaErloes) {
 }
 
 
+
 public synchronized void setErloes(long newVal, boolean doSave) {
+
 	benutzerliste.clearErloes();
 	addErloes(true,newVal);
 
@@ -717,19 +767,25 @@ public synchronized void setErloes(long newVal, boolean doSave) {
 }
 
 
+
 public synchronized void setErloes(long newVal) {
+
 	setErloes(newVal,true);
 }
 
 
+
 public synchronized void clearErloes() {
+
 	benutzerliste.clearErloes();
 	addErloes(true,0L);
 	RedrawDemon.getRedrawDemon().incSaveRequests();
 }
 
 
+
 public void setupSize() {
+
 	int w = (4*AktienMan.screenSize.width)/5;
 	int h = AktienMan.screenSize.height/2;
 	
@@ -839,6 +895,8 @@ private void disableAktienButtons() {
 
 	abenabled = false;
 	checkAktienButtons(null);
+	
+	Portfolios.disableMoveCopyMenus();
 }
 
 
@@ -847,6 +905,8 @@ private void enableAktienButtons(BenutzerAktie ba) {
 
 	abenabled = true;
 	checkAktienButtons(ba);
+	
+	Portfolios.enableMoveCopyMenus();
 }
 
 
@@ -919,7 +979,9 @@ private void checkAktienButtons(BenutzerAktie ba) {
 }
 
 
+
 private void checkLockButtons() {
+
 	if (isLocked(false))
 	{
 		menuAkt.setEnabled(false);
@@ -937,7 +999,9 @@ private void checkLockButtons() {
 }
 
 
+
 public void checkPortfolioMenu() {
+
 	if (Portfolios.isDefault())
 	{
 		pofoRename.setEnabled(false);
@@ -951,17 +1015,23 @@ public void checkPortfolioMenu() {
 }
 
 
+
 public synchronized long getAnzahlAktien() {
+
 	return benutzerliste.size();
 }
 
 
+
 public synchronized BenutzerAktie getAktieNr(int index) {
+
 	return benutzerliste.getAt(index);
 }
 
 
+
 private void checkListButtons() {
+
 	if (isLocked(false))
 	{
 		lwaehrung.setEnabled(false);
@@ -1010,9 +1080,15 @@ public synchronized void listeAktualisieren(int boersenindex) {
 
 
 private boolean nochNichtAngefordert(String cmp, int bis, String boerse) {
+
 	for (int i = 0; i < bis; i++)
 	{
-		if (cmp.equalsIgnoreCase(getAktieNr(i).getRequest(boerse))) return false;
+		BenutzerAktie ba = getAktieNr(i);
+
+		if ((!ba.doNotUpdate()) && (cmp.equalsIgnoreCase(ba.getRequest(boerse))))
+		{
+			return false;
+		}
 	}
 
 	return true;
@@ -1080,7 +1156,9 @@ public synchronized void listeAktualisierenAusfuehren(String boerse) {
 }
 
 
+
 private synchronized void listeSelektierteAktieAktualisieren() {
+
 	for (int i = 0; i < getAnzahlAktien(); i++)
 	{
 		BenutzerAktie ba = getAktieNr(i);
@@ -1106,6 +1184,7 @@ private synchronized void listeSelektierteAktieAktualisieren() {
 }
 
 
+
 public synchronized void listeNeuerAktienkurs(String wkn, String kurz, String platz,
 												String name, long kurs, String kursdatum,
 												long vortageskurs, long eroeffnungskurs,
@@ -1122,6 +1201,11 @@ public synchronized void listeNeuerAktienkurs(String wkn, String kurz, String pl
 	{
 		BenutzerAktie ba = getAktieNr(i);
 		
+		if (ba.hasWKN(wkn))
+		{
+			ba.setSymbol(kurz);
+		}
+		
 		if ((ba.isEqual(wkn,kurz,platz,compPlatz)) && (!ba.doNotUpdate()))
 		{
 			ba.setValues(name,kurs,kursdatum,vortageskurs,eroeffnungskurs,
@@ -1136,6 +1220,7 @@ public synchronized void listeNeuerAktienkurs(String wkn, String kurz, String pl
 		progressCanvas.inc();
 	}
 }
+
 
 
 public synchronized void listeAktienkursNA(String wkn, String kurz, String platz,
@@ -1165,7 +1250,9 @@ public synchronized void listeAktienkursNA(String wkn, String kurz, String platz
 }
 
 
-public synchronized void listeAnfrageFalsch(String wkn, String platz, boolean sofortZeichnen) {
+
+/*public synchronized void listeAnfrageFalsch(String wkn, String platz, boolean sofortZeichnen) {
+
 	if (wkn.length() == 0) return;
 	if (platz.length() == 0) return;
 
@@ -1188,10 +1275,12 @@ public synchronized void listeAnfrageFalsch(String wkn, String platz, boolean so
 		listeUpdate(true,false,sofortZeichnen,false);
 		progressCanvas.inc();
 	}
-}
+} */
+
 
 
 public synchronized void listeAnfrageFehler(String request, String wkn, String platz, boolean sofortZeichnen, int nextID) {
+
 	if (AktienMan.DEBUG)
 	{
 		System.out.println("Fehler beim Einlesen der Kursdaten von "+wkn+"."+platz+"  -> "+nextID);
@@ -1228,7 +1317,9 @@ public synchronized void listeAnfrageFehler(String request, String wkn, String p
 }
 
 
+
 public synchronized void listeNeueAktie(BenutzerAktie ba) {
+
 	/* #Demoversion */
 	if (main() || (getAnzahlAktien() < 3))
 	{
@@ -1474,7 +1565,9 @@ public synchronized void listeUpdateInfo() {
 }
 
 
+
 public synchronized void windowToFront(Window w) {
+
 	backWindow = w;
 
 	Thread t = new Thread() {
@@ -1493,7 +1586,9 @@ public synchronized void windowToFront(Window w) {
 }
 
 
+
 private synchronized void listeSelektierteAktieMaxkurs() {
+
 	for (int i = 0; i < getAnzahlAktien(); i++)
 	{
 		if (getAktieNr(i).isSelected())
@@ -1505,7 +1600,9 @@ private synchronized void listeSelektierteAktieMaxkurs() {
 }
 
 
+
 public synchronized void listeSelektierteAktieChart(int type) {
+
 	for (int i = 0; i < getAnzahlAktien(); i++)
 	{
 		BenutzerAktie ba = getAktieNr(i);
@@ -1519,7 +1616,9 @@ public synchronized void listeSelektierteAktieChart(int type) {
 }
 
 
+
 public synchronized void listeSelektierteAktieIntradayChart(String boerse) {
+
 	for (int i = 0; i < getAnzahlAktien(); i++)
 	{
 		if (getAktieNr(i).isSelected())
@@ -1531,7 +1630,9 @@ public synchronized void listeSelektierteAktieIntradayChart(String boerse) {
 }
 
 
+
 private synchronized void listeSelektierteAktieInfo() {
+
 	for (int i = 0; i < getAnzahlAktien(); i++)
 	{
 		if (getAktieNr(i).isSelected())
@@ -1543,7 +1644,9 @@ private synchronized void listeSelektierteAktieInfo() {
 }
 
 
+
 private synchronized void listeSelektierteAktieAendern() {
+
 	if (AktienMan.aktieaendern != null)
 	{
 		AktienMan.aktieaendern.toFront();
@@ -1564,7 +1667,9 @@ private synchronized void listeSelektierteAktieAendern() {
 }
 
 
+
 private synchronized void listeSelektierteAktieVerkaufen() {
+
 	if (AktienMan.aktieverkaufen != null)
 	{
 		AktienMan.aktieverkaufen.toFront();
@@ -1586,19 +1691,96 @@ private synchronized void listeSelektierteAktieVerkaufen() {
 
 
 
-public synchronized void listeAktieVerkaufen(int index, long anzahl, long verkaufskurs, long gebuehren) {
+public synchronized void listeSelektierteAktieCopyMove(int pofoToIndex, boolean move) {
 
-	addErloes(true,anzahl * Waehrungen.exchange(verkaufskurs,Waehrungen.getVerkaufsWaehrung(),getErloesWaehrung())
+	if (isLocked(true)) return;
+
+	for (int i = 0; i < getAnzahlAktien(); i++)
+	{
+		if (getAktieNr(i).isSelected())
+		{
+			listeAktieCopyMove(i,pofoToIndex,move);
+			break;
+		}
+	}
+}
+
+
+
+private synchronized void listeAktieCopyMove(int aktieIndex, int pofoToIndex, boolean move) {
+
+	if (pofoToIndex == Portfolios.INDEX_NONE) return;
+	
+	BenutzerAktie to = (BenutzerAktie)(getAktieNr(aktieIndex).clone());
+	
+	if (to == null) return;
+
+	BenutzerListe listeTo = BenutzerListe.restore(Portfolios.getFileByIndex(pofoToIndex));
+	
+	listeTo.add(to);
+	
+	boolean error = BenutzerListe.store(listeTo);
+
+	listeTo = null;
+
+	if (move && (!error))
+	{
+		listeAktieLoeschen(aktieIndex);
+	}
+}
+
+
+
+public synchronized void listeAktieVerkaufen(int index, long anzahl, long verkaufskurs, long gebuehren,
+												boolean calculate, boolean move, String moveTo, ADate vdatum) {
+
+	if (calculate)
+	{
+		addErloes(true,anzahl * Waehrungen.exchange(verkaufskurs,Waehrungen.getVerkaufsWaehrung(),getErloesWaehrung())
 						- Waehrungen.exchange(gebuehren,Waehrungen.getVerkaufsWaehrung(),getErloesWaehrung()));
+	}
 
 	BenutzerAktie ba = getAktieNr(index);
 	
-	if (ba.getStueckzahl() == anzahl)
+	if (anzahl >= ba.getStueckzahl())
 	{
-		listeAktieLoeschen(index);
+		if (move)
+		{
+			ba.fixAktie(vdatum,verkaufskurs,Waehrungen.getVerkaufsWaehrung());
+
+			listeAktieCopyMove(index,Portfolios.getIndexByName(moveTo),true);
+		}
+		else
+		{
+			listeAktieLoeschen(index);
+		}
 	}
 	else
 	{
+		if (move)
+		{
+			int pofoToIndex = Portfolios.getIndexByName(moveTo);
+
+			if (pofoToIndex != Portfolios.INDEX_NONE)
+			{
+				BenutzerAktie to = (BenutzerAktie)(ba.clone());
+				
+				if (to != null)
+				{
+					to.setStueckzahl(anzahl);
+					to.fixAktie(vdatum,verkaufskurs,Waehrungen.getVerkaufsWaehrung());
+					
+					BenutzerListe listeTo = BenutzerListe.restore(Portfolios.getFileByIndex(pofoToIndex));
+	
+					listeTo.add(to);
+	
+					BenutzerListe.store(listeTo);
+					
+					listeTo = null;
+				}
+			}
+		}
+		
 		ba.decStueckzahl(anzahl);
 
 		listeUpdate(true,false,true,false);

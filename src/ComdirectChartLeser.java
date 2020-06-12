@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-12-09
+ @version 2000-03-14
 */
 
 import java.net.*;
@@ -81,7 +81,7 @@ public void run() {
 	{
 		System.out.println("Comdirect-Chart-URL fehlerhaft.");
 	}
-	catch (IOException e) {}
+	catch (Exception e) {}
 	finally
 	{
 		if (!valid)
@@ -95,9 +95,11 @@ public void run() {
 			{
 				in.close();
 			}
-			catch (IOException e) {}
-		
-			in = null;
+			catch (Exception e) {}
+			finally
+			{
+				in = null;
+			}
 		}
 	}
 }

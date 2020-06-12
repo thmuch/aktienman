@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-28
+ @version 2000-03-14
 */
 
 import java.awt.*;
@@ -21,6 +21,7 @@ private BenutzerAktie ba;
 
 
 public AktieMaximalkurs(BenutzerAktie ba) {
+
 	super(AktienMan.AMFENSTERTITEL+"Maximalkurs");
 	
 	this.ba = ba;
@@ -39,6 +40,7 @@ public AktieMaximalkurs(BenutzerAktie ba) {
 
 
 public void setupElements() {
+
 	setLayout(gridbag);
 }
 
@@ -49,6 +51,7 @@ public void display() {}
 
 
 public synchronized void setupElements2() {
+
 	panelKurse = new Panel(gridbag);
 
 	kurse = new long[AktienMan.boersenliste.size()];
@@ -81,6 +84,7 @@ public synchronized void setupElements2() {
 
 
 private void startThreads() {
+
 	KursQuelle quelle = KursQuellen.getKursQuelle();
 
 	for (int i = 0; i < AktienMan.boersenliste.size(); i++)
@@ -90,7 +94,7 @@ private void startThreads() {
 			String wkn   = ba.getWKNString();
 			String platz = AktienMan.boersenliste.getAt(i).getKurz();
 
-			quelle.sendSingleMaxkursRequest(this,wkn+"."+platz,wkn,platz);
+			quelle.sendSingleMaxkursRequest(this,ba.getRequestWKN()+platz,wkn,platz);
 		}
 	}
 }
@@ -98,6 +102,7 @@ private void startThreads() {
 
 
 private synchronized void fillKursPanel(boolean draw) {
+
 	if (draw) panelKurse.removeAll();
 
 	long maxkurs = 1L, minkurs = Long.MAX_VALUE;
@@ -191,18 +196,20 @@ private synchronized void setKurs(int index, long kurs, int nextID) {
 		String wkn   = ba.getWKNString();
 		String platz = AktienMan.boersenliste.getAt(index).getKurz();
 
-		KursQuellen.getKursQuelle(nextID).sendSingleMaxkursRequest(this,wkn+"."+platz,wkn,platz,false);
+		KursQuellen.getKursQuelle(nextID).sendSingleMaxkursRequest(this,ba.getRequestWKN()+platz,wkn,platz,false);
 	}
 }
 
 
 private synchronized void setKurs(int index, long kurs) {
+
 	setKurs(index,kurs,"",Waehrungen.NONE,0L);
 }
 
 
 
 private synchronized void setKurs(int index, long kurs, String datum, int waehrung, long hvolumen) {
+
 	kurse[index] = kurs;
 	kwaehrung[index] = waehrung;
 	volumen[index] = hvolumen;
@@ -241,10 +248,10 @@ public synchronized void listeAktienkursNA(String wkn, String kurz, String platz
 
 
 
-public synchronized void listeAnfrageFalsch(String wkn, String platz, boolean sofortZeichnen) {
+/*public synchronized void listeAnfrageFalsch(String wkn, String platz, boolean sofortZeichnen) {
 
 	setKurs(getIndex(platz),BenutzerAktie.VALUE_ERROR);
-}
+}*/
 
 
 

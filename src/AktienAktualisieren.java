@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-07-06
+ @version 2000-03-12
 */
 
 import java.awt.*;
@@ -37,6 +37,7 @@ private boolean doSave = false;
 
 
 public AktienAktualisieren() {
+
 	super(AktienMan.AMNAME);
 
 	setupElements2();
@@ -51,6 +52,7 @@ public AktienAktualisieren() {
 
 
 public void setupElements() {
+
 	setLayout(gridbag);
 }
 
@@ -61,6 +63,7 @@ public void display() {}
 
 
 public synchronized void setupElements2() {
+
 	panelListe = new Panel(gridbag);
 	
 	count = new int[5];
@@ -90,6 +93,7 @@ public synchronized void setupElements2() {
 
 
 private void startThreads() {
+
 	buttonCount = 5;
 	
 	AktienMan.checkURLs();
@@ -103,6 +107,7 @@ private void startThreads() {
 
 
 private synchronized void fillListenPanel(boolean draw) {
+
 	if (draw) panelListe.removeAll();
 	
 	for (int i = 0; i < 5; i++)
@@ -133,13 +138,16 @@ private synchronized void fillListenPanel(boolean draw) {
 
 
 public synchronized void incCount(int index) {
+
 	count[index]++;
+
 	if ((count[index] % UPDATE) == 0) fillListenPanel(true);
 }
 
 
 
 public synchronized void finishCounting(int index) {
+
 	count[index] = STATUS_FINISHED;
 	fillListenPanel(true);
 	doSave = true;
@@ -154,6 +162,7 @@ public synchronized void finishCounting(int index) {
 
 
 public synchronized void setError(int index) {
+
 	count[index] = STATUS_ERROR;
 	fillListenPanel(true);
 	
@@ -176,6 +185,7 @@ public synchronized void setError(int index) {
 
 
 private synchronized void savePopups() {
+
 	ObjectOutputStream out = null;
 
 	try
@@ -190,7 +200,7 @@ private synchronized void savePopups() {
 		out.writeObject(AktienMan.listeAusland);
 		out.flush();
 	}
-	catch (IOException e)
+	catch (Exception e)
 	{
 		System.out.println("Fehler beim Speichern der Aktienpopups.");
 	}
@@ -202,9 +212,11 @@ private synchronized void savePopups() {
 			{
 				out.close();
 			}
-			catch (IOException e) {}
-		
-			out = null;
+			catch (Exception e) {}
+			finally
+			{
+				out = null;
+			}
 		}
 	}
 }
@@ -212,6 +224,7 @@ private synchronized void savePopups() {
 
 
 public synchronized static void loadPopups() {
+
 	ObjectInputStream in = null;
 
 	try
@@ -235,11 +248,11 @@ public synchronized static void loadPopups() {
 		AktienMan.listeEuroSTOXX = (Aktienliste)in.readObject();
 		AktienMan.listeAusland = (Aktienliste)in.readObject();
 	}
-	catch (IOException e) {}
 	catch (ClassNotFoundException e)
 	{
 		System.out.println("Gespeicherte Aktienpopups fehlerhaft.");
 	}
+	catch (Exception e) {}
 	finally
 	{
 		if (in != null)
@@ -248,9 +261,11 @@ public synchronized static void loadPopups() {
 			{
 				in.close();
 			}
-			catch (IOException e) {}
-		
-			in = null;
+			catch (Exception e) {}
+			finally
+			{
+				in = null;
+			}
 		}
 	}
 }

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-12-12
+ @version 2000-03-13
 */
 
 
@@ -65,6 +65,13 @@ public static final int STR_CD_KURSVORTAG    = 18;
 public static final int STR_CD_KURSEROEFF    = 19;
 public static final int STR_CD_KURSHOECHST   = 20;
 public static final int STR_CD_KURSTIEFST    = 21;
+
+public static final int STR_CD_LISTEWKNLI    = 23;
+public static final int STR_CD_LISTEWKNRE    = 24;
+public static final int STR_CD_LISTERESET    = 25;
+public static final int STR_CD_LISTEQUOTE    = 26;
+public static final int STR_CD_LISTEBOERSELI = 27;
+public static final int STR_CD_LISTEBOERSERE = 28;
 
 public static final int STR_CD_CHARTS        = 30;
 public static final int STR_CD_CHARTHREF     = 31;
@@ -135,6 +142,24 @@ public String getString(int strNr) {
 		
 	case STR_CD_KURSTIEFST:
 		return "Tagestiefstkurs";
+	
+	case STR_CD_LISTEWKNLI:
+		return ">";
+
+	case STR_CD_LISTEWKNRE:
+		return "<";
+
+	case STR_CD_LISTERESET:
+		return "</tr>";
+
+	case STR_CD_LISTEQUOTE:
+		return "quotes";
+
+	case STR_CD_LISTEBOERSELI:
+		return ".";
+
+	case STR_CD_LISTEBOERSERE:
+		return "&";
 		
 	case STR_CD_CHARTS:
 		return "/charts/";
@@ -269,9 +294,54 @@ public String get(int urlNr) {
 
 public String checkWKN(String wkn) {
 
-	if (wkn.equals("843002"))
+/*	if (wkn.equals("849084"))
+	{
+		return "DE0008490848";
+	}
+	else if (wkn.equals("972039"))
+	{
+		return "LU0046900790";
+	}
+	else if (wkn.equals("986012"))
+	{
+		return "LU0066471896";
+	}
+	else if (wkn.equals("988009"))
+	{
+		return "LU0086711412";
+	}
+	else if (wkn.equals("976976"))
+	{
+		return "DE0009769760";
+	}
+	else if (wkn.equals("974587"))
+	{
+		return "LU0062624902";
+	}
+	else if (wkn.equals("987702"))
+	{
+		return "LU0082616367";
+	}
+	else if (wkn.equals("109079"))
+	{
+		return "DE0001090793";
+	}
+	else if (wkn.equals("974433"))
+	{
+		return "GB0001746154";
+	}
+	else if (wkn.equals("971609"))
+	{
+		return "LU0052474979";
+	} */
+
+/*	else if (wkn.equals("843002"))
 	{
 		return "MUV2";
+	}
+	else if (wkn.equals("555750"))
+	{
+		return "DTE";
 	}
 	else if (wkn.equals("710000"))
 	{
@@ -313,10 +383,74 @@ public String checkWKN(String wkn) {
 	{
 		return "LYLK";
 	}
-	else if (wkn.equals("849084"))
+	else if (wkn.equals("535000"))
 	{
-		return "DE0008490848";
+		return "DRB";
 	}
+	else if (wkn.equals("922220"))
+	{
+		return "TLT";
+	}
+	else if (wkn.equals("885023"))
+	{
+		return "SMI";
+	}
+	else if (wkn.equals("723610"))
+	{
+		return "SIE";
+	}
+	else if (wkn.equals("899868"))
+	{
+		return "LUC";
+	}
+	else if (wkn.equals("923893"))
+	{
+		return "HBC1";
+	}
+	else if (wkn.equals("872922"))
+	{
+		return "GLX";
+	}
+	else if (wkn.equals("851289"))
+	{
+		return "HNK";
+	}
+	else if (wkn.equals("852062"))
+	{
+		return "PRG";
+	}
+	else if (wkn.equals("760080"))
+	{
+		return "ALT";
+	}
+	else if (wkn.equals("909571"))
+	{
+		return "CTMA";
+	}
+	else if (wkn.equals("566480"))
+	{
+		return "EVT";
+	}
+	else if (wkn.equals("507460"))
+	{
+		return "GSO";
+	}
+	else if (wkn.equals("529650"))
+	{
+		return "WE2";
+	}
+	else if (wkn.equals("354344"))
+	{
+		return "JAAG";
+	}
+	else if (wkn.equals("925475"))
+	{
+		return "MU5";
+	}
+	else if (wkn.equals("934248"))
+	{
+		return "UTS";
+	} */
 
 	return wkn;
 }
@@ -381,14 +515,14 @@ public String getDeubaChartURL(String rel, int type) {
 
 public String getComdirectKursURL(String wkn, String boerse) {
 
-	String wkneu = checkWKN(wkn);
+/*	String wkneu = checkWKN(wkn);
 	
 	if (!wkneu.equals(wkn))
 	{
 		wkneu += "." + boerse;
-	}
+	} */
 
-	return get(URL_KURSECOMDIRECT) + wkneu + "&searchButton=Exakt&XsearchWPArt=UKN&XsearchBoersen=" + boerse;
+	return get(URL_KURSECOMDIRECT) + /*wkneu*/ checkWKN(wkn) + "&searchButton=Exakt&XsearchWPArt=UKN&XsearchBoersen=" + boerse;
 }
 
 
@@ -449,6 +583,11 @@ public String getComdirectChartURL(String rel, int type, int charttype) {
 
 
 public boolean isValidNr(long nr) {
+
+	if ((nr == 270) || (nr == 271) || (nr == 272) || (nr == 339))
+	{
+		return false;
+	}
 
 	return true;
 }

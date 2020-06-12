@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-27
+ @version 2000-03-14
 */
 
 import java.net.*;
@@ -19,7 +19,9 @@ private boolean doReload;
 
 
 public DeubaChartLoader(ChartViewer chartviewer, String filename, int type) {
+
 	super();
+
 	this.chartviewer = chartviewer;
 	this.filename = filename;
 
@@ -29,6 +31,7 @@ public DeubaChartLoader(ChartViewer chartviewer, String filename, int type) {
 
 
 public void run() {
+
 	BufferedReader in = null;
 	boolean valid = false;
 	
@@ -70,7 +73,7 @@ public void run() {
 	{
 		System.out.println("Deuba-Netchart-URL fehlerhaft.");
 	}
-	catch (IOException e) {}
+	catch (Exception e) {}
 	finally
 	{
 		if (!valid)
@@ -84,9 +87,11 @@ public void run() {
 			{
 				in.close();
 			}
-			catch (IOException e) {}
-		
-			in = null;
+			catch (Exception e) {}
+			finally
+			{
+				in = null;
+			}
 		}
 	}
 }

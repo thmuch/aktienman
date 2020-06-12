@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-07-13
+ @version 2000-03-12
 */
 
 import java.awt.*;
@@ -222,14 +222,26 @@ public void setupElements() {
 			doCancel();
 		}
 	});
-	
-	constrain(panelButtons,buttonAbbruch,0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,10);
-	constrain(panelButtons,buttonBeobachten,1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,1.0,0.0,0,0,0,10);
-	constrain(panelButtons,buttonOK,2,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,1.0,0.0,0,0,0,0);
+
+	Button menuesAktualisieren = new Button("Aktienmen\u00fcs online aktualisieren...");
+	menuesAktualisieren.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			new AktienAktualisieren();
+			doCancel();
+		}
+	});
+
+	Panel menuPanel = new Panel(gridbag);
+	constrain(menuPanel,menuesAktualisieren,0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+
+	constrain(panelButtons,menuPanel,0,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,10,0,50);
+	constrain(panelButtons,buttonAbbruch,1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,10);
+	constrain(panelButtons,buttonBeobachten,2,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,1.0,0.0,0,0,0,10);
+	constrain(panelButtons,buttonOK,3,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,1.0,0.0,0,0,0,0);
 	
 	constrain(this,panelAktie,0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,10,10,5,10);
 	constrain(this,panelRest,1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,10,10,5,10);
-	constrain(this,panelButtons,0,1,2,1,GridBagConstraints.NONE,GridBagConstraints.SOUTHEAST,0.0,0.0,10,10,10,10);
+	constrain(this,panelButtons,0,1,2,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.SOUTHEAST,0.0,0.0,15,10,10,10);
 
 	if (aktienDAX.getItemCount() > 0)
 	{

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-30
+ @version 2000-03-12
 */
 
 import java.net.*;
@@ -89,7 +89,7 @@ public void run() {
 										{
 											punkte = Waehrungen.doubleToLong(pstr);
 										}
-										catch (NumberFormatException e)
+										catch (Exception e)
 										{
 											punkte = BenutzerAktie.VALUE_NA;
 										}
@@ -150,7 +150,7 @@ public void run() {
 										{
 											vortag = Waehrungen.doubleToLong(vstr);
 										}
-										catch (NumberFormatException e)
+										catch (Exception e)
 										{
 											vortag = BenutzerAktie.VALUE_NA;
 										}
@@ -176,7 +176,7 @@ public void run() {
 			{
 				System.out.println("BBBank-Index-URL fehlerhaft.");
 			}
-			catch (IOException e) {}
+			catch (Exception e) {}
 			finally
 			{
 				if (in != null)
@@ -185,9 +185,11 @@ public void run() {
 					{
 						in.close();
 					}
-					catch (IOException e) {}
-				
-					in = null;
+					catch (Exception e) {}
+					finally
+					{
+						in = null;
+					}
 				}
 			}
 			
@@ -197,7 +199,7 @@ public void run() {
 				{
 					sleep(TIMEOUT);
 				}
-				catch (InterruptedException e) {}
+				catch (Exception e) {}
 			}
 
 		} while (IndexQuelle.autoIndexOn());

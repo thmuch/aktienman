@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-13
+ @version 2000-03-12
 */
 
 import java.awt.*;
@@ -8,24 +8,36 @@ import java.awt.event.*;
 
 
 
+
 public final class AktieVerkaufen extends AktienFrame {
+
+private static final int ACTION_NONE = -1;
+private static final int ACTION_DEL  =  0;
+private static final int ACTION_MOVE =  1;
 
 private Button buttonVerkaufen;
 private Button buttonAlle;
-private TextField anzahl,verkaufskurs,gebuehren;
-private Choice banken;
+private TextField anzahl,verkaufskurs,gebuehren,datum;
+private Choice banken,pofoMove;
 private Label bankGebuehren;
-private Checkbox cbTelefon,cbInternet,cbErloes;
-private CheckboxGroup tradeGroup;
+private Checkbox cbTelefon,cbInternet,cbErloes,cbDelete,cbMove;
+private CheckboxGroup tradeGroup,actionGroup;
+
+private static int actionDelMove = ACTION_NONE;
+private static String actionPortfolio = "";
+
 
 
 
 public AktieVerkaufen(int index, BenutzerAktie ba) {
+
 	super(AktienMan.AMFENSTERTITEL+"Aktie verkaufen",index,ba);
 }
 
 
+
 public void setupElements2() {
+
 	Panel panelOben = new Panel(gridbag);
 	Panel panelButtons = new Panel(gridbag);
 
@@ -71,15 +83,29 @@ public void setupElements2() {
 	});
 	constrain(panelOben,verkaufskurs,3,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 	
-	constrain(panelOben,new Label("sonst. Geb\u00fchren:"),2,2,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,5,15,0,0);
+	constrain(panelOben,new Label("Datum:"),2,2,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,5,15,0,0);
+	
+	String datumstr = ba.getFixedDateString().trim();
+
+	int sp = datumstr.indexOf(" ");
+
+	if (sp >= 0)
+	{
+		datumstr = datumstr.substring(0,sp);
+	}
+
+	datum = new TextField(datumstr,10);
+	constrain(panelOben,datum,3,2,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,5,5,0,0);
+	
+	constrain(panelOben,new Label("sonst. Geb\u00fchren:"),2,3,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,5,15,0,0);
 
 	gebuehren = new TextField(AktienMan.properties.getString("Konfig.StdGebuehren"),10);
-	constrain(panelOben,gebuehren,3,2,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,5,5,0,0);
+	constrain(panelOben,gebuehren,3,3,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,5,5,0,0);
 
-	constrain(panelOben,new Label("Bankgeb\u00fchren:"),2,3,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,5,15,0,0);
+	constrain(panelOben,new Label("Bankgeb\u00fchren:"),2,4,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,5,15,0,0);
 
 	bankGebuehren = new Label();
-	constrain(panelOben,bankGebuehren,3,3,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,5,5,0,0);
+	constrain(panelOben,bankGebuehren,3,4,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,5,5,0,0);
 	
 	constrain(panelOben,new Label("Verkauf per"),0,4,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
 
@@ -111,7 +137,30 @@ public void setupElements2() {
 	cbErloes = new Checkbox("Gesamtaufwand berechnen",true);
 	constrain(panelErloes,cbErloes,0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
 
-	constrain(panelOben,panelErloes,2,4,2,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,5,15,0,0);
+	constrain(panelOben,panelErloes,2,5,2,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,5,15,0,0);
+	
+	Panel panelAction = new Panel(gridbag);
+
+	actionGroup = new CheckboxGroup();
+	
+	cbDelete = new Checkbox("Aktie aus dem Portfolio l\u00f6schen",!isActionMove(),actionGroup);
+	cbMove = new Checkbox("Aktie verschieben ins Portfolio",isActionMove(),actionGroup);
+	
+	constrain(panelAction,cbDelete,0,0,2,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+
+	pofoMove = Portfolios.getChoiceMove();
+	pofoMove.select(getActionPortfolio());
+	
+	if (pofoMove.getItemCount() < 1)
+	{
+		actionGroup.setSelectedCheckbox(cbDelete);
+		cbMove.setEnabled(false);
+	}
+
+	constrain(panelAction,cbMove,0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(panelAction,pofoMove,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
+
+	constrain(panelOben,panelAction,1,6,3,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,20,0,0,0);
 	
 	Label achtung = new Label();
 	if (!ba.istSteuerfrei())
@@ -145,7 +194,9 @@ public void setupElements2() {
 }
 
 
+
 private void checkTrade() {
+
 	int bindex = banken.getSelectedIndex();
 	
 	if (bindex < 1)
@@ -173,7 +224,9 @@ private void checkTrade() {
 }
 
 
+
 private void checkBankGebuehren() {
+
 	long anz = 0L, vkurs = 0L;
 	boolean error = false;
 
@@ -209,7 +262,9 @@ private void checkBankGebuehren() {
 }
 
 
+
 private void checkVerkaufskurs() {
+
 	long vkurs;
 	
 	String vstr = verkaufskurs.getText();
@@ -243,7 +298,9 @@ private void checkVerkaufskurs() {
 }
 
 
+
 private void checkButtonAlle() {
+
 	String anzstr = anzahl.getText();
 	
 	if (anzstr.length() == 0)
@@ -299,7 +356,9 @@ private void checkButtonAlle() {
 }
 
 
+
 public synchronized void executeOK() {
+
 	long verkaufsKurs = 0L, anz = 0L, geBuehren = 0L;
 	
 	buttonVerkaufen.setEnabled(false);
@@ -327,22 +386,31 @@ public synchronized void executeOK() {
 	}
 	catch (NumberFormatException e) {}
 
-	if (cbErloes.getState())
+	Bank bank = AktienMan.bankenliste.getAt(banken.getSelectedIndex());
+	geBuehren += bank.getGebuehren(anz*verkaufsKurs,cbInternet.getState());
+	
+	boolean move = cbMove.getState();
+	String moveTo = pofoMove.getSelectedItem();
+	
+	ADate vdatum = null;
+	
+	try
 	{
-		Bank bank = AktienMan.bankenliste.getAt(banken.getSelectedIndex());
-		geBuehren += bank.getGebuehren(anz*verkaufsKurs,cbInternet.getState());
+		vdatum = ADate.parse(datum.getText());
 	}
-	else
-	{
-		geBuehren = 0L;
-		verkaufsKurs = 0L;
-	}
+	catch (Exception e) {}
 
-	AktienMan.hauptdialog.listeAktieVerkaufen(index,anz,verkaufsKurs,geBuehren);
+	AktienMan.hauptdialog.listeAktieVerkaufen(index,anz,verkaufsKurs,geBuehren,cbErloes.getState(),
+												move,moveTo,vdatum);
+	
+	setActionPortfolio(moveTo);
+	setActionMove(move);
 }
 
 
+
 public synchronized boolean canOK() {
+
 	long db;
 	try
 	{
@@ -381,12 +449,75 @@ public synchronized boolean canOK() {
 		}
 	}
 	
+	if (cbMove.getState())
+	{
+		try
+		{
+			ADate verkaufd = ADate.parse(datum.getText());
+			
+			if (verkaufd.after(new ADate()))
+			{
+				new Warnalert(this,"Ein Verkaufsdatum in der Zukunft ist nicht erlaubt.");
+				return false;
+			}
+		}
+		catch (Exception e)
+		{
+			new Warnalert(this,"Bitte geben Sie ein g\u00fcltiges Verkaufsdatum ein.");
+			return false;
+		}
+	}
+	
 	return true;
 }
 
 
+
 public void closed() {
+
 	AktienMan.aktieverkaufen = null;
+}
+
+
+
+private synchronized static boolean isActionMove() {
+
+	if (actionDelMove == ACTION_NONE)
+	{
+		actionDelMove = AktienMan.properties.getInt("Verkaufen.DelMove",ACTION_DEL);
+	}
+	
+	return (actionDelMove == ACTION_MOVE);
+}
+
+
+
+private synchronized static void setActionMove(boolean move) {
+
+	actionDelMove = (move) ? ACTION_MOVE : ACTION_DEL;
+
+	AktienMan.properties.setInt("Verkaufen.DelMove",actionDelMove);
+}
+
+
+
+private synchronized static String getActionPortfolio() {
+
+	if (actionPortfolio.length() == 0)
+	{
+		actionPortfolio = AktienMan.properties.getString("Verkaufen.Portfolio");
+	}
+	
+	return actionPortfolio;
+}
+
+
+
+private synchronized static void setActionPortfolio(String neu) {
+
+	actionPortfolio = neu;
+
+	AktienMan.properties.setString("Verkaufen.Portfolio",actionPortfolio);
 }
 
 }
