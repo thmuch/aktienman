@@ -1,5 +1,5 @@
-AktienMan 1.60
-Copyright ©1998,99 Thomas Much
+AktienMan 1.70
+Copyright ©1998-2000 Thomas Much
 Ein Programm von AktienMan&Friends (http://www.aktienman.de).
 
 Zielsetzung
@@ -9,8 +9,8 @@ Einsatzbereiche
 Wer bisher jeden Tag die aktuellen Kurse seiner Aktien aus n-tv, T-Online oder dem Internet ermittelte und ausrechnen mußte, welchen Wert die eigenen Aktien im Einzelnen und insgesamt haben, wird von AktienMan spürbar entlastet. Ein kurzer Klick auf den Knopf "Aktualisieren" genügt, und AktienMan holt sich alle aktuellen Kurse von allen deutschen Börsen automatisch aus dem Internet und berechnet den Wert des eigenen Portfolios. Zusätzlich können die Kaufs- und Verkaufskosten der wichtigsten deutschen Banken berechnet werden.
 
 Installation
-Systemvoraussetzung für AktienMan/Mac sind ein Apple PowerMacintosh mit mindestens 166 Mhz Systemtakt, das Betriebssystem MacOS in der Version 8.0 oder höher sowie ein fertig installiertes "Macintosh Runtime for Java" (MRJ) in der Version 2.1 (oder höher).
-Normalerweise wird MRJ 2.0 bei der Installation von MacOS 8.1 bzw. 8.5 automatisch mitinstalliert. Diese Version ist jedoch fehlerhaft, so daß wir dringend zu MRJ 2.1.4 raten müssen. Apple stellt MRJ 2.1.4 unter http://www.apple.com/java/ zum kostenlosen Download zur Verfügung, ebenso finden Sie auf der AktienMan-Homepage Verweise auf die entsprechenden Archive.
+Systemvoraussetzung für AktienMan/Mac sind ein Apple PowerMacintosh mit mindestens 166 Mhz Systemtakt, das Betriebssystem MacOS in der Version 8.0 oder höher sowie ein fertig installiertes "Macintosh Runtime for Java" (MRJ) in der Version 2.2 (oder höher).
+Normalerweise wird MRJ 2.0 bei der Installation von MacOS 8.1 bzw. 8.5 automatisch mitinstalliert. Diese Version ist jedoch fehlerhaft, so daß wir dringend zu MRJ 2.2 raten müssen. Apple stellt MRJ 2.2 unter http://www.apple.com/java/ zum kostenlosen Download zur Verfügung, ebenso finden Sie auf der AktienMan-Homepage Verweise auf die entsprechenden Archive.
 Die eigentliche Installation von AktienMan ist denkbar einfach: Sie haben das AktienMan-Archiv bereits heruntergeladen und mit StuffIt ausgepackt. Das war es auch schon, eine weitere Installation ist nicht notwendig! Klicken Sie einfach doppelt auf das Programmsymbol "AktienMan". AktienMan wird geladen, und nach wenigen Sekunden - abhängig von der Geschwindigkeit des Rechners - erscheint das Hauptfenster. Wer mit dem Aktienhandel bereits vertraut ist, sollte AktienMan weitestgehend intuitiv bedienen können. Und ansonsten erhält man nach der Registrierung natürlich ein gedrucktes Handbuch.
 
 Einschränkungen der Demo-Version
@@ -29,6 +29,17 @@ AktienMan kennt nun drei unabhängige Währungen, die bei Bedarf automatisch inein
 - die Listenwährung bestimmt, in welcher Währung die Aktien in der Liste des Hauptdialogs angezeigt werden; unten links im Hauptdialog kann man die Listenwährung umschalten.
 
 Versionsübersicht
+1.70 (2000-03-17)
+- Die Kursabfrage bei Comdirect und der Deutschen Bank wurde komplett überarbeitet, so dass sich alle in EUR gehandelten Werte nun problemlos aktualisieren lassen sollten.
+- Das Listen-Kontextmenü und das globale "Aktie"-Menü bieten zwei Optionen zum Kopieren und Verschieben eines Wertes in ein anderes Portfolio.
+- Der "Aktie verkaufen"-Dialog kann einen Wert in ein bel. Portfolio verschieben.
+- Die Sortierung der Liste ist auch nach abs. Differenz, Kaufdatum und fixiertem Datum möglich.
+- Die Namen von fixierten Werten werden grau dargestellt.
+- Wenn im AktienMan-Verzeichnis manuell ein Ordner "Einstellungen" angelegt wird, werden alle Konfigurationsdateien von dort gelesen und dort gespeichert.
+- In den "Voreinstellungen" kann die maximale Zahl gleichzeitiger Kursanfragen beschränkt werden, um Problemen bei der Aktualisierung vorzubeugen.
+- "Aktienmenüs aktualisieren" wurde vom "Bearbeiten"-Menü in den "Aktie kaufen"-Dialog verschoben.
+- Von den Portfolio-Dateien wird beim Speichern automatisch ein Backup angelegt.
+- [Bugfix] Ein fixierter Wert hatte die Aktualisierung eines anderen Wertes mit gleicher WKN und gleichem Börsenplatz verhindert.
 1.60 (1999-12-13)
 - Unten links im Hauptfenster kann man die Sortierung der Liste einstellen (alphabetisch bzw. nach absoluten Prozentdifferenzen).
 - Über den "Liste exportieren"-Menüpunkt kann man die Aktienliste nun auch als CSV-Datei exportieren.
@@ -50,12 +61,6 @@ Versionsübersicht
 - Workaround für die WKNs 519003 (BMW3) und 703703 (RWE3) eingebaut.
 - Die Namenskürzung wurde weiter verbessert.
 - Deuba-Charts werden wieder geladen.
-1.41 (1999-06-30)
-- Unterhalb der Aktualisieren-Buttons werden nun drei Indizes angezeigt (DAX, Neuer Markt, Dow Industrials). Auf- und absteigende Pfeile erscheinen ab +/- 0,1% Differenz zum Vortag, Pfeile nach oben und unten ab +/- 1,0% Differenz. Ab +/- 2,0% werden die Differenzwerte zusätzlich grün bzw. rot dargestellt.
-- Die Indizes werden beim Aktualisieren der Liste mit aktualisiert. Wenn "Konfiguration - Indizes regelmäßig aktualisieren" eingeschaltet ist, werden die Indizes ab dem ersten Aktualisieren einmal pro Minute automatisch neu geladen.
-- Die Buttons "Aktualisieren FSE" und "Aktualisieren ETR" wurden durch ein Popup-Menü ersetzt, mit dem alle Aktien an allen deutschen Börsen aktualisiert werden können.
-- Workaround für die WKNs 710000 (DCX), 750000 (TKA), 519000 (BMW), 695200 (PRS), 850000 (GMC), 920566 (LYLK), 920578 (LYLX) und 849084 (Eurovesta) eingebaut.
-- Die Kurse und Charts der Deutschen Bank werden wieder geladen.
 
 Kontakt
 Bestellungen richten Sie bitte an bestellung@aktienman.de, am besten wickeln Sie Ihre Bestellung aber über die AktienMan-Homepage http://www.aktienman.de ab. Supportanfragen beantwortet support@aktienman.de.

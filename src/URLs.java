@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-03-13
+ @version 2000-03-27
 */
 
 
@@ -74,7 +74,7 @@ public static final int STR_CD_LISTEBOERSELI = 27;
 public static final int STR_CD_LISTEBOERSERE = 28;
 
 public static final int STR_CD_CHARTS        = 30;
-public static final int STR_CD_CHARTHREF     = 31;
+//public static final int STR_CD_CHARTHREF     = 31;
 public static final int STR_CD_CHARTIMAGE    = 32;
 public static final int STR_CD_CHARTSRC      = 33;
 
@@ -85,7 +85,7 @@ public static final int STR_DEUBA_KURSZEILE  = 43;
 public static final int STR_DEUBA_KURSSYMBOL = 44;
 
 public static final int STR_DEUBA_CHARTS     = 50;
-public static final int STR_DEUBA_CHARTHREF  = 51;
+//public static final int STR_DEUBA_CHARTHREF  = 51;
 public static final int STR_DEUBA_CHARTIMAGE = 52;
 public static final int STR_DEUBA_CHARTSRC   = 53;
 
@@ -153,19 +153,19 @@ public String getString(int strNr) {
 		return "</tr>";
 
 	case STR_CD_LISTEQUOTE:
-		return "quotes";
+		return "/quotes/";
 
 	case STR_CD_LISTEBOERSELI:
 		return ".";
 
 	case STR_CD_LISTEBOERSERE:
 		return "&";
-		
+
 	case STR_CD_CHARTS:
 		return "/charts/";
 
-	case STR_CD_CHARTHREF:
-		return " href=\"";
+/*	case STR_CD_CHARTHREF:
+		return " href=\""; */
 	
 	case STR_CD_CHARTIMAGE:
 		return "cdcharttcl";
@@ -191,8 +191,8 @@ public String getString(int strNr) {
 	case STR_DEUBA_CHARTS:
 		return ".html?";
 
-	case STR_DEUBA_CHARTHREF:
-		return " href=\"";
+/*	case STR_DEUBA_CHARTHREF:
+		return " href=\""; */
 
 	case STR_DEUBA_CHARTIMAGE:
 		return " usemap=\'";
@@ -218,7 +218,7 @@ public String getString(int strNr) {
 
 
 
-protected String getBase(int bnr) {
+public String getBase(int bnr) {
 
 	switch (bnr)
 	{
@@ -232,7 +232,8 @@ protected String getBase(int bnr) {
 		return "http://deuba.teledata.de:9030";
 	
 	case BASE_COMDIRECT:
-		return "http://informer2.comdirect.de:9004";
+//		return "http://informer2.comdirect.de:9004";
+		return "http://informer2.comdirect.de";
 	}
 	
 	return "";
@@ -522,7 +523,9 @@ public String getComdirectKursURL(String wkn, String boerse) {
 		wkneu += "." + boerse;
 	} */
 
-	return get(URL_KURSECOMDIRECT) + /*wkneu*/ checkWKN(wkn) + "&searchButton=Exakt&XsearchWPArt=UKN&XsearchBoersen=" + boerse;
+//	return get(URL_KURSECOMDIRECT) + /*wkneu*/ checkWKN(wkn) + "&searchButton=Exakt&XsearchWPArt=UKN&XsearchBoersen=" + boerse;
+
+	return get(URL_KURSECOMDIRECT) + checkWKN(wkn) + "&searchButton_tol=Tolerant&XsearchWPArt=UKN&XsearchBoersen=" + boerse;
 }
 
 

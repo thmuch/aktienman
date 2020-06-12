@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-03-06
+ @version 2000-03-21
 */
 
 import java.util.*;
@@ -26,9 +26,9 @@ private String festeBoerse = "";
 private long verkaufserloes = 0L;
 private int erloesWaehrung = Waehrungen.DEM;
 private int portfoliover = 0;
+private int sortBy = SORT_NAME;
 
 private transient String portfolioFile = "";
-private transient static int listeSortBy = SORT_NONE;
 
 
 
@@ -183,9 +183,23 @@ public synchronized void erloesToWaehrung(int neueWaehrung) {
 
 
 
+public synchronized int getSortBy() {
+
+	return sortBy;
+}
+
+
+
+public synchronized void setSortBy(int neu) {
+
+	sortBy = neu;
+}
+
+
+
 public synchronized void sort(boolean kurz) {
 
-	switch (getListeSortBy())
+	switch (getSortBy())
 	{
 	case SORT_ABSPERC:
 
@@ -497,26 +511,6 @@ public static BenutzerListe restore(String datei) {
 	benutzerliste.setPortfolioFile(datei);
 	
 	return benutzerliste;
-}
-
-
-
-public synchronized static int getListeSortBy() {
-
-	if (listeSortBy <= SORT_NONE)
-	{
-		listeSortBy = AktienMan.properties.getInt("Konfig.ListeSortBy",SORT_NAME);
-	}
-	
-	return listeSortBy;
-}
-
-
-
-public synchronized static void setListeSortBy(int neu) {
-
-	AktienMan.properties.setInt("Konfig.ListeSortBy",neu);
-	listeSortBy = neu;
 }
 
 }

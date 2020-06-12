@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-03-10
+ @version 2000-03-27
 */
 
 
@@ -8,6 +8,25 @@
 
 public class NewURLs extends URLs {
 
+
+
+
+public String getBase(int bnr) {
+
+	if (bnr == BASE_COMDIRECT)
+	{
+		return "http://informer2.comdirect.de";
+	}
+
+	return super.getBase(bnr);
+}
+
+
+
+public String getComdirectKursURL(String wkn, String boerse) {
+
+	return get(URL_KURSECOMDIRECT) + checkWKN(wkn) + "&searchButton_tol=Tolerant&XsearchWPArt=UKN&XsearchBoersen=" + boerse;
+}
 
 
 
@@ -23,15 +42,15 @@ public class NewURLs extends URLs {
 
 
 
-/*public String getString(int strNr) {
+public String getString(int strNr) {
 
-	if (strNr == STR_DEUBA_CHARTSRC)
+	if (strNr == STR_CD_LISTEQUOTE)
 	{
-		return " src=\'";
+		return "/quotes/";
 	}
 
 	return super.getString(strNr);
-}*/
+}
 
 
 
@@ -151,7 +170,7 @@ public class NewURLs extends URLs {
 
 
 
-/*public boolean isValidNr(long nr) {
+public boolean isValidNr(long nr) {
 
 	if ((nr == 270) || (nr == 271) || (nr == 272) || (nr == 339))
 	{
@@ -159,6 +178,6 @@ public class NewURLs extends URLs {
 	}
 
 	return super.isValidNr(nr);
-} */
+}
 
 }

@@ -7,6 +7,7 @@ import java.util.*;
 
 
 
+
 public class URLClassLoader extends ClassLoader {
 
 private Hashtable cache = new Hashtable();
@@ -15,13 +16,17 @@ private String host;
 
 
 
+
 public URLClassLoader(String host) {
+
 	super();
 	this.host = host;
 }
 
 
+
 public synchronized Class loadClass(String name, boolean resolve) throws ClassNotFoundException {
+
 	Class c = (Class)cache.get(name);
 
 	if (c == null)
@@ -50,6 +55,7 @@ public synchronized Class loadClass(String name, boolean resolve) throws ClassNo
 	
 	return c;
 }
+
 
 
 private byte[] loadClassData(String name) {

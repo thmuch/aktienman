@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-03-14
+ @version 2000-03-27
 */
 
 import java.awt.*;
@@ -128,6 +128,8 @@ public synchronized void loadPortfolio(boolean doSave) {
 	checkListButtons();
 	disableAktienButtons();
 
+	sortby.select(getSortBy());
+
 	listeUpdate(false,false,true,true);
 	setErloes(getErloes(),false);
 
@@ -158,6 +160,8 @@ public void display() {
 	setupSize();
 	listeRedraw(false);
 	checkListButtons();
+
+	sortby.select(getSortBy());
 	
 	MRJApplicationUtils.registerAboutHandler(this);
 }
@@ -259,7 +263,6 @@ public void setupElements() {
 	sortby.addItem("Differenz");
 	sortby.addItem("Kaufdatum");
 	sortby.addItem("fix. Datum");
-	sortby.select(BenutzerListe.getListeSortBy());
 	sortby.addItemListener(new ItemListener() {
 		public void itemStateChanged(ItemEvent e) {
 			sortByWechseln();
@@ -316,13 +319,13 @@ public void setupElements() {
 				listeSelektierteAktieChart(ChartQuellen.getChartQuelle().hasType24() ? URLs.CHART_24 : URLs.CHART_36);
 				break;
 
-			case 6:
+/*			case 6:
 				listeSelektierteAktieIntradayChart("FRA");
 				break;
 
 			case 7:
 				listeSelektierteAktieIntradayChart("ETR");
-				break;
+				break; */
 			}
 
 			if (idx != 0) buttonChart.select(0);
@@ -784,6 +787,20 @@ public synchronized void clearErloes() {
 
 
 
+public synchronized int getSortBy() {
+
+	return benutzerliste.getSortBy();
+}
+
+
+
+public synchronized void setSortBy(int neu) {
+
+	benutzerliste.setSortBy(neu);
+}
+
+
+
 public void setupSize() {
 
 	int w = (4*AktienMan.screenSize.width)/5;
@@ -879,9 +896,9 @@ private synchronized void sortByWechseln() {
 
 	int neu = sortby.getSelectedIndex();
 	
-	if (neu != BenutzerListe.getListeSortBy())
+	if (neu != getSortBy())
 	{
-		BenutzerListe.setListeSortBy(neu);
+		setSortBy(neu);
 
 		listeUpdate(false,true,true,false);
 
@@ -1035,11 +1052,13 @@ private void checkListButtons() {
 	if (isLocked(false))
 	{
 		lwaehrung.setEnabled(false);
+		sortby.setEnabled(false);
 		menuExport.setEnabled(false);
 	}
 	else
 	{
 		lwaehrung.setEnabled(true);
+		sortby.setEnabled(true);
 
 		if (getAnzahlAktien() > 0)
 		{
@@ -1505,7 +1524,9 @@ private synchronized void portfolioLoeschen() {
 }
 
 
+
 public synchronized void listeUpdate(boolean save, boolean chgInfo, boolean sofort, boolean to00) {
+
 	RedrawDemon.getRedrawDemon().incRedrawRequests(to00);
 	
 	if (save) RedrawDemon.getRedrawDemon().incSaveRequests();
@@ -1515,15 +1536,15 @@ public synchronized void listeUpdate(boolean save, boolean chgInfo, boolean sofo
 }
 
 
+
 public synchronized void listeRedraw(boolean to00) {
+
 	disableAktienButtons();
+	
+	panelListe.setVisible(false);
+
 	panelListe.removeAll();
 	panelText.removeAll();
-	
-	if (to00 || (getAnzahlAktien() < 1))
-	{
-		pane.setScrollPosition(new Point(0,0));
-	}
 
 	if (getAnzahlAktien() > 0)
 	{
@@ -1547,14 +1568,21 @@ public synchronized void listeRedraw(boolean to00) {
 	panelListe.validate();
 	pane.validate();
 
-	if (to00) pane.setScrollPosition(new Point(0,0));
+	if (to00 || (getAnzahlAktien() < 1))
+	{
+		pane.setScrollPosition(new Point(0,0));
+	}
+	
+	panelListe.setVisible(true);
 
 	panelText.paintAll(getGraphics());
 	pane.paintAll(getGraphics());
 }
 
 
+
 public synchronized void listeUpdateInfo() {
+
 	if (getAnzahlAktien() > 0)
 	{
 		for (int i = 0; i < getAnzahlAktien(); i++)
@@ -1617,7 +1645,7 @@ public synchronized void listeSelektierteAktieChart(int type) {
 
 
 
-public synchronized void listeSelektierteAktieIntradayChart(String boerse) {
+/*public synchronized void listeSelektierteAktieIntradayChart(String boerse) {
 
 	for (int i = 0; i < getAnzahlAktien(); i++)
 	{
@@ -1627,7 +1655,7 @@ public synchronized void listeSelektierteAktieIntradayChart(String boerse) {
 			break;
 		}
 	}
-}
+}*/
 
 
 
@@ -2130,6 +2158,16 @@ private synchronized void listeSpeichernCSV() {
 			MRJFileUtils.setFileTypeAndCreator(f,new MRJOSType("TEXT"),new MRJOSType("XCEL"));
 		}
 		catch (Exception e) {}
+	}
+}
+
+
+
+public void waitProgress() {
+
+	if (progressCanvas != null)
+	{
+		progressCanvas.setWaiting();
 	}
 }
 

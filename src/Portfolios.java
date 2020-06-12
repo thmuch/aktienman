@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-03-14
+ @version 2000-03-27
 */
 
 import java.awt.*;
@@ -336,6 +336,8 @@ private synchronized static void setIndex(int i, boolean doSave, boolean doLoad)
 			new Warnalert(hauptdialog,"Mit der Demoversion k\u00f6nnen Sie nur das Standard-Portfolio verwalten.");
 		}
 	}
+	
+	boolean resetProgress = false;
 
 	if (!hauptdialog.isLocked(true))
 	{
@@ -347,8 +349,11 @@ private synchronized static void setIndex(int i, boolean doSave, boolean doLoad)
 			
 			if (doLoad)
 			{
-				hauptdialog.resetProgress();
+				hauptdialog.waitProgress();
+
 				hauptdialog.loadPortfolio(doSave);
+				
+				resetProgress = true;
 			}
 		}
 
@@ -361,6 +366,11 @@ private synchronized static void setIndex(int i, boolean doSave, boolean doLoad)
 	hauptdialog.setPortfolioTitle(getCurrentWindowTitle());
 	
 	AktienMan.properties.setString("Portfolio.StartName",getName(getIndex()));
+	
+	if (resetProgress)
+	{
+		hauptdialog.resetProgress();
+	}
 }
 
 

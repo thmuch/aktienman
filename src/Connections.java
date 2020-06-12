@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-03-13
+ @version 2000-03-21
 */
 
 import java.awt.*;
@@ -95,10 +95,10 @@ public static void getConnection() {
 		
 		connections++;
 		
-		if (AktienMan.DEBUG)
+/*		if (AktienMan.DEBUG)
 		{
 			System.out.println("+++ Neue Connection (jetzt "+connections+")");
-		}
+		} */
 	}
 }
 
@@ -110,10 +110,10 @@ public static void releaseConnection() {
 	{
 		connections--;
 
-		if (AktienMan.DEBUG)
+/*		if (AktienMan.DEBUG)
 		{
 			System.out.println("--  nur noch "+connections+" Connections");
-		}
+		} */
 		
 		if (connections < 0) connections = 0;
 		

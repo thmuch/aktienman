@@ -8,6 +8,7 @@ import java.awt.event.*;
 
 
 
+
 public final class VerkaufserloesSetzen extends AktienFrame {
 
 private Button buttonOK;
@@ -15,12 +16,16 @@ private TextField neuerErloes;
 
 
 
+
 public VerkaufserloesSetzen() {
+
 	super(AktienMan.AMFENSTERTITEL+"Gesamtaufwand setzen");
 }
 
 
+
 public void setupElements2() {
+
 	Panel panelOben = new Panel(gridbag);
 	Panel panelButtons = new Panel(gridbag);
 	
@@ -60,7 +65,9 @@ public void setupElements2() {
 }
 
 
+
 public synchronized void executeOK() {
+
 	buttonOK.setEnabled(false);
 
 	try
@@ -71,7 +78,9 @@ public synchronized void executeOK() {
 }
 
 
+
 public void closed() {
+
 	AktienMan.erloessetzen = null;
 }
 

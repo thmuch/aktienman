@@ -8,18 +8,23 @@ import java.awt.event.*;
 
 
 
+
 public final class VerkaufserloesLoeschen extends AktienFrame {
 
 private Button buttonJa;
 
 
 
+
 public VerkaufserloesLoeschen() {
+
 	super(AktienMan.AMFENSTERTITEL+"Gesamtaufwand l\u00f6schen");
 }
 
 
+
 public void setupElements2() {
+
 	Label label = new Label("Wollen Sie den Gesamtaufwand wirklich l\u00f6schen?");
 	label.setForeground(Color.red);
 	constrain(this,label,0,0,3,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,10,10,10,10);
@@ -44,13 +49,17 @@ public void setupElements2() {
 }
 
 
+
 public synchronized void executeOK() {
+
 	buttonJa.setEnabled(false);
 	AktienMan.hauptdialog.clearErloes();
 }
 
 
+
 public void closed() {
+
 	AktienMan.erloesloeschen = null;
 }
 

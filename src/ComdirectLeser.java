@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-03-14
+ @version 2000-03-27
 */
 
 import java.io.*;
@@ -9,6 +9,8 @@ import java.net.*;
 
 
 public class ComdirectLeser extends Thread {
+
+private static final String READ_LIST = "LISTE";
 
 private static final int STATUS_WAIT4NAME    =  0;
 private static final int STATUS_WAIT4WKN     =  1;
@@ -144,7 +146,7 @@ private String readKursliste(BufferedReader in, String wkn, String boerse) throw
 
 
 
-private boolean readKurs(BufferedReader in, boolean readListe) throws Exception {
+private String readKurs(BufferedReader in, String reqBoerse, boolean readListe) throws Exception {
 
 	String str_fehler  = AktienMan.url.getString(URLs.STR_CD_KURSFEHLER);
 	String str_aktkurs = AktienMan.url.getString(URLs.STR_CD_KURS);
@@ -158,6 +160,9 @@ private boolean readKurs(BufferedReader in, boolean readListe) throws Exception 
 	String str_eroeff  = AktienMan.url.getString(URLs.STR_CD_KURSEROEFF);
 	String str_hoechst = AktienMan.url.getString(URLs.STR_CD_KURSHOECHST);
 	String str_tiefst  = AktienMan.url.getString(URLs.STR_CD_KURSTIEFST);
+
+	String str_quote   = AktienMan.url.getString(URLs.STR_CD_LISTEQUOTE);
+	String str_boerse  = AktienMan.url.getString(URLs.STR_CD_LISTEBOERSELI) + reqBoerse + AktienMan.url.getString(URLs.STR_CD_LISTEBOERSERE);
 	
 	String s;
 	String name = "", platz = "", wkn = "", kursdatum = "", kurz = "";
@@ -184,6 +189,27 @@ private boolean readKurs(BufferedReader in, boolean readListe) throws Exception 
 			status = STATUS_FINISHED;
 			continue;
 		}
+		else
+		{
+			int iq = s.indexOf(str_quote);
+			
+			if (iq >= 0)
+			{
+				int leftquote  = s.lastIndexOf('"',iq);
+				int rightquote = s.indexOf('"',iq);
+				
+				if ((leftquote >= 0) && (rightquote > leftquote))
+				{
+					String neueurl = s.substring(leftquote+1,rightquote);
+					
+					if (neueurl.indexOf(str_boerse) >= 0)
+					{
+						/* neue URL mit korrekten Quote-Werten lesen */
+						return  AktienMan.url.getBase(URLs.BASE_COMDIRECT) + neueurl;
+					}
+				}
+			}
+		}
 
 		switch (status)
 		{
@@ -194,12 +220,11 @@ private boolean readKurs(BufferedReader in, boolean readListe) throws Exception 
 				if (readListe)
 				{
 					/* Quelle soll als Kursliste interpretiert werden */
-					return true;
+					return READ_LIST;
 				}
 				else
 				{
 					receiver.listeAnfrageFehler(request,baWKN,baBoerse,sofortZeichnen,nextID);
-					//receiver.listeAnfrageFalsch(baWKN,baBoerse,sofortZeichnen);
 					status = STATUS_FINISHED;
 					found = true;
 				}
@@ -528,8 +553,7 @@ private boolean readKurs(BufferedReader in, boolean readListe) throws Exception 
 	
 	if (valid)
 	{
-		if (baWKN.equalsIgnoreCase(wkn) && baBoerse.equalsIgnoreCase(platz))
-//		if ((wkn.length() > 0) && (platz.length() > 0))
+		if (baWKN.equalsIgnoreCase(wkn) && reqBoerse.equalsIgnoreCase(platz))
 		{
 			if (kurs > 0L)
 			{
@@ -552,7 +576,7 @@ private boolean readKurs(BufferedReader in, boolean readListe) throws Exception 
 		receiver.listeAnfrageFehler(request,baWKN,baBoerse,sofortZeichnen,nextID);
 	}
 
-	return false;
+	return null;
 }
 
 
@@ -578,32 +602,35 @@ public void run() {
 		
 		in = new BufferedReader(new InputStreamReader(url.openStream()));
 		
-		if (readKurs(in,true))
+		String neueURL = readKurs(in,spboerse,true);
+		
+		if (neueURL != null)
 		{
-			String neueURL = readKursliste(in,baWKN,baBoerse);
-			
-			if (neueURL == null)
+			if (neueURL.equals(READ_LIST))
 			{
-				receiver.listeAnfrageFehler(request,baWKN,baBoerse,sofortZeichnen,nextID);
-			}
-			else
-			{
-				try
-				{
-					in.close();
-				}
-				catch (Exception e) {}
-				finally
-				{
-					in = null;
-				}
+				neueURL = readKursliste(in,baWKN,spboerse);
 				
-				url = new URL(neueURL);
+				if (neueURL == null)
+				{
+					throw new Exception();
+				}
+			}
 
-				in = new BufferedReader(new InputStreamReader(url.openStream()));
-				
-				readKurs(in,false);
+			try
+			{
+				in.close();
 			}
+			catch (Exception e) {}
+			finally
+			{
+				in = null;
+			}
+			
+			url = new URL(neueURL);
+
+			in = new BufferedReader(new InputStreamReader(url.openStream()));
+			
+			readKurs(in,spboerse,false);
 		}
 	}
 	catch (MalformedURLException e)

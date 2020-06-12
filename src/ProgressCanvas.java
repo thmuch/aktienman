@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-15
+ @version 2000-03-27
 */
 
 import java.awt.*;
@@ -15,6 +15,9 @@ private static final int HOEHE  =  10;
 
 private Color blau = Color.blue.darker();
 private Color grau = Color.lightGray;
+private Color gelb = Color.orange;
+
+private boolean waiting;
 
 private int anz,max;
 
@@ -22,13 +25,16 @@ private int anz,max;
 
 
 public ProgressCanvas() {
+
 	super();
+
 	setValues(0,0);
 }
 
 
 
 public synchronized void setValues(int anz, int max) {
+
 	this.max = (max < 0) ? 0 : max;
 	
 	if (anz > this.max)
@@ -37,12 +43,25 @@ public synchronized void setValues(int anz, int max) {
 	}
 
 	this.anz = (anz < 0) ? 0 : anz;
+	
+	waiting = false;
 }
 
 
 
-public synchronized void paint(Graphics g)
-{
+public synchronized void setWaiting() {
+
+	anz = max = 1;
+
+	waiting = true;
+
+	paint(getGraphics());
+}
+
+
+
+public synchronized void paint(Graphics g) {
+
 	Dimension d = getSize();
 	
 	if (max <= 0)
@@ -61,7 +80,7 @@ public synchronized void paint(Graphics g)
 		g.setColor(Color.black);
 		g.drawRect(0,0,d.width-1,d.height-1);
 		
-		g.setColor(blau);
+		g.setColor(waiting ? gelb : blau);
 		g.fillRect(0,0,((d.width*anz)/max)-1,d.height-1);
 	}
 }
@@ -69,12 +88,14 @@ public synchronized void paint(Graphics g)
 
 
 public Dimension getPreferredSize() {
+
 	return new Dimension(BREITE,HOEHE);
 }
 
 
 
 public Dimension getMinimumSize() {
+
 	return getPreferredSize();
 }
 
@@ -89,6 +110,7 @@ public synchronized void addMax(int mehr) {
 
 
 public synchronized void inc() {
+
 	anz++;
 	paint(getGraphics());
 	

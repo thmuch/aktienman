@@ -60,14 +60,23 @@ todo
 // Kommentarfeld pro Aktie
 // Lange "WKNs" (ISINs) zulassen
 // Listeneinträge gleicher WKN farblich unterlegen (grau/weiß)
+//
+Version 1.81 (.04.00)
+// RELEASE erhöhen, DEBUG entfernen
 // SMS/E-Mails verschicken
 // bei Über-/Unterschreiten optional Warndialog (mit Ton)
-// auch Chartleser teilw. neu programmieren
+// Online-Währung auch US-$ und Yen, dafür Wechselkursleser
 // Aktie Info: Höchst-/Tiefstkurs mit Jahresangabe
-//
-Version 1.71 (.03.00)
-// RELEASE erhöhen, DEBUG entfernen
+// "Aktie Info": Höchst/Tiefstkurs auch als 52w-Hoch/Tief
+// auch Chartleser teilw. neu programmieren
 // 
+Version 1.80 (02.04.00)
+- Comdirect-Kursleser für Fonds verbessert
+- Listendarstellung beschleunigt
+- beim Umschalten zwischen Portfolios wird der Fortschrittsbalken orange gezeichnet
+- die Sortierreihenfolge wird nun im Portfolio (und nicht mehr global) gespeichert
+- während ein modaler Dialog angezeigt wird, kann die Sortierreihenfolge nicht mehr umgeschaltet werden
+- "Aktualisieren an" sollte wieder funktionieren
 Version 1.70 (17.03.00)
 - "Voreinstellungen": Gleichzeitige Kursanfragen
 - "Aktienmenüs aktualisieren" vom "Bearbeiten"-Menü in den "Aktie kaufen"-Dialog verschoben

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-03-14
+ @version 2000-03-27
 */
 
 import java.net.*;
@@ -48,31 +48,32 @@ public void run() {
 		String s;
 		
 		String str_charts    = AktienMan.url.getString(URLs.STR_CD_CHARTS);
-		String str_charthref = AktienMan.url.getString(URLs.STR_CD_CHARTHREF);
 		
 		while ((s = in.readLine()) != null)
 		{
-			if (s.indexOf(str_charts) > 0)
-			{
-				int i = s.indexOf(str_charthref);
-				
-				if (i > 0)
-				{
-					int i2 = s.indexOf("\"", i + str_charthref.length());
-					
-					if (i2 > i)
-					{
-						String rel = s.substring(i + str_charthref.length(), i2);
-						
-						chartviewer.setComdirectRelURL(rel);
-						
-						int charttype = ((isFonds) || (type == URLs.CHART_INTRA)) ? URLs.CHART_LINIE : URLs.CHART_STANDARD;
-						
-						new ComdirectChartLoader(chartviewer,AktienMan.url.getComdirectChartURL(rel,type,charttype),type).start();
+			s = s.trim();
 
-						valid = true;
-						break;
-					}
+			if (s.length() == 0) continue;
+			
+			int i = s.indexOf(str_charts);
+			
+			if (i > 0)
+			{
+				int leftquote  = s.lastIndexOf('"',i);
+				int rightquote = s.indexOf('"',i);
+				
+				if ((leftquote >= 0) && (rightquote > leftquote))
+				{
+					String rel = s.substring(leftquote+1,rightquote);
+					
+					chartviewer.setComdirectRelURL(rel);
+					
+					int charttype = ((isFonds) || (type == URLs.CHART_INTRA)) ? URLs.CHART_LINIE : URLs.CHART_STANDARD;
+					
+					new ComdirectChartLoader(chartviewer,AktienMan.url.getComdirectChartURL(rel,type,charttype),type).start();
+
+					valid = true;
+					break;
 				}
 			}
 		}
