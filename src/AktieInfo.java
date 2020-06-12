@@ -109,7 +109,7 @@ public synchronized void setValues(boolean draw) {
 	constrain(panelInfo,new Label("Tiefstkurs:"),0,8,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,10,0);
 	constrain(panelInfo,new Label(ba.getTiefstkursString()),1,8,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,10,0);
 
-	constrain(panelInfo,new Label("Handelsvolumen:"),0,9,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(panelInfo,new Label("gehandelte St\u00fcck:"),0,9,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	constrain(panelInfo,new Label(ba.getHandelsvolumenString()),1,9,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 	
 	String seit = ba.getWatchStartString();

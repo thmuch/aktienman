@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-11-09
+ @version 2001-08-27
 */
 
 
@@ -48,21 +48,25 @@ public class NewURLs extends URLs {
 
 
 
-/*public String getString(int strNr) {
+public String getString(int strNr) {
 
 	switch (strNr)
 	{
-	case STR_CD_LISTEQUOTE:
-
-		return "/quotes/";
-
 	case STR_CD_KURSENDE:
 
-		return "Chart Analyzer";
+		return "Chart Analyser";
+
+	case STR_CD_LISTEBOERSERE:
+
+		return "";
+
+	case STR_CD_KURSVOLUMEN:
+
+		return "Gehandelter Nennwert";
 	}
 
 	return super.getString(strNr);
-}*/
+}
 
 
 
@@ -98,6 +102,9 @@ public boolean isValidNr(long nr) {
 	case 272:
 	case 339:
 	case 485:
+	case 595:
+	case 613:
+	case 619:
 
 		return false;
 	}

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-11-09
+ @version 2001-10-30
 */
 
 import java.net.*;
@@ -32,6 +32,20 @@ public BBBankIndexLeser(long tID, int type) {
 
 	this.tID  = tID;
 	this.type = type;
+}
+
+
+
+private String fixWert(String val) {
+
+	int i;
+	
+	while (((i = val.indexOf(".")) > 0) && (i < val.indexOf(",")))
+	{
+		val = val.substring(0,i) + val.substring(i+1);
+	}
+	
+	return val.trim();
 }
 
 
@@ -84,6 +98,7 @@ public void run() {
 
 						if (i >= 0)
 						{
+
 							int i2 = s.indexOf("=",i);
 							int i3 = s.indexOf("&",i2);
 							
@@ -105,7 +120,7 @@ public void run() {
 
 								try
 								{
-									punkte = Waehrungen.doubleToLong(s.substring(i+1,i2).trim());
+									punkte = Waehrungen.doubleToLong(fixWert(s.substring(i+1,i2).trim()));
 								}
 								catch (Exception e)
 								{
@@ -113,7 +128,7 @@ public void run() {
 								}
 							}
 
-							break;
+ 							break;
 							
 						case STATUS_ZEIT:
 							{
@@ -132,7 +147,7 @@ public void run() {
 
 								try
 								{
-									vortag = Waehrungen.doubleToLong(s.substring(i+1,i2).trim());
+									vortag = Waehrungen.doubleToLong(fixWert(s.substring(i+1,i2).trim()));
 								}
 								catch (Exception e)
 								{

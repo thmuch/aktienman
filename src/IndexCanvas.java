@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-10-24
+ @version 2001-10-30
 */
 
 import java.awt.*;
@@ -108,7 +108,7 @@ private synchronized long getProz() {
 
 	long proz = 0L;
 
-	if (vortag > 0L)
+	if ((vortag > 0L) && (punkte > 0L))
 	{
 		proz = (100000L * punkte) / vortag - 100000L;
 		
@@ -125,13 +125,18 @@ private synchronized long getProz() {
 
 private synchronized String getDiff() {
 
-	long diff = punkte - vortag;
-	
-	String difstr = ((diff<0L)?" ":" +") + NumUtil.get00String(diff);
-	
-	long proz = getProz();
+	if ((vortag > 0L) && (punkte > 0L))
+	{
+		long diff = punkte - vortag;
+		
+		String difstr = ((diff<0L)?" ":" +") + NumUtil.get00String(diff);
+		
+		long proz = getProz();
 
-	return difstr + ((proz<0L)?" ":" +") + NumUtil.get00String(proz) + "%";
+		return difstr + ((proz<0L)?" ":" +") + NumUtil.get00String(proz) + "%";
+	}
+	
+	return "";
 }
 
 
@@ -154,7 +159,7 @@ private synchronized int getWidth() {
 	
 	x += breite;
 	
-	String pstr = NumUtil.get00String(punkte);
+	String pstr = (punkte > 0L) ? NumUtil.get00String(punkte) : "n/a";
 	
 	int plen = metrics.stringWidth(pstr);
 	
@@ -194,7 +199,7 @@ public synchronized void paint(Graphics g)
 	
 	x += breite;
 	
-	String pstr = NumUtil.get00String(punkte);
+	String pstr = (punkte > 0L) ? NumUtil.get00String(punkte) : "n/a";
 	
 	int plen = metrics.stringWidth(pstr);
 	

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-11-11
+ @version 2001-10-30
 */
 
 import java.awt.*;
@@ -11,7 +11,7 @@ import com.apple.mrj.*;
 
 
 
-public final class Hauptdialog extends AFrame implements ComponentListener,
+public final class Hauptdialog extends AFrame implements ComponentListener,MRJQuitHandler,
 															MRJAboutHandler,KursReceiver {
 
 private static final String FENSTERTITEL = AktienMan.AMNAME+" "+AktienMan.AMVERSION;
@@ -163,7 +163,15 @@ public void display() {
 
 	sortby.select(getSortBy());
 	
-	MRJApplicationUtils.registerAboutHandler(this);
+	if (SysUtil.isAMac())
+	{
+		MRJApplicationUtils.registerAboutHandler(this);
+	}
+	
+	if (SysUtil.isMacOSX())
+	{
+		MRJApplicationUtils.registerQuitHandler(this);
+	}
 }
 
 
@@ -171,6 +179,13 @@ public void display() {
 public void handleAbout() {
 
 	callAbout();
+}
+
+
+
+public void handleQuit() {
+
+	saveAndExit();
 }
 
 
@@ -227,7 +242,7 @@ public void setupElements() {
 
 	if (LSRTDAX30Quelle.canUseLSRT())
 	{
-		if (SysUtil.isMacOS()) aktChoice.add("-------");
+		if (SysUtil.isAMac()) aktChoice.add("-------");
 
 		aktChoice.add("Lang&Schwarz Realtime-DAX30 (BID)");
 		aktChoice.add("Lang&Schwarz Realtime-DAX30 (ASK)");
@@ -249,7 +264,7 @@ public void setupElements() {
 				{
 					idx -= (count+1);
 					
-					if (SysUtil.isMacOS()) idx--;
+					if (SysUtil.isAMac()) idx--;
 					
 					if ((idx >= 0) && (idx <= 1))
 					{
@@ -510,25 +525,18 @@ public void setupElements() {
 
 	fileMenu.add(menuExport);
 	
-	fileMenu.addSeparator();
+	if (!SysUtil.isMacOSX())
+	{
+		fileMenu.addSeparator();
 
-	mi = new MenuItem("Beenden",new MenuShortcut(KeyEvent.VK_Q));
-	mi.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			doCancel();
-		}
-	});
-	fileMenu.add(mi);
-	
-/*	mi = new MenuItem("Aktienmen\u00fcs aktualisieren...");
-	mi.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			new AktienAktualisieren();
-		}
-	});
-	amMenu.add(mi);
-
-	amMenu.addSeparator(); */
+		mi = new MenuItem("Beenden",new MenuShortcut(KeyEvent.VK_Q));
+		mi.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				doCancel();
+			}
+		});
+		fileMenu.add(mi);
+	}
 
 	mi = new MenuItem("Warnungen...");
 	mi.addActionListener(new ActionListener() {
@@ -687,7 +695,7 @@ public void setupElements() {
 	});
 	pofoMenu.add(pofoDelete);
 	
-	if (!SysUtil.isMacOS())
+	if (!SysUtil.isAMac())
 	{
 		Menu hilfeMenu = new Menu("Hilfe",true);
 		menubar.add(hilfeMenu);
@@ -1775,9 +1783,12 @@ public synchronized void addIndexPanelAndPane(boolean doResize) {
 		pane.invalidate();
 		invalidate();
 	}
-	
-	constrain(this,panelIndex,0,1,3,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,5,10,5,10);
-	constrain(this,pane,0,2,3,1,GridBagConstraints.BOTH,GridBagConstraints.CENTER,1.0,1.0,5,10,5,10);
+
+	if ((!doResize) || (!SysUtil.isMacOSX()))
+	{
+		constrain(this,panelIndex,0,1,3,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,5,10,5,10);
+		constrain(this,pane,0,2,3,1,GridBagConstraints.BOTH,GridBagConstraints.CENTER,1.0,1.0,5,10,5,10);
+	}
 	
 	if (doResize)
 	{
@@ -2128,8 +2139,11 @@ private synchronized void listeSpeichernHTML() {
 	{
 		BufferedWriter out = null;
 		
-		MRJFileUtils.setDefaultFileType(new MRJOSType("????"));
-		MRJFileUtils.setDefaultFileCreator(new MRJOSType("????"));
+		if (SysUtil.isAMac())
+		{
+			MRJFileUtils.setDefaultFileType(new MRJOSType("????"));
+			MRJFileUtils.setDefaultFileCreator(new MRJOSType("????"));
+		}
 
 		boolean kurz = BenutzerListe.useShortNames();
 		boolean steuerfrei = BenutzerListe.useSteuerfrei();
@@ -2246,13 +2260,34 @@ private synchronized void listeSpeichernHTML() {
 			out = null;
 		}
 		
-		try
+		if (SysUtil.isAMac())
 		{
-			MRJFileUtils.setFileTypeAndCreator(f,new MRJOSType("TEXT"),new MRJOSType("iCAB"));
-			/* Netscape = "MOSS" */
-			/* IE berŸcksichtigen */
+			try
+			{
+				MRJFileUtils.setFileTypeAndCreator(f,new MRJOSType("TEXT"),new MRJOSType("iCAB"));
+				/* Netscape = "MOSS" */
+				/* IE berŸcksichtigen */
+			}
+			catch (Exception e) {}
+
+			try
+			{
+				MRJFileUtils.openURL(f.toString());
+			}
+			catch (Exception e)
+			{
+				try
+				{
+					String params[] = { "open", f.toString() };
+
+					Runtime.getRuntime().exec(params);
+				}
+				catch (Exception e2)
+				{
+					System.out.println(e2);
+				}
+			}
 		}
-		catch (Exception e) {}
 		
 /*		if (SysUtil.isMacOS())
 		{
@@ -2312,8 +2347,11 @@ private synchronized void listeSpeichernCSV() {
 	{
 		BufferedWriter out = null;
 		
-		MRJFileUtils.setDefaultFileType(new MRJOSType("????"));
-		MRJFileUtils.setDefaultFileCreator(new MRJOSType("????"));
+		if (SysUtil.isAMac())
+		{
+			MRJFileUtils.setDefaultFileType(new MRJOSType("????"));
+			MRJFileUtils.setDefaultFileCreator(new MRJOSType("????"));
+		}
 
 		boolean kurz = BenutzerListe.useShortNames();
 		boolean prozJahr = !BenutzerListe.calcProzJahr();
@@ -2376,11 +2414,14 @@ private synchronized void listeSpeichernCSV() {
 			out = null;
 		}
 		
-		try
+		if (SysUtil.isAMac())
 		{
-			MRJFileUtils.setFileTypeAndCreator(f,new MRJOSType("TEXT"),new MRJOSType("XCEL"));
+			try
+			{
+				MRJFileUtils.setFileTypeAndCreator(f,new MRJOSType("TEXT"),new MRJOSType("XCEL"));
+			}
+			catch (Exception e) {}
 		}
-		catch (Exception e) {}
 	}
 }
 
@@ -2486,7 +2527,7 @@ public boolean mainr()
 
 
 
-public void closed() {
+private void saveAndExit() {
 
 	if (AktienMan.daxKamera != null) AktienMan.daxKamera.savePos();
 	
@@ -2501,6 +2542,13 @@ public void closed() {
 	AktienMan.properties.saveParameters();
 
 	System.exit(0);
+}
+
+
+
+public void closed() {
+
+	saveAndExit();
 }
 
 

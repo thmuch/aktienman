@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-02-04
+ @version 2001-10-30
 */
 
 import java.awt.*;
@@ -54,13 +54,17 @@ public synchronized void executeOK() {
 	File alt = new File(Portfolios.getCurrentFile());
 
 	String s = "";
-	try
+
+	if (SysUtil.isAMac())
 	{
-		s = MRJFileUtils.findFolder(MRJFileUtils.kWhereToEmptyTrashFolderType).toString();
-	}
-	catch (FileNotFoundException e)
-	{
-		s = "";
+		try
+		{
+			s = MRJFileUtils.findFolder(MRJFileUtils.kWhereToEmptyTrashFolderType).toString();
+		}
+		catch (FileNotFoundException e)
+		{
+			s = "";
+		}
 	}
 	
 	if (s.length() > 0)

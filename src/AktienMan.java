@@ -1,11 +1,11 @@
 /**
  @author Thomas Much
- @version 2000-11-12
+ @version 2001-11-07
 */
 
 /**
  AktienMan Portfolio-Management-Software
- Copyright (c)1998-2000 by Thomas Much (thomas@snailshell.de)
+ Copyright (c)1998-2001 by Thomas Much (thomas@snailshell.de)
  Hauptprogramm (main)
 */
 
@@ -16,12 +16,12 @@ import java.awt.*;
 public final class AktienMan {
 
 public static final String AMNAME         = "AktienMan";
-public static final String AMVERSION      = "1.95";
+public static final String AMVERSION      = "1.96";
 public static final String AMFENSTERTITEL = AMNAME + " - ";
 
-public static ADate compDate              = new ADate(2000,11,12); /* Compilierdatum */
-public static final int RELEASE           = 20; /* 1.95 (2000-11-12) */
-public static final boolean DEBUG         = true; /**/
+public static ADate compDate              = new ADate(2001,11,7); /* Compilierdatum */
+public static final int RELEASE           = 21; /* 1.96 (2001-11-07) */
+public static final boolean DEBUG         = false; /**/
 
 public static Aktienliste listeDAX        = new Aktienliste();
 public static Aktienliste listeMDAX       = new Aktienliste();

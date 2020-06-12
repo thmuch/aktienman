@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-11-10
+ @version 2001-10-30
 */
 
 import java.awt.*;
@@ -359,7 +359,7 @@ public synchronized Image getImage() {
 
 public synchronized Image getIndexImage(int index) {
 
-	return usImages[index];
+	return (usImages != null) ? usImages[index] : null;
 }
 
 

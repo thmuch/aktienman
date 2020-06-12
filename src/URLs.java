@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-11-10
+ @version 2001-08-27
 */
 
 
@@ -161,10 +161,11 @@ public String getString(int strNr) {
 		return "Kurszeit";
 
 	case STR_CD_KURSVOLUMEN:
-		return "Gehandelte St&uuml;ck";
+//		return "Gehandelte St&uuml;ck";
+		return "Gehandelter Nennwert";
 
 	case STR_CD_KURSENDE:
-		return "Chart Analyzer";
+		return "Chart Analyser";
 
 	case STR_CD_KURSTITEL:
 		return "<th ";
@@ -203,7 +204,8 @@ public String getString(int strNr) {
 		return ".";
 
 	case STR_CD_LISTEBOERSERE:
-		return "&";
+//		return "&";
+		return "";
 
 	case STR_CD_CHARTS:
 		return "/charts/";
@@ -625,6 +627,9 @@ public boolean isValidNr(long nr) {
 	case 272:
 	case 339:
 	case 485:
+	case 595:
+	case 613:
+	case 619:
 
 		return false;
 	}

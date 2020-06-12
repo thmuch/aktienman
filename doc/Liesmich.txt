@@ -1,11 +1,13 @@
-AktienMan 1.90-beta (2000-08-19)
-Copyright ©1998-2000 by Thomas Much (thomas@aktienman.de)
+AktienMan 1.96-beta (2001-11-07)
+Copyright ©1998-2001 by Thomas Much (thomas@aktienman.de)
 
 
 History
 -------
 allg. Bugs
-// Absturz, wenn Maxkursdialog vor Ende geschlossen wird ...
+// Absturz, wenn Maxkursdialog vor Ende geschlossen wird ... (?)
+MOSX-Bugs
+// MOSX Fenstertoppen schlägt ab und zu fehl...
 Mac-Bugs
 // 
 Win-Bugs
@@ -73,10 +75,33 @@ Version 2.00 (.12.00)
 // RO-Web-Portfolios
 // Top/Flop-Liste im Extra-Fenster, Kopie per Klick ins aktuelle Portfolio
 // SMS/E-Mails verschicken
-// neue Bankkonditionen (easytrade)
-// UpdateLoader: ProgessBar
-// Mac OS X Version
 // 
+Version 1.97 (.12.00)
+// RELEASE erhöhen, DEBUG entfernen
+// neue Bankkonditionen (easytrade)
+// UpdateLoader: ProgessBar, längere Kommentare zum Update, Messages an alle Kunden
+// Bugfix: 2x-Kontextpopup unter Windows
+// Direkt-Buttons für einzelne Portfolios
+// einzelne Zeilen durch Linien oder Graustufen trennen
+// L&S-Weiterschaltung evtl. von Voreinstellungen abhängig machen
+// Fonds
+// Comdirect-Optimal-Rechner (für Ojo)
+// Charts unter Linux etwas höher
+// PoFo-Umschaltbuttons
+// Menü "Zur AM-Anwender-Seite", falls registriert
+// US$ als Währung zulassen, Kurs aus dem Web ermitteln
+// bei unbekannten Währungen: Fehler!!!
+//
+Version 1.96 (07.11.01)
+- Comdirect-Kurse werden wieder aktualisiert
+- Comdirect-Kurslisten werden wieder aktualisiert
+- die Indizes werden wieder aktualisiert
+- die Gesamtaufwand-Währung wird nun mit EUR initialisiert
+- [MOSX] die Voreinstellungen werden nun in ~/Library/Preferences gespeichert
+- [MOSX] Das Ändern der Indizes zur Laufzeit zerstört nicht mehr das Layout des Hauptfensters
+- [Bugfix] Nullreferenzzugriff bei der DAX-Kamera beseitigt
+- [Bugfix] Bei Fehlern im Comdirect-Kursleser wurde nicht immer automatisch auf einen
+  anderen Kursleser umgeschaltet.
 Version 1.95 (12.11.00)
 - neue Comdirect-Ordergebühren
 - die Portfolio-Chartübersicht steht nun für alle Zeittypen zur Verfügung

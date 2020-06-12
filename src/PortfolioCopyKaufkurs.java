@@ -1,12 +1,11 @@
 /**
  @author Thomas Much
- @version 2000-08-15
+ @version 2000-11-12
 */
 
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import com.apple.mrj.*;
 
 
 

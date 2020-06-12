@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-03-27
+ @version 2000-11-13
 */
 
 import java.awt.*;
@@ -366,6 +366,11 @@ private synchronized static void setIndex(int i, boolean doSave, boolean doLoad)
 	hauptdialog.setPortfolioTitle(getCurrentWindowTitle());
 	
 	AktienMan.properties.setString("Portfolio.StartName",getName(getIndex()));
+	
+/*	if (SysUtil.isMacOSX())
+	{
+		AktienMan.properties.saveParameters();
+	} */
 	
 	if (resetProgress)
 	{

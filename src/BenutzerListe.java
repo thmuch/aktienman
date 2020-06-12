@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-08-01
+ @version 2001-11-05
 */
 
 import java.util.*;
@@ -25,7 +25,7 @@ private ADate letzteAktualisierung = null;
 private String festeBoerse = null;
 private String kommentar = null;
 private long verkaufserloes = 0L;
-private int erloesWaehrung = Waehrungen.DEM;
+private int erloesWaehrung = Waehrungen.EUR;
 private int portfoliover = 0;
 private int sortBy = SORT_NAME;
 

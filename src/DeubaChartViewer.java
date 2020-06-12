@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-27
+ @version 2000-11-13
 */
 
 import java.awt.*;
@@ -79,6 +79,11 @@ protected synchronized void checkXY(int x, int y) {
 	{
 		x -= WINFIX_X;
 		y -= WINFIX_Y;
+	}
+	else if (SysUtil.isMacOSX())
+	{
+		x -= MOSXFIX_X;
+		y -= MOSXFIX_Y;
 	}
 	
 	if ((y >= 5) && (y <= 27))

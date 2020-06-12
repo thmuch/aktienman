@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-07-30
+ @version 2000-11-12
 */
 
 
@@ -20,7 +20,7 @@ public static final String LOADKAMERA  = "DAX-Kamera wird geladen...";
 public static final String LOADCHART   = "Chart wird geladen...";
 public static final String CHARTERROR  = "Chart konnte nicht geladen werden.";
 
-public static final String FILEMENUTITLE = SysUtil.isMacOS() ? "Ablage" : "Datei";
+public static final String FILEMENUTITLE = SysUtil.isAMac() ? "Ablage" : "Datei";
 public static final String EDITMENUTITLE = "Bearbeiten";
 
 public static final String DEMOVERSION = "D E M O - V E R S I O N";

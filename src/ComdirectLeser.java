@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-11-07
+ @version 2000-12-27
 */
 
 import java.io.*;
@@ -189,7 +189,7 @@ private String readKurs(BufferedReader in, String reqBoerse, boolean readListe) 
 			status = STATUS_FINISHED;
 			continue;
 		}
-		else
+		else if (status < STATUS_WAIT4REST)
 		{
 			int iq = s.indexOf(str_quote);
 			
@@ -630,7 +630,10 @@ public void run() {
 
 			in = new BufferedReader(new InputStreamReader(url.openStream()));
 			
-			readKurs(in,spboerse,false);
+			if (readKurs(in,spboerse,false) != null)
+			{
+				throw new Exception();
+			}
 		}
 	}
 	catch (MalformedURLException e)

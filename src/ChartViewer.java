@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-27
+ @version 2000-11-13
 */
 
 import java.awt.*;
@@ -17,8 +17,11 @@ private static final int STATUS_EMPTY    =  0;
 private static final int STATUS_LOADING  =  1;
 private static final int STATUS_FINISHED =  2;
 
-protected static final int WINFIX_X =  8;
-protected static final int WINFIX_Y = 46;
+protected static final int WINFIX_X  =  8;
+protected static final int WINFIX_Y  = 46;
+
+protected static final int MOSXFIX_X =  0;
+protected static final int MOSXFIX_Y = 26;
 
 private Image chartImage = null;
 
@@ -45,6 +48,11 @@ public ChartViewer(Image chartImage, String titel, String wknboerse, int type, S
 	{
 		initWidth  += WINFIX_X;
 		initHeight += WINFIX_Y;
+	}
+	else if (SysUtil.isMacOSX())
+	{
+		initWidth  += MOSXFIX_X;
+		initHeight += MOSXFIX_Y;
 	}
 
 	this.wknboerse = wknboerse;
@@ -75,30 +83,35 @@ public void display() {}
 
 
 protected boolean isFonds() {
+
 	return fondsonly;
 }
 
 
 
 protected synchronized void setType(int type) {
+
 	this.type = type;
 }
 
 
 
 protected synchronized int getType() {
+
 	return type;
 }
 
 
 
 protected synchronized void setStatus(int status) {
+
 	this.status = status;
 }
 
 
 
 private synchronized int getStatus() {
+
 	return status;
 }
 
@@ -121,7 +134,9 @@ public synchronized String getStatusString() {
 
 
 protected synchronized void setStatusFinished() {
+
 	setStatus(STATUS_FINISHED);
+
 	nextID = ChartQuellen.CHARTQUELLE_NONE;
 }
 
@@ -164,6 +179,7 @@ public synchronized void setStatusError() {
 
 
 public synchronized void setStatusEmpty() {
+
 	setStatus(STATUS_EMPTY);
 	neuZeichnen();
 }
@@ -171,12 +187,14 @@ public synchronized void setStatusEmpty() {
 
 
 protected String getWKNBoerse() {
+
 	return wknboerse;
 }
 
 
 
 public synchronized void setImage(Image chartImage, byte[] data) {
+
 	this.chartImage = chartImage;
 	
 	if (chartImage == null)
@@ -205,18 +223,21 @@ protected abstract void setImageData(byte[] data);
 
 
 public synchronized Image getImage() {
+
 	return chartImage;
 }
 
 
 
 public void setupElements() {
+
 	setLayout(new BorderLayout());
 }
 
 
 
 private void neuZeichnen() {
+
 	paintAll(getGraphics());
 }
 
@@ -261,13 +282,16 @@ protected void resetChartLoader() {
 
 
 public synchronized void setChartLoader(ChartLoader chartloader) {
+
 	resetChartLoader();
+
 	this.chartloader = chartloader;
 }
 
 
 
 public void closed() {
+
 	resetChartLoader();
 }
 

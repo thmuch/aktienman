@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-11-10
+ @version 2000-11-12
 */
 
 import java.awt.*;
@@ -122,7 +122,7 @@ public void windowClosed(WindowEvent e) {
 
 public void keyPressed(KeyEvent e) {
 
-	if (((SysUtil.isMacOS()) && (e.getKeyCode() == KeyEvent.VK_W) && (e.isMetaDown()))
+	if (((SysUtil.isAMac()) && (e.getKeyCode() == KeyEvent.VK_W) && (e.isMetaDown()))
 		|| ((e.getKeyCode() == KeyEvent.VK_F4) && (e.isAltDown())))
 	{
 		e.consume();

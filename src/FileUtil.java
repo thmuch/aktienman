@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-08-11
+ @version 2001-11-05
 */
 
 import java.io.*;
@@ -30,10 +30,32 @@ private static String moduleDir = null;
 static {
 
 	String einstr = getWorkingDirectory() + Lang.CONFIGDIR;
-
-	File einst = new File(einstr);
 	
-	homeDir = ((einst.exists()) ? einstr : System.getProperty("user.home")) + filesep;
+	if (new File(einstr).exists())
+	{
+		homeDir = einstr + filesep;
+	}
+	else
+	{
+		homeDir = System.getProperty("user.home") + filesep;
+	
+		if (SysUtil.isMacOSX())
+		{
+			String newhome = homeDir + "Library" + filesep + "Preferences" + filesep;
+			
+			String oldname = homeDir + getDefaultUnixFilename();
+			String newname = newhome + getDefaultFilename();
+			
+			new File(oldname).renameTo(new File(newname));
+
+			new File(oldname + EXT_PORTFOLIO).renameTo(new File(newname + EXT_PORTFOLIO));
+			new File(oldname + EXT_POPUP).renameTo(new File(newname + EXT_POPUP));
+			new File(oldname + EXT_CONFIG).renameTo(new File(newname + EXT_CONFIG));
+			new File(oldname + EXT_INDIZES).renameTo(new File(newname + EXT_INDIZES));
+			
+			homeDir = newhome;
+		}
+	}
 	
 	String modstr = getWorkingDirectory() + Lang.MODULEDIR;
 	
@@ -73,14 +95,21 @@ public static String getModuleDirectory() {
 
 private static String getDefaultFile() {
 
-	String s = AktienMan.AMNAME;
+	return getHomeDirectory() + ((SysUtil.isAUnix()) ? getDefaultUnixFilename() : getDefaultFilename());
+}
 
-	if (SysUtil.isLinux())
-	{
-		s = "." + s.toLowerCase();
-	}
 
-	return getHomeDirectory() + s;
+
+private static String getDefaultUnixFilename() {
+
+	return "." + getDefaultFilename().toLowerCase();
+}
+
+
+
+private static String getDefaultFilename() {
+
+	return AktienMan.AMNAME;
 }
 
 

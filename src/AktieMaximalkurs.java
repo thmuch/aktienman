@@ -117,7 +117,7 @@ private synchronized void fillKursPanel(boolean draw) {
 	}
 	
 	constrain(panelKurse,new Label("akt. Kurs"),2,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,2,0);
-	constrain(panelKurse,new Label("Volumen",Label.RIGHT),4,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.EAST,1.0,0.0,0,10,2,0);
+	constrain(panelKurse,new Label("geh. St\u00fcck",Label.RIGHT),4,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.EAST,1.0,0.0,0,10,2,0);
 
 	int ypos = 1;
 

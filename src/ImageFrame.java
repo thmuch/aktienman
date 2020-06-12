@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-11-10
+ @version 2001-10-30
 */
 
 import java.awt.*;
@@ -112,8 +112,11 @@ private void sichern() {
 	{
 		BufferedOutputStream out = null;
 		
-		MRJFileUtils.setDefaultFileType(new MRJOSType("????"));
-		MRJFileUtils.setDefaultFileCreator(new MRJOSType("????"));
+		if (SysUtil.isAMac())
+		{
+			MRJFileUtils.setDefaultFileType(new MRJOSType("????"));
+			MRJFileUtils.setDefaultFileCreator(new MRJOSType("????"));
+		}
 
 		String filename = pfad + datei;
 
@@ -159,11 +162,14 @@ private void sichern() {
 			out = null;
 		}
 
-		try
+		if (SysUtil.isAMac())
 		{
-			MRJFileUtils.setFileTypeAndCreator(f,new MRJOSType(filetype),new MRJOSType("ogle"));
+			try
+			{
+				MRJFileUtils.setFileTypeAndCreator(f,new MRJOSType(filetype),new MRJOSType("ogle"));
+			}
+			catch (Exception e) {}
 		}
-		catch (Exception e) {}
 	}
 }
 

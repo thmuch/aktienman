@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-27
+ @version 2000-11-13
 */
 
 import java.awt.*;
@@ -26,24 +26,28 @@ public ComdirectChartViewer(String wknboerse, boolean isFonds, int type, int nex
 
 
 public synchronized void setComdirectRelURL(String rel) {
+
 	relURL = rel;
 }
 
 
 
 protected void loadingFinished() {
+
 	setComdirectImage(getType(),getImage());
 }
 
 
 
 private synchronized Image getComdirectImage(int type) {
+
 	return comdirectCharts[type];
 }
 
 
 
 private synchronized void setComdirectImage(int type, Image img) {
+
 	comdirectCharts[type] = img;
 }
 
@@ -82,26 +86,31 @@ protected synchronized void checkXY(int x, int y) {
 		x -= WINFIX_X;
 		y -= WINFIX_Y;
 	}
+	else if (SysUtil.isMacOSX())
+	{
+		x -= MOSXFIX_X;
+		y -= MOSXFIX_Y;
+	}
 
 	if ((y >= 2) && (y <= 23))
 	{
-		if ((x >= 15) && (x <= 69))
+		if ((x >= 15) && (x <= 78/*69*/))
 		{
 			switchImage(URLs.CHART_INTRA);
 		}
-		else if ((x >= 72) && (x <= 131))
+		else if ((x >= 79/*72*/) && (x <= 144/*131*/))
 		{
 			switchImage(URLs.CHART_3);
 		}
-		else if ((x >= 134) && (x <= 194))
+		else if ((x >= 145/*134*/) && (x <= 210/*194*/))
 		{
 			switchImage(URLs.CHART_6);
 		}
-		else if ((x >= 196) && (x <= 236))
+		else if ((x >= 211/*196*/) && (x <= 258/*236*/))
 		{
 			switchImage(URLs.CHART_12);
 		}
-		else if ((x >= 240) && (x <= 287))
+		else if ((x >= 259/*240*/) && (x <= 310/*287*/))
 		{
 			switchImage(URLs.CHART_36);
 		}
@@ -111,18 +120,21 @@ protected synchronized void checkXY(int x, int y) {
 
 
 protected synchronized void setImageData(byte[] data) {
+
 	chartData[getType()] = data;
 }
 
 
 
 public synchronized byte[] getImageData() {
+
 	return chartData[getType()];
 }
 
 
 
 public String getDefaultFilename() {
+
 	return getWKNBoerse() + "-" + AktienMan.url.getComdirectChartMonths(getType()) + "-" + new ADate().toTimestamp(false) + "." + getExt();
 }
 	

@@ -1,16 +1,16 @@
-AktienMan 1.95
-Copyright ©1998-2000 Thomas Much
-Ein Programm von AktienMan&Friends (http://www.aktienman.de).
+AktienMan 1.96
+Copyright ©1998-2001 Thomas Much
+Ein Programm von AktienMan & Friends (http://www.aktienman.de).
 
 Zielsetzung
 AktienMan ist ein modernes Programm, das die Verwaltung der eigenen Aktien ermöglicht. Es ermittelt jederzeit alle aktuellen Kurse des persönlichen Portfolios (Aktienwerte) aus dem Internet. An keiner Stelle erfolgt die Bekanntgabe des eigenen Portfolios oder der Anzahl der Aktien an Dritte.
 
 Einsatzbereiche
-Wer bisher jeden Tag die aktuellen Kurse seiner Aktien aus n-tv, T-Online oder dem Internet ermittelte und ausrechnen mußte, welchen Wert die eigenen Aktien im Einzelnen und insgesamt haben, wird von AktienMan spürbar entlastet. Ein kurzer Klick auf den Knopf "Aktualisieren" genügt, und AktienMan holt sich alle aktuellen Kurse von allen deutschen Börsen automatisch aus dem Internet und berechnet den Wert des eigenen Portfolios. Zusätzlich können die Kaufs- und Verkaufskosten der wichtigsten deutschen Banken berechnet werden.
+Wer bisher jeden Tag die aktuellen Kurse seiner Aktien aus n-tv, T-Online oder dem Internet ermittelte und ausrechnen mußte, welchen Wert die eigenen Aktien im Einzelnen und insgesamt haben, wird von AktienMan spürbar entlastet. Ein kurzer Klick auf den Knopf "Aktualisieren" genügt, und AktienMan holt sich alle aktuellen Kurse von allen deutschen Börsen automatisch aus dem Internet und berechnet den Wert des eigenen Portfolios. 
 
 Installation
-Systemvoraussetzung für AktienMan/Mac sind ein Apple PowerMacintosh mit mindestens 166 Mhz Systemtakt, das Betriebssystem MacOS in der Version 8.0 oder höher sowie ein fertig installiertes "Macintosh Runtime for Java" (MRJ) in der Version 2.2 (oder höher).
-Normalerweise wird MRJ 2.0 bei der Installation von MacOS 8.x automatisch mitinstalliert. Diese Version ist jedoch fehlerhaft, so daß wir dringend zu MRJ 2.2.3 raten müssen. Apple stellt MRJ 2.2.3 unter http://www.apple.com/java/ zum kostenlosen Download zur Verfügung, ebenso finden Sie auf der AktienMan-Homepage Verweise auf die entsprechenden Archive.
+Systemvoraussetzung für AktienMan/Mac sind ein Apple PowerMacintosh mit mindestens 166 Mhz Systemtakt, das Betriebssystem MacOS in der Version 8.1 oder höher sowie ein fertig installiertes "Macintosh Runtime for Java" (MRJ) in der Version 2.2 (oder höher).
+Aktuell ist MRJ 2.2.5. Sollten Sie eine ältere Version installiert haben, die z.T. fehlerhaft waren, laden Sie sich bitte die neuste Version von http://developer.apple.com/java/download.html herunter und installieren Sie diese. Auf der AktienMan-Homepage finden Sie einen Verweis auf das entsprechende Archiv.
 Die eigentliche Installation von AktienMan ist denkbar einfach: Sie haben das AktienMan-Archiv bereits heruntergeladen und mit StuffIt ausgepackt. Das war es auch schon, eine weitere Installation ist nicht notwendig! Klicken Sie einfach doppelt auf das Programmsymbol "AktienMan". AktienMan wird geladen, und nach wenigen Sekunden - abhängig von der Geschwindigkeit des Rechners - erscheint das Hauptfenster. Wer mit dem Aktienhandel bereits vertraut ist, sollte AktienMan weitestgehend intuitiv bedienen können. Und ansonsten erhält man nach der Registrierung natürlich ein gedrucktes Handbuch.
 
 Einschränkungen der Demo-Version
@@ -29,6 +29,10 @@ AktienMan kennt nun drei unabhängige Währungen, die bei Bedarf automatisch inein
 - die Listenwährung bestimmt, in welcher Währung die Aktien in der Liste des Hauptdialogs angezeigt werden; unten links im Hauptdialog kann man die Listenwährung umschalten.
 
 Versionsübersicht
+1.96 (2001-11-07)
+- Die Indizes werden wieder aktualisiert.
+- [Bugfix] Nullreferenzzugriff bei der DAX-Kamera beseitigt.
+- [Bugfix] Bei Fehlern im Comdirect-Kursleser wurde nicht immer automatisch auf einen anderen Kursleser umgeschaltet.
 1.95 (2000-11-12)
 - Die Portfolio-Chartübersicht steht nun für alle Zeittypen zur Verfügung. 
 - Im DAX-Kamera-Fenster werden unten nun auch Dow Jones, S&P 500 und NASDAQ angezeigt. Die neuen Indizes können im Bearbeiten-Menü des Kamera-Fensters einzeln ausgeschaltet werden. 

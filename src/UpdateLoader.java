@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-05-23
+ @version 2001-10-30
 */
 
 import java.net.*;
@@ -115,8 +115,11 @@ private boolean save(byte[] daten) {
 	DataOutputStream out = null;
 	boolean valid = false;
 
-	MRJFileUtils.setDefaultFileType(new MRJOSType("????"));
-	MRJFileUtils.setDefaultFileCreator(new MRJOSType("????"));
+	if (SysUtil.isAMac())
+	{
+		MRJFileUtils.setDefaultFileType(new MRJOSType("????"));
+		MRJFileUtils.setDefaultFileCreator(new MRJOSType("????"));
+	}
 
 	File f = new File(filename);
 	
@@ -155,7 +158,7 @@ private boolean save(byte[] daten) {
 		}
 	}
 
-	if (filename.endsWith(".sit"))
+	if (SysUtil.isAMac() && filename.endsWith(".sit"))
 	{
 		try
 		{
