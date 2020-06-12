@@ -1,7 +1,9 @@
 /**
  @author Thomas Much
- @version 2002-01-14
+ @version 2002-10-09
 
+ 2002-10-09
+   readKursURL findet Comdirect-Chartseiten nun wieder
  2002-01-14
    readChartURL findet nun wieder die Chart-URL; das URL-Ende wird mit dem letzten
      Zeichen von str_chartsrc gesucht
@@ -120,6 +122,8 @@ private String readKursURL() {
 	boolean valid = false;
 	String kursURL = "";
 
+	/* €nderungen mit ComdirectChartLeser.run abgleichen! */
+
 	try
 	{
 		URL url = new URL(AktienMan.url.getComdirectKursURL(getWKN(),getBoerse()));
@@ -128,7 +132,8 @@ private String readKursURL() {
 
 		String s;
 		
-		String str_charts = AktienMan.url.getString(URLs.STR_CD_CHARTS);
+		String str_charts       = AktienMan.url.getString(URLs.STR_CD_CHARTS);
+		String str_chartreplace = AktienMan.url.getString(URLs.STR_CD_CHARTREPLACE);
 		
 		while ((s = in.readLine()) != null)
 		{
@@ -146,6 +151,9 @@ private String readKursURL() {
 				if ((leftquote >= 0) && (rightquote > leftquote))
 				{
 					String relURL = s.substring(leftquote+1,rightquote);
+
+					i = relURL.indexOf(str_charts);
+					relURL = relURL.substring(0,i) + str_chartreplace + relURL.substring(i+str_charts.length());
 					
 					kursURL = AktienMan.url.getComdirectChartURL(relURL,getType(),URLs.CHART_LINIE);
 

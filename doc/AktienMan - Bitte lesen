@@ -1,5 +1,5 @@
-AktienMan 1.96
-Copyright ©1998-2001 Thomas Much
+AktienMan 1.98
+Copyright ©1998-2002 Thomas Much
 Ein Programm von AktienMan & Friends (http://www.aktienman.de).
 
 Zielsetzung
@@ -17,10 +17,12 @@ Einschränkungen der Demo-Version
 Die Demo-Version kann nur das Standardportfolio mit maximal drei Aktien verwalten. Die registrierte Vollversion besitzt dagegen keine Einschränkung bei der Zahl der Portfolios oder der zu verwaltenden Aktien.
 
 Bestellung der Vollversion
-Sie können jederzeit eine aktuelle Version von AktienMan aus dem Internet von der Seite http://www.aktienman.de herunterladen. Wenn Sie Gefallen an AktienMan gefunden haben und dauerhaft benutzen möchten, können Sie das komplette Handbuch und einen Schlüssel zur Freischaltung von AktienMan bei AktienMan&Friends direkt im Internet bestellen. AktienMan&Friends liefert dann die Anleitung und den notwendigen Freischalt-Schlüssel mit einer Rechnung über DM 79,-- (EUR 40,39) inkl. 16% Mwst. an Ihre Adresse. Mit der Bestellung sind Sie automatisch für AktienMan bei AktienMan&Friends registriert.
+Sie können jederzeit eine aktuelle Version von AktienMan aus dem Internet von der Seite http://www.aktienman.de herunterladen. Wenn Sie Gefallen an AktienMan gefunden haben und dauerhaft benutzen möchten, können Sie das komplette Handbuch und einen Schlüssel zur Freischaltung von AktienMan bei AktienMan&Friends direkt im Internet bestellen. AktienMan&Friends liefert dann die Anleitung und den notwendigen Freischalt-Schlüssel mit einer Rechnung über € 39,-- (DM 76,28) inkl. 16% Mwst. an Ihre Adresse. Mit der Bestellung sind Sie automatisch für AktienMan bei AktienMan&Friends registriert.
 
 Rechtliches
-AktienMan kann auf einem beliebigen Rechner/Betriebssystem eingesetzt werden. Es muß lediglich gewährleistet sein, daß AktienMan nur vom registrierten Benutzer zum Einsatz kommt. Jeder registrierte Benutzer kann für jeweils DM 50,-- (EUR 25,56) inkl. Mwst. weitere Schlüssel von AktienMan&Friends bestellen.
+AktienMan kann auf einem beliebigen Rechner/Betriebssystem eingesetzt werden. Es muß lediglich gewährleistet sein, daß AktienMan nur vom registrierten Benutzer zum Einsatz kommt. Jeder registrierte Benutzer kann für jeweils € 25,-- (DM 48,90) inkl. 16% Mwst. weitere Schlüssel von AktienMan&Friends bestellen.
+
+Wichtiger Hinweis: Da AktienMan alle Kursinformationen von Rechnern im Internet abfragt, auf die wir keinen Einfluss haben, können wir für die Zuverlässigkeit und Genauigkeit der Daten keine Garantie übernehmen. Relevant für Ihre Käufe und Verkäufe sind einzig und allein die Daten, die Ihnen von Ihrer Bank beim Kauf bzw. Verkauf übermittelt werden.
 
 Hinweise zur Euro-Version
 AktienMan kennt nun drei unabhängige Währungen, die bei Bedarf automatisch ineinander umgerechnet werden:
@@ -29,30 +31,17 @@ AktienMan kennt nun drei unabhängige Währungen, die bei Bedarf automatisch inein
 - die Listenwährung bestimmt, in welcher Währung die Aktien in der Liste des Hauptdialogs angezeigt werden; unten links im Hauptdialog kann man die Listenwährung umschalten.
 
 Versionsübersicht
+1.98 (2002-10-10)
+- Comdirect-Kurse und -Charts werden wieder geladen.
+1.97 (2002-01-14)
+- Comdirect-Charts werden wieder geladen.
+- In der Portfolio-Chartübersicht werden nun auch Fonds angezeigt.
+- Diverse Probleme mit dem Rechtsklick-Popup auf einen Listeneintrag behoben; allerdings kann es dadurch nun passieren, dass eine Zeile erst nach dem Verlassen des Popups selektiert wird.
+- [Bugfix] Nullreferenzzugriff und Redrawfehler in der Portfolio-Chartübersicht beseitigt.
 1.96 (2001-11-07)
 - Die Indizes werden wieder aktualisiert.
 - [Bugfix] Nullreferenzzugriff bei der DAX-Kamera beseitigt.
 - [Bugfix] Bei Fehlern im Comdirect-Kursleser wurde nicht immer automatisch auf einen anderen Kursleser umgeschaltet.
-1.95 (2000-11-12)
-- Die Portfolio-Chartübersicht steht nun für alle Zeittypen zur Verfügung. 
-- Im DAX-Kamera-Fenster werden unten nun auch Dow Jones, S&P 500 und NASDAQ angezeigt. Die neuen Indizes können im Bearbeiten-Menü des Kamera-Fensters einzeln ausgeschaltet werden. 
-- Bei der Bankgebührenberechnung werden die neuen Comdirect-Gebühren berücksichtigt. 
-- [Bugfix] Indizes, Aktienlisten und Comdirect-Kurse werden wieder aktualisiert. 
-1.90 (2000-08-19)
-- Aktiensplits
-- bei "Aktie ändern" kann für jeden Wert eine Dividende eingetragen werden
-- im Portfolio-Menü kann ein Fenster mit allen Intraday-Charts des aktuellen Portfolios aufgerufen werden
-- die Warnungen bei Über-/Unterschreiten eines Grenzwertes können unter "Bearbeiten - Warnungen..." konfiguriert werden (optisch, akustisch)
-- unter "Bearbeiten - Indizes" können die angezeigten Indizes konfiguriert werden
-- die Indexwerte werden am Programmende automatisch gespeichert
-- bei "Aktie verkaufen" wird nun die Verkaufswährung angezeigt
-- für Veränderungsbeobachtungen kann der Kaufkurs aller beobachteten Aktien auf den aktuellen Kurs gesetzt werden; dazu muss beim Anklicken des "Aktualisieren"-Buttons die Shift-Taste gedrückt werden
-1.80 (2000-04-02)
-- Die Listendarstellung wurde beschleunigt. 
-- Fondsabfrage bei Comdirect verbessert.
-- Die Sortierreihenfolge wird nun für jedes Portfolio separat gespeichert. 
-- [Bugfix] Während ein modaler Dialog angezeigt wird, kann die Sortierreihenfolge nicht mehr umgeschaltet werden. 
-- [Bugfix] "Aktualisieren an" funktioniert wieder.
 
 Kontakt
 Bestellungen richten Sie bitte an bestellung@aktienman.de, am besten wickeln Sie Ihre Bestellung aber über die AktienMan-Homepage http://www.aktienman.de ab. Supportanfragen beantwortet support@aktienman.de.

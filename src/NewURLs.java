@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2002-01-13
+ @version 2002-12-16
 */
 
 
@@ -11,21 +11,17 @@ public class NewURLs extends URLs {
 
 
 
-/*public String getBase(int bnr) {
+public String getBase(int bnr) {
 
 	switch (bnr)
 	{
-	case BASE_COMDIRECT:
+	case BASE_DEUBA:
 
-		return "http://informer2.comdirect.de";
-
-	case BASE_BBBANK:
-
-		return "http://bbbank.teledata.de/bbbank/";
+		return "http://deuba.aktienman.de:9030";
 	}
 
 	return super.getBase(bnr);
-}*/
+}
 
 
 
@@ -52,17 +48,8 @@ public class NewURLs extends URLs {
 
 	switch (strNr)
 	{
-	case STR_CD_KURSENDE:
-
-		return "Chart Analyser";
-
-	case STR_CD_LISTEBOERSERE:
-
-		return "";
-
 	case STR_CD_KURSVOLUMEN:
-
-		return "Gehandelter Nennwert";
+		return "St&uuml;ckvolumen";
 	}
 
 	return super.getString(strNr);
@@ -106,6 +93,17 @@ public boolean isValidNr(long nr) {
 	case 613:
 	case 619:
 	case 675:
+	case 701:
+	case 712:
+	case 758:
+	case 764:
+	case 770:
+	case 792:
+	case 809:
+	case 810:
+	case 813:
+	case 815:
+	case 829:
 
 		return false;
 	}

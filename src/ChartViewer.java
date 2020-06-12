@@ -230,6 +230,8 @@ public synchronized void setImage(Image chartImage, byte[] data) {
 			setImageData(data);
 		}
 	}
+	
+	System.gc();
 }
 
 
@@ -292,6 +294,8 @@ protected void resetChartLoader() {
 	{
 		chartloader.stopLoading();
 		chartloader = null;
+		
+		System.gc();
 	}
 }
 
@@ -309,6 +313,8 @@ public synchronized void setChartLoader(ChartLoader chartloader) {
 public void closed() {
 
 	resetChartLoader();
+	
+	System.gc();
 }
 
 

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-03-27
+ @version 2002-10-09
 */
 
 import java.awt.*;
@@ -134,6 +134,8 @@ public synchronized void reset() {
 	catch (InterruptedException e) {}
 	
 	paint(getGraphics());
+	
+	System.gc();
 }
 
 }

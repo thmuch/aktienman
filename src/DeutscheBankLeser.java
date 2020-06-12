@@ -65,6 +65,8 @@ public void run() {
 
 		String spwkn    = request.substring(0,sp);
 		String spboerse = request.substring(sp+1);
+		
+		System.out.println(AktienMan.url.getDeubaKursURL(spwkn,spboerse)); /* TODO */
 
 		URL url = new URL(AktienMan.url.getDeubaKursURL(spwkn,spboerse));
 		

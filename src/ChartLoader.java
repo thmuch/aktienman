@@ -98,6 +98,8 @@ public void run() {
 			
 				in = null;
 			}
+			
+			System.gc();
 		}
 
 		if (!stopped && reload)

@@ -95,6 +95,8 @@ public void run() {
 			}
 
 			Connections.releaseConnection();
+
+			System.gc();
 		}
 
 		if (!stopped)

@@ -23,7 +23,10 @@ public IntradayChartViewer(String wknboerse, BenutzerAktie ba) {
 
 
 protected synchronized void setImageData(byte[] data) {
+
 	chartData = data;
+
+	System.gc();
 }
 
 

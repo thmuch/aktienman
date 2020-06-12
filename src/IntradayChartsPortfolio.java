@@ -194,6 +194,8 @@ private synchronized void stopThreads() {
 			threads[i] = null;
 		}
 	}
+	
+	System.gc();
 }
 
 
@@ -205,6 +207,8 @@ public synchronized void setChartError(int index) {
 	isError[index] = true;
 
 	repaintByIndex(index);
+	
+	System.gc();
 }
 
 
@@ -219,6 +223,8 @@ public synchronized void setChartImage(int index, Image image) {
 	{
 		repaintBigIndex();
 	}
+
+	System.gc();
 }
 
 

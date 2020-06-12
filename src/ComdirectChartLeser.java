@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-03-27
+ @version 2002-10-09
 */
 
 import java.net.*;
@@ -40,6 +40,8 @@ public void run() {
 	AktienMan.checkURLs();
 	
 	if (!AktienMan.hauptdialog.mainr()) return;
+	
+	/* €nderungen mit ChartPofoComdirectLeser.readKursURL abgleichen! */
 
 	chartviewer = new ComdirectChartViewer(wkn+"."+boerse,isFonds,type,nextID);
 	
@@ -51,7 +53,8 @@ public void run() {
 
 		String s;
 		
-		String str_charts    = AktienMan.url.getString(URLs.STR_CD_CHARTS);
+		String str_charts       = AktienMan.url.getString(URLs.STR_CD_CHARTS);
+		String str_chartreplace = AktienMan.url.getString(URLs.STR_CD_CHARTREPLACE);
 		
 		while ((s = in.readLine()) != null)
 		{
@@ -69,6 +72,9 @@ public void run() {
 				if ((leftquote >= 0) && (rightquote > leftquote))
 				{
 					String rel = s.substring(leftquote+1,rightquote);
+					
+					i = rel.indexOf(str_charts);
+					rel = rel.substring(0,i) + str_chartreplace + rel.substring(i+str_charts.length());
 					
 					chartviewer.setComdirectRelURL(rel);
 					

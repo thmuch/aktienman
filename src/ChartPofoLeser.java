@@ -168,6 +168,8 @@ protected void loadChart(String imgURL) {
 			}
 
 			Connections.releaseConnection();
+			
+			System.gc();
 		}
 
 		if (getParent() != null)

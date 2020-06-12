@@ -325,6 +325,8 @@ public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, in
 public synchronized void setKameraDaten(byte[] kameraDaten) {
 
 	this.kameraDaten = kameraDaten;
+
+	System.gc();
 }
 
 
@@ -332,6 +334,8 @@ public synchronized void setKameraDaten(byte[] kameraDaten) {
 public synchronized void setImage(Image daxImage) {
 
 	this.daxImage = daxImage;
+
+	System.gc();
 }
 
 
@@ -339,6 +343,8 @@ public synchronized void setImage(Image daxImage) {
 public synchronized void setImage(int index, Image image) {
 
 	usImages[index] = image;
+
+	System.gc();
 }
 
 

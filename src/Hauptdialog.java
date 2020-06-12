@@ -1,7 +1,9 @@
 /**
  @author Thomas Much
- @version 2002-01-14
- 
+ @version 2002-10-09
+
+ 2002-10-09
+   Hauptdialog implementiert nun MRJPrefsHandler (für Mac OS X)
  2002-01-14
    setChartChoice kennt nun auch 5- und 10-Jahres-Charts
    listeSelect/aktienPopup synchronisieren nicht mehr während aktienpopup.show (dadurch hängt MOSX nicht mehr)
@@ -16,7 +18,7 @@ import com.apple.mrj.*;
 
 
 public final class Hauptdialog extends AFrame implements ComponentListener,MRJQuitHandler,
-															MRJAboutHandler,KursReceiver {
+															MRJAboutHandler,MRJPrefsHandler,KursReceiver {
 
 private static final String FENSTERTITEL = AktienMan.AMNAME+" "+AktienMan.AMVERSION;
 
@@ -182,6 +184,7 @@ public void display() {
 	if (SysUtil.isMacOSX())
 	{
 		MRJApplicationUtils.registerQuitHandler(this);
+		MRJApplicationUtils.registerPrefsHandler(this);
 	}
 }
 
@@ -197,6 +200,13 @@ public void handleAbout() {
 public void handleQuit() {
 
 	saveAndExit();
+}
+
+
+
+public void handlePrefs() {
+
+	callKonfiguration();
 }
 
 

@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2002-01-14
+ @version 2002-12-16
 */
 
 
@@ -36,7 +36,6 @@ public static final int URL_KURSECOMDIRECT   = 40;
 public static final int URL_KURSEDEUBA       = 50;
 public static final int URL_CHARTDEUBA       = 51;
 
-//public static final int URL_INDEXBBBANK      = 60;
 public static final int URL_BBBINDEXD        = 61;
 public static final int URL_BBBINDEXEU       = 62;
 public static final int URL_BBBINDEXUS       = 63;
@@ -76,6 +75,8 @@ public static final int STR_CD_KURSVORTAG    = 18;
 public static final int STR_CD_KURSEROEFF    = 19;
 public static final int STR_CD_KURSHOECHST   = 20;
 public static final int STR_CD_KURSTIEFST    = 21;
+public static final int STR_CD_FONDSKURS     = 22;
+public static final int STR_CD_KURSDFK       = 29;
 
 public static final int STR_CD_LISTEWKNLI    = 23;
 public static final int STR_CD_LISTEWKNRE    = 24;
@@ -85,9 +86,9 @@ public static final int STR_CD_LISTEBOERSELI = 27;
 public static final int STR_CD_LISTEBOERSERE = 28;
 
 public static final int STR_CD_CHARTS        = 30;
-//public static final int STR_CD_CHARTHREF     = 31;
 public static final int STR_CD_CHARTIMAGE    = 32;
 public static final int STR_CD_CHARTSRC      = 33;
+public static final int STR_CD_CHARTREPLACE  = 34;
 
 public static final int STR_DEUBA_KURSFEHLER = 40;
 public static final int STR_DEUBA_KURSTITEL  = 41;
@@ -96,14 +97,12 @@ public static final int STR_DEUBA_KURSZEILE  = 43;
 public static final int STR_DEUBA_KURSSYMBOL = 44;
 
 public static final int STR_DEUBA_CHARTS     = 50;
-//public static final int STR_DEUBA_CHARTHREF  = 51;
 public static final int STR_DEUBA_CHARTIMAGE = 52;
 public static final int STR_DEUBA_CHARTSRC   = 53;
 
 public static final int STR_BBB_INDEXTITLE   = 60;
 public static final int STR_BBB_INDEXSET     = 61;
 public static final int STR_BBB_INDEXENDE    = 62;
-//public static final int STR_BBB_INDEXVALUE   = 63;
 
 public static final int STR_LSDAX_KURSANFANG = 70;
 public static final int STR_LSDAX_KURSENDE   = 71;
@@ -157,38 +156,43 @@ public String getString(int strNr) {
 		return "<title>Komfortsuche</title>";
 	
 	case STR_CD_KURS:
-		return "Aktueller Kurs";
+		return "Aktuell<";
+	
+	case STR_CD_FONDSKURS:
+		return "R&uuml;cknahmepreis<";
+
+	case STR_CD_KURSDFK:
+		return "Deutsche Fonds";
 
 	case STR_CD_KURSZEIT:
-		return "Kurszeit";
+		return "<td align";
 
 	case STR_CD_KURSVOLUMEN:
-//		return "Gehandelte St&uuml;ck";
-		return "Gehandelter Nennwert";
+		return "<tr align=right class='bcolorYellowB'>";
 
 	case STR_CD_KURSENDE:
-		return "Chart Analyser";
+		return "Impressum";
 
 	case STR_CD_KURSTITEL:
-		return "<th ";
+		return "<th>";
 	
 	case STR_CD_KURSWKN:
-		return ">WKN<";
+		return "WKN:";
 	
 	case STR_CD_KURSSYMBOL:
-		return ">Symbol<";
+		return "Symbol:";
 
 	case STR_CD_KURSVORTAG:
-		return "Letzter bzw. Schlu&szlig;";
+		return "Schluss Vortag";
 		
 	case STR_CD_KURSEROEFF:
-		return "Er&ouml;ffnungskurs";
+		return "Er&ouml;ffnung";
 		
 	case STR_CD_KURSHOECHST:
-		return "Tagesh&ouml;chstkurs";
+		return "Hoch";
 		
 	case STR_CD_KURSTIEFST:
-		return "Tagestiefstkurs";
+		return "Tief";
 	
 	case STR_CD_LISTEWKNLI:
 		return ">";
@@ -200,27 +204,24 @@ public String getString(int strNr) {
 		return "</tr>";
 
 	case STR_CD_LISTEQUOTE:
-		return "/quotes/";
+		return "/fokus/";
 
 	case STR_CD_LISTEBOERSELI:
 		return ".";
 
 	case STR_CD_LISTEBOERSERE:
-//		return "&";
 		return "";
 
 	case STR_CD_CHARTS:
-		return "/charts/";
+		return "/fokus/";
 
-/*	case STR_CD_CHARTHREF:
-		return " href=\""; */
+	case STR_CD_CHARTREPLACE:
+		return "/charts/";
 	
 	case STR_CD_CHARTIMAGE:
-//		return "cdcharttcl";
 		return "cdchart";
 
 	case STR_CD_CHARTSRC:
-//		return " src=\"";
 		return " src='";
 	
 	case STR_DEUBA_KURSFEHLER:
@@ -241,9 +242,6 @@ public String getString(int strNr) {
 	case STR_DEUBA_CHARTS:
 		return ".html?";
 
-/*	case STR_DEUBA_CHARTHREF:
-		return " href=\""; */
-
 	case STR_DEUBA_CHARTIMAGE:
 		return " usemap=\'";
 
@@ -258,9 +256,6 @@ public String getString(int strNr) {
 
 	case STR_BBB_INDEXENDE:
 		return "Bitte beachten";
-
-/*	case STR_BBB_INDEXVALUE:
-		return "\"2\">"; */
 
 	case STR_LSDAX_KURSANFANG:
 		return "<PRE>";
@@ -379,14 +374,13 @@ public String getBase(int bnr) {
 		return "http://www.exchange.de/";
 	
 	case BASE_BBBANK:
-//		return "http://bbbank.teledata.de:9056/bbbank/";
 		return "http://bbbank.teledata.de/bbbank/";
 	
 	case BASE_DEUBA:
-		return "http://deuba.teledata.de:9030";
-	
+//		return "http://deuba.teledata.de:9030";
+		return "http://deuba.aktienman.de:9030";
+
 	case BASE_COMDIRECT:
-//		return "http://informer2.comdirect.de:9004";
 		return "http://informer2.comdirect.de";
 	}
 	
@@ -447,9 +441,6 @@ public String get(int urlNr) {
 	case URL_CHARTDEUBA:
 		return getBase(BASE_DEUBA) + "/db/";
 
-/*	case URL_INDEXBBBANK:
-		return getBase(BASE_BBBANK) + "KL_Indices.htm"; */
-
 	case URL_BBBINDEXD:
 		return getBase(BASE_BBBANK) + "kursliste.html?sKl=indizes-germany&sType=index&bNoIdx=0&kunde=99999ext";
 
@@ -463,7 +454,6 @@ public String get(int urlNr) {
 		return getBase(BASE_BBBANK) + "kursliste.html?sKl=indizes-asia&sType=index&bNoIdx=0&kunde=99999ext";
 
 	case URL_LSDAX30REALTIME:
-//		return "http://212.6.204.101/lang/nbody_dax.cfm?heyde=0.93857015&CFID=7296&CFTOKEN=41289468";
 		return "http://quotecenter.ls-d.de/lang/nbody_nm.cfm?lus=0.23665493&CFID=929612&CFTOKEN=11833536&papier=DAX";
 	}
 
@@ -634,7 +624,19 @@ public boolean isValidNr(long nr) {
 	case 595:
 	case 613:
 	case 619:
+//	case 672: reaktiviert am 22.3.02 (Deaktivierung 1.3.02)
 	case 675:
+	case 701: // 2002-05-09
+	case 712:
+	case 758:
+	case 764: // 2002-07-09
+	case 770:
+	case 792: // 2002-08-14
+	case 809: // 2002-12-16
+	case 810: // 2002-12-16
+	case 813: // 2002-12-16
+	case 815: // 2002-12-16
+	case 829:
 
 		return false;
 	}

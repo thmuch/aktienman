@@ -454,7 +454,7 @@ public static boolean store(BenutzerListe benutzerliste) {
 	{
 		FileOutputStream fos = new FileOutputStream(filename);
 		GZIPOutputStream gzos = new GZIPOutputStream(fos);
-		out = new ObjectOutputStream(fos);
+		out = new ObjectOutputStream(fos); // Fehler, muss aber so bleiben...
 		out.writeObject(benutzerliste);
 		out.flush();
 	}
@@ -495,7 +495,7 @@ public static BenutzerListe restore(String datei) {
 	{
 		FileInputStream fis = new FileInputStream(datei);
 		GZIPInputStream gzis = new GZIPInputStream(fis);
-		in = new ObjectInputStream(fis);
+		in = new ObjectInputStream(fis); // Fehler, muss aber so bleiben...
 		benutzerliste = (BenutzerListe)in.readObject();
 	}
 	catch (IOException e) {}

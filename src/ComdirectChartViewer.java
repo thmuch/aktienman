@@ -146,6 +146,8 @@ private synchronized Image getComdirectImage(int type) {
 private synchronized void setComdirectImage(int type, Image img) {
 
 	comdirectCharts[type] = img;
+
+	System.gc();
 }
 
 
@@ -221,6 +223,8 @@ private synchronized void switchImage(int type) {
 protected synchronized void setImageData(byte[] data) {
 
 	chartData[getType()] = data;
+	
+	System.gc();
 }
 
 

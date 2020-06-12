@@ -44,7 +44,10 @@ private synchronized Image getDeubaImage(int type) {
 
 
 private synchronized void setDeubaImage(int type, Image img) {
+
 	deubaCharts[type] = img;
+
+	System.gc();
 }
 
 
@@ -114,7 +117,10 @@ protected synchronized void checkXY(int x, int y) {
 
 
 protected synchronized void setImageData(byte[] data) {
+
 	chartData[getType()] = data;
+
+	System.gc();
 }
 
 

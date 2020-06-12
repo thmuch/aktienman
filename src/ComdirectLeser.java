@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-12-27
+ @version 2002-12-16
 */
 
 import java.io.*;
@@ -12,22 +12,19 @@ public class ComdirectLeser extends Thread {
 
 private static final String READ_LIST = "LISTE";
 
-private static final int STATUS_WAIT4NAME    =  0;
-private static final int STATUS_WAIT4WKN     =  1;
-private static final int STATUS_READWKN      =  2;
-private static final int STATUS_WAIT4SYMBOL  =  3;
-private static final int STATUS_READSYMBOL   =  4;
-private static final int STATUS_WAIT4KURS    =  5;
-private static final int STATUS_READKURS     =  6;
-private static final int STATUS_WAIT4ZEIT    =  7;
-private static final int STATUS_READZEIT     =  8;
-private static final int STATUS_WAIT4REST    =  9;
-private static final int STATUS_READVOLUMEN  = 10;
-private static final int STATUS_READVORTAG   = 11;
-private static final int STATUS_READEROEFF   = 12;
-private static final int STATUS_READHOECHST  = 13;
-private static final int STATUS_READTIEFST   = 14;
-private static final int STATUS_FINISHED     = 15;
+private static final int STATUS_WAIT4NAME     =  0;
+private static final int STATUS_WAIT4WKN      =  1;
+private static final int STATUS_WAIT4SYMBOL   =  3;
+private static final int STATUS_READFONDSKURS =  5;
+private static final int STATUS_READKURS      =  6;
+private static final int STATUS_WAIT4ZEIT     =  7;
+private static final int STATUS_WAIT4REST     =  9;
+private static final int STATUS_READVOLUMEN   = 10;
+private static final int STATUS_READVORTAG    = 11;
+private static final int STATUS_READEROEFF    = 12;
+private static final int STATUS_READHOECHST   = 13;
+private static final int STATUS_READTIEFST    = 14;
+private static final int STATUS_FINISHED      = 15;
 
 private KursReceiver receiver;
 private String request,baWKN,baBoerse;
@@ -72,6 +69,13 @@ private String fixKurs(String kstr) {
 	if ((i = kstr.indexOf("&")) > 0)
 	{
 		kstr = kstr.substring(0,i);
+	}
+	
+	while (kstr.length() > 0)
+	{
+		if (Character.isDigit(kstr.charAt(kstr.length() - 1))) break;
+		
+		kstr = kstr.substring(0,kstr.length() - 1);
 	}
 	
 	while (((i = kstr.indexOf(".")) > 0) && (i < kstr.indexOf(",")))
@@ -119,6 +123,8 @@ private String readKursliste(BufferedReader in, String wkn, String boerse) throw
 			}
 			else
 			{
+				System.out.println("    "+s); /* TODO */
+
 				int i = s.indexOf(str_quote);
 				
 				if (i >= 0)
@@ -129,7 +135,7 @@ private String readKursliste(BufferedReader in, String wkn, String boerse) throw
 					if ((leftquote >= 0) && (rightquote > leftquote))
 					{
 						String neueurl = s.substring(leftquote+1,rightquote);
-						
+
 						if (neueurl.indexOf(str_boerse) >= 0)
 						{
 							return AktienMan.url.getBase(URLs.BASE_COMDIRECT) + neueurl;
@@ -148,21 +154,23 @@ private String readKursliste(BufferedReader in, String wkn, String boerse) throw
 
 private String readKurs(BufferedReader in, String reqBoerse, boolean readListe) throws Exception {
 
-	String str_fehler  = AktienMan.url.getString(URLs.STR_CD_KURSFEHLER);
-	String str_aktkurs = AktienMan.url.getString(URLs.STR_CD_KURS);
-	String str_zeit    = AktienMan.url.getString(URLs.STR_CD_KURSZEIT);
-	String str_volumen = AktienMan.url.getString(URLs.STR_CD_KURSVOLUMEN);
-	String str_ende    = AktienMan.url.getString(URLs.STR_CD_KURSENDE);
-	String str_titel   = AktienMan.url.getString(URLs.STR_CD_KURSTITEL);
-	String str_wkn     = AktienMan.url.getString(URLs.STR_CD_KURSWKN);
-	String str_symbol  = AktienMan.url.getString(URLs.STR_CD_KURSSYMBOL);
-	String str_vortag  = AktienMan.url.getString(URLs.STR_CD_KURSVORTAG);
-	String str_eroeff  = AktienMan.url.getString(URLs.STR_CD_KURSEROEFF);
-	String str_hoechst = AktienMan.url.getString(URLs.STR_CD_KURSHOECHST);
-	String str_tiefst  = AktienMan.url.getString(URLs.STR_CD_KURSTIEFST);
+	String str_fehler    = AktienMan.url.getString(URLs.STR_CD_KURSFEHLER);
+	String str_aktkurs   = AktienMan.url.getString(URLs.STR_CD_KURS);
+	String str_fondskurs = AktienMan.url.getString(URLs.STR_CD_FONDSKURS);
+	String str_dfk       = AktienMan.url.getString(URLs.STR_CD_KURSDFK);
+	String str_zeit      = AktienMan.url.getString(URLs.STR_CD_KURSZEIT);
+	String str_volumen   = AktienMan.url.getString(URLs.STR_CD_KURSVOLUMEN);
+	String str_ende      = AktienMan.url.getString(URLs.STR_CD_KURSENDE);
+	String str_titel     = AktienMan.url.getString(URLs.STR_CD_KURSTITEL);
+	String str_wkn       = AktienMan.url.getString(URLs.STR_CD_KURSWKN);
+	String str_symbol    = AktienMan.url.getString(URLs.STR_CD_KURSSYMBOL);
+	String str_vortag    = AktienMan.url.getString(URLs.STR_CD_KURSVORTAG);
+	String str_eroeff    = AktienMan.url.getString(URLs.STR_CD_KURSEROEFF);
+	String str_hoechst   = AktienMan.url.getString(URLs.STR_CD_KURSHOECHST);
+	String str_tiefst    = AktienMan.url.getString(URLs.STR_CD_KURSTIEFST);
 
-	String str_quote   = AktienMan.url.getString(URLs.STR_CD_LISTEQUOTE);
-	String str_boerse  = AktienMan.url.getString(URLs.STR_CD_LISTEBOERSELI) + reqBoerse + AktienMan.url.getString(URLs.STR_CD_LISTEBOERSERE);
+	String str_quote     = AktienMan.url.getString(URLs.STR_CD_LISTEQUOTE);
+	String str_boerse    = AktienMan.url.getString(URLs.STR_CD_LISTEBOERSELI) + reqBoerse + AktienMan.url.getString(URLs.STR_CD_LISTEBOERSERE);
 	
 	String s;
 	String name = "", platz = "", wkn = "", kursdatum = "", kurz = "";
@@ -172,8 +180,7 @@ private String readKurs(BufferedReader in, String reqBoerse, boolean readListe) 
 	long tiefstkurs = BenutzerAktie.VALUE_NA;
 	long vortageskurs = BenutzerAktie.VALUE_NA;
 	long handelsvolumen = 0L;
-	int thcount = 0;
-	int vortagcount = 0;
+	int volcount = 0;
 	int status = STATUS_WAIT4NAME;
 	boolean found = false;
 	boolean valid = false;
@@ -204,8 +211,10 @@ private String readKurs(BufferedReader in, String reqBoerse, boolean readListe) 
 					
 					if (neueurl.indexOf(str_boerse) >= 0)
 					{
+						System.out.println("    Neue URL: "+AktienMan.url.getBase(URLs.BASE_COMDIRECT) + neueurl); /* TODO */
+
 						/* neue URL mit korrekten Quote-Werten lesen */
-						return  AktienMan.url.getBase(URLs.BASE_COMDIRECT) + neueurl;
+						return AktienMan.url.getBase(URLs.BASE_COMDIRECT) + neueurl;
 					}
 				}
 			}
@@ -231,86 +240,179 @@ private String readKurs(BufferedReader in, String reqBoerse, boolean readListe) 
 			}
 			else if (s.indexOf(str_titel) >= 0)
 			{
-				if (++thcount == 2)
+				int i = s.indexOf(">");
+				int i2 = s.indexOf("<",i+1);
+				
+				if ((i > 0) && (i2 > i))
 				{
-					int i = s.indexOf(">");
-					int i2 = s.indexOf("<",i+1);
-					
-					if ((i > 0) && (i2 > i))
-					{
-						name = s.substring(i+1,i2).trim();
+					name = s.substring(i+1,i2).trim();
 
-						status = STATUS_WAIT4WKN;
-						valid = true;
-					}
-					else
-					{
-						status = STATUS_FINISHED;
-					}
+					status = STATUS_WAIT4WKN;
+					valid = true;
+				}
+				else
+				{
+					status = STATUS_FINISHED;
 				}
 			}
 			break;
 		
 		case STATUS_WAIT4WKN:
-
-			if (s.indexOf(str_wkn) > 0)
 			{
-				status = STATUS_READWKN;
-			}
-			break;
-		
-		case STATUS_READWKN:
-			{
-				int i = s.indexOf(">", s.indexOf(">") + 1);
-				int i2 = s.indexOf("<", i + 1);
+				int wknpos = s.indexOf(str_wkn);
 				
-				if ((i > 0) && (i2 > i))
+				if (wknpos > 0)
 				{
-					wkn = s.substring(i+1,i2).trim();
-				}
-				
-				status = STATUS_WAIT4SYMBOL;
-			}
-			break;
-		
-		case STATUS_WAIT4SYMBOL:
-
-			if (s.indexOf(str_symbol) > 0)
-			{
-				status = STATUS_READSYMBOL;
-			}
-			break;
-		
-		case STATUS_READSYMBOL:
-			{
-				int i = s.indexOf(">", s.indexOf(">") + 1);
-				int i2 = s.indexOf("<", i + 1);
-				
-				if ((i > 0) && (i2 > i))
-				{
-					String symbol = s.substring(i+1,i2).trim();
+					int i = s.indexOf(";", wknpos);
+					int i2 = s.indexOf("&", i + 1);
 					
-					i = symbol.indexOf(".");
-					
-					if (i > 0)
+					if ((i > 0) && (i2 > i))
 					{
-						kurz = symbol.substring(0,i);
-						platz = symbol.substring(i+1);
+						wkn = s.substring(i+1,i2).trim();
+					}
+					
+					if (s.indexOf(str_dfk,i2) > 0)
+					{
+						platz = "DFK";
+						
+						status = STATUS_WAIT4ZEIT;
+						break;
+					}
+					else
+					{
+						int sympos = s.indexOf(str_symbol,i2);
+						
+						if (sympos > 0)
+						{
+							i = s.indexOf(";", sympos);
+							i2 = s.indexOf("<", i + 1);
+							
+							if ((i > 0) && (i2 > i))
+							{
+								String symbol = s.substring(i+1,i2).trim();
+								
+								i = symbol.indexOf(".");
+								
+								if (i > 0)
+								{
+									kurz = symbol.substring(0,i);
+									platz = symbol.substring(i+1);
+
+									status = STATUS_WAIT4ZEIT;
+									break;
+								}
+							}
+						}
+					}
+
+					status = STATUS_FINISHED;
+				}
+			}
+			break;
+
+		case STATUS_WAIT4ZEIT:
+			{
+				int zeitpos = s.indexOf(str_zeit);
+				
+				if (zeitpos >= 0)
+				{
+					int i = s.indexOf(">", zeitpos);
+					int i2 = s.indexOf("&", i+1);
+					
+					if ((i > 0) && (i2 > i))
+					{
+						kursdatum = s.substring(i+1,i2).trim();
+						
+						i = s.indexOf("\">", i2);
+						i2 = s.indexOf("&", i+1);
+						
+						if ((i > 0) && (i2 > i))
+						{
+							kursdatum += " " + s.substring(i+2,i2).trim();
+						}
 					}
 				}
-				
-				status = STATUS_WAIT4KURS;
+
+				status = STATUS_WAIT4REST;
+			}
+			break;
+		
+		case STATUS_READVOLUMEN:
+			{
+				if (++volcount == 9)
+				{
+					int i = s.indexOf(";");
+					int i2 = s.indexOf("&",i+1);
+
+					if ((i > 0) && (i2 > i))
+					{
+						String volumen = s.substring(i+1,i2).trim();
+						
+						boolean mio = false;
+						
+						i = volumen.indexOf(" Mio.");
+						
+						if (i > 0)
+						{
+							volumen = volumen.substring(0,i).trim();
+							mio = true;
+						}
+
+						i = volumen.indexOf(".");
+						
+						while (i >= 0)
+						{
+							volumen = volumen.substring(0,i) + volumen.substring(i+1);
+							i = volumen.indexOf(".");
+						}
+
+						try
+						{
+							handelsvolumen = Long.parseLong(volumen);
+							
+							if (mio) handelsvolumen *= 1000000L;
+						}
+						catch (NumberFormatException e) {}
+					}
+					
+					status = STATUS_WAIT4REST;
+				}
 			}
 			break;
 
-		case STATUS_WAIT4KURS:
-
-			if (s.indexOf(str_aktkurs) > 0)
+		case STATUS_WAIT4REST:
+		
+			if (s.indexOf(str_fondskurs) > 0)
+			{
+				status = STATUS_READFONDSKURS;
+			}
+			else if (s.indexOf(str_aktkurs) > 0)
 			{
 				status = STATUS_READKURS;
 			}
+			else if (s.indexOf(str_volumen) >= 0)
+			{
+				status = STATUS_READVOLUMEN;
+			}
+			else if (s.indexOf(str_vortag) > 0)
+			{
+				status = STATUS_READVORTAG;
+			}
+			else if (s.indexOf(str_eroeff) > 0)
+			{
+				status = STATUS_READEROEFF;
+			}
+			else if (s.indexOf(str_hoechst) > 0)
+			{
+				status = STATUS_READHOECHST;
+			}
+			else if (s.indexOf(str_tiefst) > 0)
+			{
+				status = STATUS_READTIEFST;
+			}
 			break;
 		
+		case STATUS_READFONDSKURS:
 		case STATUS_READKURS:
 			{
 				int i = s.indexOf(">");
@@ -336,7 +438,14 @@ private String readKurs(BufferedReader in, String reqBoerse, boolean readListe) 
 						}
 					}
 					
-					status = STATUS_WAIT4ZEIT;
+					if (status == STATUS_READFONDSKURS)
+					{
+						status = STATUS_FINISHED;
+					}
+					else
+					{
+						status = STATUS_WAIT4REST;
+					}
 				}
 				else
 				{
@@ -344,118 +453,34 @@ private String readKurs(BufferedReader in, String reqBoerse, boolean readListe) 
 				}
 			}
 			break;
-		
-		case STATUS_WAIT4ZEIT:
-
-			if (s.indexOf(str_zeit) >= 0)
-			{
-				status = STATUS_READZEIT;
-			}
-			break;
-		
-		case STATUS_READZEIT:
-			{
-				int i = s.indexOf(">");
-				int i2 = s.indexOf("<",i+1);
-				
-				if ((i > 0) && (i2 > i))
-				{
-					kursdatum = s.substring(i+1,i2).trim();
-					
-					i = kursdatum.indexOf(",");
-					
-					if (i >= 0)
-					{
-						kursdatum = kursdatum.substring(0,i) + kursdatum.substring(i+1);
-					}
-				}
-				
-				status = STATUS_WAIT4REST;
-			}
-			break;
-		
-		case STATUS_WAIT4REST:
-
-			if (s.indexOf(str_volumen) > 0)
-			{
-				status = STATUS_READVOLUMEN;
-			}
-			else if (s.indexOf(str_vortag) > 0)
-			{
-				status = STATUS_READVORTAG;
-			}
-			else if (s.indexOf(str_eroeff) > 0)
-			{
-				status = STATUS_READEROEFF;
-			}
-			else if (s.indexOf(str_hoechst) > 0)
-			{
-				status = STATUS_READHOECHST;
-			}
-			else if (s.indexOf(str_tiefst) > 0)
-			{
-				status = STATUS_READTIEFST;
-			}
-			break;
-
-		case STATUS_READVOLUMEN:
-			{
-				int i = s.indexOf(">");
-				int i2 = s.indexOf("<",i+1);
-
-				if ((i > 0) && (i2 > i))
-				{
-					String volumen = s.substring(i+1,i2).trim();
-					
-					i = volumen.indexOf(".");
-					
-					while (i >= 0)
-					{
-						volumen = volumen.substring(0,i) + volumen.substring(i+1);
-						i = volumen.indexOf(".");
-					}
-
-					try
-					{
-						handelsvolumen = Long.parseLong(volumen);
-					}
-					catch (NumberFormatException e) {}
-				}
-				
-				status = STATUS_WAIT4REST;
-			}
-			break;
 
 		case STATUS_READVORTAG:
 			{
-				if (++vortagcount == 2)
+				int i = s.indexOf(">");
+				int i2 = s.indexOf("<",i+1);
+				
+				if ((i > 0) && (i2 > i))
 				{
-					int i = s.indexOf(">");
-					int i2 = s.indexOf("<",i+1);
-					
-					if ((i > 0) && (i2 > i))
-					{
-						String vortag = fixKurs(s.substring(i+1,i2));
+					String vortag = fixKurs(s.substring(i+1,i2));
 
-						if (vortag.equalsIgnoreCase(ComdirectQuelle.VALUENA))
+					if (vortag.equalsIgnoreCase(ComdirectQuelle.VALUENA))
+					{
+						vortageskurs = BenutzerAktie.VALUE_NA;
+					}
+					else
+					{
+						try
+						{
+							vortageskurs = Waehrungen.doubleToLong(vortag);
+						}
+						catch (NumberFormatException e)
 						{
 							vortageskurs = BenutzerAktie.VALUE_NA;
 						}
-						else
-						{
-							try
-							{
-								vortageskurs = Waehrungen.doubleToLong(vortag);
-							}
-							catch (NumberFormatException e)
-							{
-								vortageskurs = BenutzerAktie.VALUE_NA;
-							}
-						}
 					}
-
-					status = STATUS_WAIT4REST;
 				}
+
+				status = STATUS_WAIT4REST;
 			}
 			break;
 
@@ -575,6 +600,8 @@ private String readKurs(BufferedReader in, String reqBoerse, boolean readListe) 
 	{
 		receiver.listeAnfrageFehler(request,baWKN,baBoerse,sofortZeichnen,nextID);
 	}
+	
+	System.out.println("  Status == "+status+" "+valid+" "+found+"  "+name+" "+platz+" "+wkn+" "+kurz+"  "+kurs); /* TODO */
 
 	return null;
 }
@@ -597,6 +624,8 @@ public void run() {
 
 		String spwkn    = request.substring(0,sp);
 		String spboerse = request.substring(sp+1);
+		
+		System.out.println("CD: "+AktienMan.url.getComdirectKursURL(spwkn,spboerse)); /* TODO */
 
 		URL url = new URL(AktienMan.url.getComdirectKursURL(spwkn,spboerse));
 		
@@ -614,6 +643,8 @@ public void run() {
 				{
 					throw new Exception();
 				}
+
+				System.out.println("  Liste -> "+neueURL); /* TODO */
 			}
 
 			try
