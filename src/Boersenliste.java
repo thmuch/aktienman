@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-28
+ @version 2000-08-09
 */
 
 import java.awt.*;
@@ -16,6 +16,7 @@ private static final int STANDARDBOERSE = 3;
 
 
 public synchronized void setupList() {
+
 	add(new Boersenplatz("Berlin","BER"));
 	add(new Boersenplatz("Bremen","BRE"));
 	add(new Boersenplatz("D\u00fcsseldorf","DUS"));
@@ -31,30 +32,33 @@ public synchronized void setupList() {
 
 
 public synchronized Boersenplatz getAt(int index) {
+
 	return (Boersenplatz)elementAt(index);
 }
 
 
 
 public synchronized Aktie getAktie(int index) {
+
 	return null;
 }
 
 
 
-public synchronized int getBoersenIndex(String kurz) {
+public synchronized int getBoersenIndex(String kurz, int defval) {
 
 	for (int i=0; i < size(); i++)
 	{
 		if (getAt(i).getKurz().equalsIgnoreCase(kurz)) return i;
 	}
 
-	return 0;
+	return defval;
 }
 
 
 
 public synchronized int getStandardBoerse() {
+
 	return AktienMan.properties.getInt("Konfig.StdBoerse",STANDARDBOERSE);
 }
 
@@ -67,6 +71,13 @@ public synchronized Choice getChoiceNoFonds() {
 	c.remove(size() - 1);
 	
 	return c;
+}
+
+
+
+public synchronized int getCountNoFonds() {
+
+	return size() - 1;
 }
 
 }

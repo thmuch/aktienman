@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-12-12
+ @version 2000-08-09
 */
 
 import java.awt.*;
@@ -13,11 +13,13 @@ public final class AktieAendern extends AktienFrame {
 
 private TextField neuername,aktienWKN,kaufdatum,kaufkurs;
 private TextField stueckzahl,hochkurs,tiefkurs,gewinngrenze;
-private TextField aktkurs,aktdatum;
+private TextField aktkurs,aktdatum,dividende,divdatum;
 private Choice plaetze,waehrung;
 private Checkbox boerseNurDiese,gewinnAbs,gewinnProz,watchOnly,dontUpdate;
 private CheckboxGroup gewinnGruppe;
 private Button buttonChange,buttonDelete;
+
+private boolean doSplit = false;
 
 
 
@@ -25,6 +27,7 @@ private Button buttonChange,buttonDelete;
 public AktieAendern(int index, BenutzerAktie ba) {
 
 	super(AktienMan.AMFENSTERTITEL+"Aktiendaten \u00e4ndern",index,ba);
+
 	kaufkurs.requestFocus();
 }
 
@@ -58,7 +61,7 @@ public void setupElements2() {
 	constrain(panelMitte,aktienWKN,1,0,2,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,2,0,0);
 	
 	plaetze = AktienMan.boersenliste.getChoice(true);
-	plaetze.select(AktienMan.boersenliste.getBoersenIndex(ba.getBoerse()));
+	plaetze.select(AktienMan.boersenliste.getBoersenIndex(ba.getBoerse(),0));
 	plaetze.addItemListener(new ItemListener() {
 		public void itemStateChanged(ItemEvent e) {
 			checkNurDiese();
@@ -157,8 +160,18 @@ public void setupElements2() {
 	constrain(panelRest,verlustPanel,1,5,1,2,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 
 	constrain(panelRest,new Label("Angaben in Kaufw\u00e4hrung!",Label.CENTER),0,7,2,1,GridBagConstraints.NONE,GridBagConstraints.NORTH,0.0,0.0,2,0,0,0);
+	
+	constrain(panelRest,new Label("Dividende je St\u00fcck"),0,8,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,10,0,0,0);
+	constrain(panelRest,new Label("Div.-Datum"),1,8,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,10,2,0,0);
+
+	dividende = new TextField(ba.getDividendeString(),10);
+	divdatum  = new TextField(ba.getDividendeDatum(),10);
+
+	constrain(panelRest,dividende,0,9,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,0,0);
+	constrain(panelRest,divdatum,1,9,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,2,0,0);
 
 	Button buttonCancel = new Button(Lang.CANCEL);
+	Button buttonSplit = new Button(" Splitten... ");
 	buttonChange = new Button(Lang.CHANGE);
 	buttonDelete = new Button(Lang.DELETE);
 	
@@ -179,15 +192,24 @@ public void setupElements2() {
 			doDelete();
 		}
 	});
+	
+	buttonSplit.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			doSplit = true;
+			doCancel();
+		}
+	});
 
-	constrain(panelButtons,buttonCancel,0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,10);
-	constrain(panelButtons,buttonDelete,1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,10);
-	constrain(panelButtons,buttonChange,2,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
+	constrain(panelButtons,new Label(""),0,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,0,0,10);
+	constrain(panelButtons,buttonDelete,1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,10,0,10);
+	constrain(panelButtons,buttonSplit,2,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,30);
+	constrain(panelButtons,buttonCancel,3,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,10);
+	constrain(panelButtons,buttonChange,4,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
 
 	constrain(this,panelOben,0,0,2,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,10,10,0,10);
 	constrain(this,panelMitte,0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,5,10,0,10);
 	constrain(this,panelRest,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,5,30,0,10);
-	constrain(this,panelButtons,0,2,2,1,GridBagConstraints.NONE,GridBagConstraints.SOUTHEAST,0.0,0.0,20,10,10,10);
+	constrain(this,panelButtons,0,2,2,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.SOUTHEAST,1.0,0.0,20,10,10,10);
 
 	if (ba.doUseGrenze())
 	{
@@ -303,6 +325,28 @@ public synchronized void executeOK() {
 		ggrenze = Waehrungen.doubleToLong(gewinngrenze.getText());
 	}
 	catch (NumberFormatException e) {}
+	
+	long divval = 0L;
+	s = dividende.getText().trim();
+	if (s.length() > 0)
+	{
+		try
+		{
+			divval = Waehrungen.doubleToLong(s);
+		}
+		catch (NumberFormatException e) {}
+	}
+	
+	ADate divdat = null;
+	s = divdatum.getText().trim();
+	if (s.length() > 0)
+	{
+		try
+		{
+			divdat = ADate.parse(s);
+		}
+		catch (Exception e) {}
+	}
 
 	boolean usegrenze = gewinnProz.getState();
 	
@@ -329,9 +373,10 @@ public synchronized void executeOK() {
 		}
 		catch (Exception e) {}
 	}
-
+	
 	ba.changeValues(name,wkn,bp,nurdiese,kdate,kkurs,anzaktien,khoch,ktief,ggrenze,
-					waehrung.getSelectedIndex(),usegrenze,watchonly,dontupdate,aktKurs,aktDate);
+					waehrung.getSelectedIndex(),usegrenze,watchonly,dontupdate,aktKurs,aktDate,
+					divval,divdat);
 
 	AktienMan.hauptdialog.listeUpdate(true,true,true,false);
 }
@@ -344,7 +389,7 @@ public synchronized boolean canOK() {
 
 	if (neuername.getText().trim().length() == 0)
 	{
-		new Warnalert(this,"Bitte geben Sie einen Aktiennamen ein.");
+		new TextWarnalert(this,"Bitte geben Sie einen Aktiennamen ein.");
 		return false;
 	}
 
@@ -352,7 +397,7 @@ public synchronized boolean canOK() {
 	
 	if (s.length() == 0)
 	{
-		new Warnalert(this,"Bitte geben Sie die WKN ein!");
+		new TextWarnalert(this,"Bitte geben Sie die WKN ein!");
 		return false;
 	}
 	
@@ -360,7 +405,7 @@ public synchronized boolean canOK() {
 	{
 		if (s.length() != 6)
 		{
-			new Warnalert(this,"WKN ung\u00fcltig. Die WKN mu\u00df aus exakt sechs Ziffern bestehen.");
+			new TextWarnalert(this,"WKN ung\u00fcltig. Die WKN mu\u00df aus exakt sechs Ziffern bestehen.");
 			return false;			
 		}
 		
@@ -368,7 +413,7 @@ public synchronized boolean canOK() {
 		{
 			if (!Character.isDigit(s.charAt(i)))
 			{
-				new Warnalert(this,"WKN ung\u00fcltig. Die WKN mu\u00df aus exakt sechs Ziffern bestehen.");
+				new TextWarnalert(this,"WKN ung\u00fcltig. Die WKN mu\u00df aus exakt sechs Ziffern bestehen.");
 				return false;			
 			}
 		}
@@ -377,7 +422,7 @@ public synchronized boolean canOK() {
 	{
 		if (s.length() < 3)
 		{
-			new Warnalert(this,"K\u00fcrzel ung\u00fcltig. Ein K\u00fcrzel mu\u00df mindestens drei Zeichen lang sein.");
+			new TextWarnalert(this,"K\u00fcrzel ung\u00fcltig. Ein K\u00fcrzel mu\u00df mindestens drei Zeichen lang sein.");
 			return false;			
 		}
 
@@ -385,14 +430,14 @@ public synchronized boolean canOK() {
 		{
 			if (!Character.isLetterOrDigit(s.charAt(i)))
 			{
-				new Warnalert(this,"K\u00fcrzel ung\u00fcltig. Ein K\u00fcrzel darf nur aus Buchstaben und Ziffern bestehen.");
+				new TextWarnalert(this,"K\u00fcrzel ung\u00fcltig. Ein K\u00fcrzel darf nur aus Buchstaben und Ziffern bestehen.");
 				return false;
 			}
 		}
 	}
 	else
 	{
-		new Warnalert(this,"Bitte geben sie einen g\u00fcltigen Wert im Feld \"WKN\" ein.");
+		new TextWarnalert(this,"Bitte geben sie einen g\u00fcltigen Wert im Feld \"WKN\" ein.");
 		return false;
 	}
 	
@@ -406,13 +451,13 @@ public synchronized boolean canOK() {
 		}
 		catch (NumberFormatException e)
 		{
-			new Warnalert(this,"Bitte geben Sie beim Kaufkurs eine g\u00fcltige Zahl ein.");
+			new TextWarnalert(this,"Bitte geben Sie beim Kaufkurs eine g\u00fcltige Zahl ein.");
 			return false;
 		}
 		
 		if (db <= 0L)
 		{
-			new Warnalert(this,"Bitte geben Sie einen g\u00fcltigen Kaufkurs ein.");
+			new TextWarnalert(this,"Bitte geben Sie einen g\u00fcltigen Kaufkurs ein.");
 			return false;
 		}
 	}
@@ -430,13 +475,13 @@ public synchronized boolean canOK() {
 			}
 			catch (NumberFormatException e)
 			{
-				new Warnalert(this,"Bitte geben Sie beim aktuellen Kurs eine g\u00fcltige Zahl ein.");
+				new TextWarnalert(this,"Bitte geben Sie beim aktuellen Kurs eine g\u00fcltige Zahl ein.");
 				return false;
 			}
 			
 			if (db <= 0L)
 			{
-				new Warnalert(this,"Bitte geben Sie einen g\u00fcltigen aktuellen Kurs ein.");
+				new TextWarnalert(this,"Bitte geben Sie einen g\u00fcltigen aktuellen Kurs ein.");
 				return false;
 			}
 		}
@@ -452,13 +497,13 @@ public synchronized boolean canOK() {
 		}
 		catch (NumberFormatException e)
 		{
-			new Warnalert(this,"Bitte geben Sie bei der St\u00fcckzahl eine g\u00fcltige Zahl ein.");
+			new TextWarnalert(this,"Bitte geben Sie bei der St\u00fcckzahl eine g\u00fcltige Zahl ein.");
 			return false;
 		}
 
 		if (i <= 0)
 		{
-			new Warnalert(this,"Bitte geben Sie eine g\u00fcltige St\u00fcckzahl ein.");
+			new TextWarnalert(this,"Bitte geben Sie eine g\u00fcltige St\u00fcckzahl ein.");
 			return false;
 		}
 	}
@@ -473,13 +518,13 @@ public synchronized boolean canOK() {
 			
 			if (kaufd.after(new ADate()))
 			{
-				new Warnalert(this,"Ein Kaufdatum in der Zukunft ist nicht erlaubt.");
+				new TextWarnalert(this,"Ein Kaufdatum in der Zukunft ist nicht erlaubt.");
 				return false;
 			}
 		}
 		catch (Exception e)
 		{
-			new Warnalert(this,"Bitte geben Sie ein g\u00fcltiges Kaufdatum ein.");
+			new TextWarnalert(this,"Bitte geben Sie ein g\u00fcltiges Kaufdatum ein.");
 			return false;
 		}
 	}
@@ -496,19 +541,19 @@ public synchronized boolean canOK() {
 				
 				if (kaufd.after(aktd))
 				{
-					new Warnalert(this,"Das Kursdatum muss nach dem Kaufdatum liegen.");
+					new TextWarnalert(this,"Das Kursdatum muss nach dem Kaufdatum liegen.");
 					return false;
 				}
 			}
 			catch (Exception e)
 			{
-				new Warnalert(this,"Bitte geben Sie ein g\u00fcltiges Kursdatum ein.");
+				new TextWarnalert(this,"Bitte geben Sie ein g\u00fcltiges Kursdatum ein.");
 				return false;
 			}
 		}
 		else
 		{
-			new Warnalert(this,"Bitte geben Sie ein g\u00fcltiges Kursdatum ein.");
+			new TextWarnalert(this,"Bitte geben Sie ein g\u00fcltiges Kursdatum ein.");
 			return false;
 		}
 	}
@@ -523,13 +568,13 @@ public synchronized boolean canOK() {
 		}
 		catch (NumberFormatException e)
 		{
-			new Warnalert(this,"Bitte geben Sie bei der Gewinngrenze eine g\u00fcltige Zahl ein.");
+			new TextWarnalert(this,"Bitte geben Sie bei der Gewinngrenze eine g\u00fcltige Zahl ein.");
 			return false;
 		}
 
 		if (db <= 0L)
 		{
-			new Warnalert(this,"Bitte geben Sie eine g\u00fcltige Gewinngrenze ein oder lassen Sie das Feld leer.");
+			new TextWarnalert(this,"Bitte geben Sie eine g\u00fcltige Gewinngrenze ein oder lassen Sie das Feld leer.");
 			return false;
 		}
 	}
@@ -544,13 +589,13 @@ public synchronized boolean canOK() {
 		}
 		catch (NumberFormatException e)
 		{
-			new Warnalert(this,"Bitte geben Sie beim Tiefkurs eine g\u00fcltige Zahl ein.");
+			new TextWarnalert(this,"Bitte geben Sie beim Tiefkurs eine g\u00fcltige Zahl ein.");
 			return false;
 		}
 
 		if (tk <= 0L)
 		{
-			new Warnalert(this,"Bitte geben Sie einen g\u00fcltigen Tiefkurs ein oder lassen Sie das Feld leer.");
+			new TextWarnalert(this,"Bitte geben Sie einen g\u00fcltigen Tiefkurs ein oder lassen Sie das Feld leer.");
 			return false;
 		}
 	}
@@ -565,19 +610,55 @@ public synchronized boolean canOK() {
 		}
 		catch (NumberFormatException e)
 		{
-			new Warnalert(this,"Bitte geben Sie beim Hochkurs eine g\u00fcltige Zahl ein.");
+			new TextWarnalert(this,"Bitte geben Sie beim Hochkurs eine g\u00fcltige Zahl ein.");
 			return false;
 		}
 
 		if (db <= 0L)
 		{
-			new Warnalert(this,"Bitte geben Sie einen g\u00fcltigen Hochkurs ein oder lassen Sie das Feld leer.");
+			new TextWarnalert(this,"Bitte geben Sie einen g\u00fcltigen Hochkurs ein oder lassen Sie das Feld leer.");
 			return false;
 		}
 		
 		if ((tk > 0L) && (db <= tk))
 		{
-			new Warnalert(this,"Der Hochkurs mu\u00df h\u00f6her als der Tiefkurs liegen.");
+			new TextWarnalert(this,"Der Hochkurs mu\u00df h\u00f6her als der Tiefkurs liegen.");
+			return false;
+		}
+	}
+	
+	long div = 0L;
+	s = dividende.getText().trim();
+	if (s.length() > 0)
+	{
+		try
+		{
+			div = Waehrungen.doubleToLong(s);
+		}
+		catch (NumberFormatException e)
+		{
+			new TextWarnalert(this,"Bitte geben Sie bei der Dividende eine g\u00fcltige Zahl ein.");
+			return false;
+		}
+
+		if (div < 0L)
+		{
+			new TextWarnalert(this,"Bitte geben Sie eine g\u00fcltige Dividende ein oder lassen Sie das Feld leer.");
+			return false;
+		}
+	}
+	
+	ADate divd = null;
+	s = divdatum.getText().trim();
+	if (s.length() > 0)
+	{
+		try
+		{
+			divd = ADate.parse(s);
+		}
+		catch (Exception e)
+		{
+			new TextWarnalert(this,"Bitte geben Sie ein g\u00fcltiges Dividendendatum ein oder lassen Sie das Feld leer.");
 			return false;
 		}
 	}
@@ -595,6 +676,16 @@ private void doDelete() {
 	AktienMan.hauptdialog.listeAktieLoeschen(index);
 
 	dispose();
+}
+
+
+
+public void cleanupAfterUnlock() {
+
+	if (doSplit)
+	{
+		AktienMan.hauptdialog.listeSelektierteAktieSplitten();
+	}
 }
 
 

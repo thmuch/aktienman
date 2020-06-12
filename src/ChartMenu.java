@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-27
+ @version 2000-11-11
 */
 
 import java.awt.*;
@@ -9,7 +9,7 @@ import java.awt.event.*;
 
 
 
-public final class ChartMenu extends Menu {
+public class ChartMenu extends Menu {
 
 private MenuItem item24,item36;
 //private Menu popIntraday;
@@ -18,7 +18,16 @@ private MenuItem item24,item36;
 
 
 public ChartMenu() {
-	super("Chart");
+
+	this("Chart");
+}
+
+
+
+protected ChartMenu(String title) {
+
+	super(title);
+
 	setupMenu();
 }
 
@@ -29,7 +38,7 @@ private void setupMenu() {
 	MenuItem mi = new MenuItem("Intraday");
 	mi.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			AktienMan.hauptdialog.listeSelektierteAktieChart(URLs.CHART_INTRA);
+			action(URLs.CHART_INTRA);
 		}
 	});
 	add(mi);
@@ -37,7 +46,7 @@ private void setupMenu() {
 	mi = new MenuItem("3 Monate");
 	mi.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			AktienMan.hauptdialog.listeSelektierteAktieChart(URLs.CHART_3);
+			action(URLs.CHART_3);
 		}
 	});
 	add(mi);
@@ -45,7 +54,7 @@ private void setupMenu() {
 	mi = new MenuItem("6 Monate");
 	mi.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			AktienMan.hauptdialog.listeSelektierteAktieChart(URLs.CHART_6);
+			action(URLs.CHART_6);
 		}
 	});
 	add(mi);
@@ -53,7 +62,7 @@ private void setupMenu() {
 	mi = new MenuItem("1 Jahr");
 	mi.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			AktienMan.hauptdialog.listeSelektierteAktieChart(URLs.CHART_12);
+			action(URLs.CHART_12);
 		}
 	});
 	add(mi);
@@ -61,7 +70,7 @@ private void setupMenu() {
 	item24 = new MenuItem("2 Jahre");
 	item24.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			AktienMan.hauptdialog.listeSelektierteAktieChart(URLs.CHART_24);
+			action(URLs.CHART_24);
 		}
 	});
 	add(item24);
@@ -69,7 +78,7 @@ private void setupMenu() {
 	item36 = new MenuItem("3 Jahre");
 	item36.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			AktienMan.hauptdialog.listeSelektierteAktieChart(URLs.CHART_36);
+			action(URLs.CHART_36);
 		}
 	});
 	add(item36);
@@ -94,6 +103,13 @@ private void setupMenu() {
 		}
 	});
 	popIntraday.add(mi); */
+}
+
+
+
+protected void action(int type) {
+
+	AktienMan.hauptdialog.listeSelektierteAktieChart(type);
 }
 
 
@@ -124,18 +140,21 @@ public synchronized void checkTypes() {
 
 
 public synchronized void setIntraday(boolean state) {
+
 //	popIntraday.setEnabled(state);
 }
 
 
 
 public synchronized void enableIntraday() {
+
 	setIntraday(true);
 }
 
 
 
 public synchronized void disableIntraday() {
+
 	setIntraday(false);
 }
 

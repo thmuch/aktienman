@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-03-27
+ @version 2000-11-07
 */
 
 import java.io.*;
@@ -181,7 +181,7 @@ private String readKurs(BufferedReader in, String reqBoerse, boolean readListe) 
 	while (((s = in.readLine()) != null) && (status != STATUS_FINISHED))
 	{
 		s = s.trim();
-		
+
 		if (s.length() == 0) continue;
 		
 		if (s.indexOf(str_ende) >= 0)

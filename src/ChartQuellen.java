@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-07-06
+ @version 2000-08-07
 */
 
 import java.util.*;
@@ -25,13 +25,16 @@ private static int chartquelle = CHARTQUELLE_NONE;
 
 
 public ChartQuellen() {
+
 	super(5);
+
 	setupList();
 }
 
 
 
 public synchronized void setupList() {
+
 	add(new ComdirectChartQuelle());
 	add(new DeubaChartQuelle());
 }
@@ -39,18 +42,21 @@ public synchronized void setupList() {
 
 
 public synchronized void add(ChartQuelle eintrag) {
+
 	addElement(eintrag);
 }
 
 
 
 public synchronized ChartQuelle getAt(int index) {
+
 	return (ChartQuelle)elementAt(index);
 }
 
 
 
 public synchronized static Choice getChoice() {
+
 	Choice choice = new Choice();
 	
 	for (int i=0; i < quellen.size(); i++)
@@ -64,21 +70,29 @@ public synchronized static Choice getChoice() {
 
 
 public synchronized static ChartQuelle getChartQuelle(int index) {
+
 	return quellen.getAt(index);
 }
 
 
 
 public synchronized static ChartQuelle getChartQuelle() {
+
 	return getChartQuelle(getChartQuelleIndex());
 }
 
 
 
 public synchronized static int getChartQuelleIndex() {
+
 	if (chartquelle <= CHARTQUELLE_NONE)
 	{
 		chartquelle = AktienMan.properties.getInt("Konfig.Chartquelle",STANDARDQUELLE);
+	}
+	
+	if ((chartquelle < 0) || (chartquelle >= quellen.size()))
+	{
+		chartquelle = STANDARDQUELLE;
 	}
 	
 	return chartquelle;
@@ -87,6 +101,7 @@ public synchronized static int getChartQuelleIndex() {
 
 
 public synchronized static void setChartQuelleIndex(int neu) {
+
 	AktienMan.properties.setInt("Konfig.Chartquelle",neu);
 	chartquelle = neu;
 }

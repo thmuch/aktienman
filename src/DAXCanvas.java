@@ -1,9 +1,10 @@
 /**
  @author Thomas Much
- @version 1999-05-07
+ @version 2000-11-10
 */
 
 import java.awt.*;
+
 
 
 
@@ -13,14 +14,16 @@ private DAXKamera dk;
 
 
 
+
 public DAXCanvas(DAXKamera dk) {
-	super();
+
 	this.dk = dk;
 }
 
 
-public void paint(Graphics g)
-{
+
+public void paint(Graphics g) {
+
 	Dimension d = getSize();
 
 	g.clearRect(0,0,d.width,d.height);
@@ -40,16 +43,63 @@ public void paint(Graphics g)
 			break;
 	}
 	
-	if (AktienMan.daxImage != null)
+	Image daxImage = dk.getImage();
+	
+	if (daxImage != null)
 	{
 		if (SysUtil.isWindows())
 		{
-			g.drawImage(AktienMan.daxImage,0,0,this);
+			g.drawImage(daxImage,0,0,this);
 		}
 		else
 		{
-			g.drawImage(AktienMan.daxImage,0,0,d.width,d.height,this);
+			g.drawImage(daxImage,0,0,d.width,d.height,this);
 		}
+	}
+	
+	Image djiImage = dk.getIndexImage(DAXKamera.INDEX_DJI);
+	
+	if (djiImage != null)
+	{
+		int iw = djiImage.getWidth(this);
+		int ih = djiImage.getHeight(this);
+		
+		int xpos = 0;
+		int ypos = d.height-ih;
+		
+		g.clearRect(xpos,ypos,iw,ih);
+
+		g.drawImage(djiImage,xpos,ypos,this);
+	}
+	
+	Image nasdaqImage = dk.getIndexImage(DAXKamera.INDEX_NASDAQ);
+	
+	if (nasdaqImage != null)
+	{
+		int iw = nasdaqImage.getWidth(this);
+		int ih = nasdaqImage.getHeight(this);
+		
+		int xpos = d.width-iw;
+		int ypos = d.height-ih;
+		
+		g.clearRect(xpos,ypos,iw,ih);
+
+		g.drawImage(nasdaqImage,xpos,ypos,this);
+	}
+
+	Image sp500Image = dk.getIndexImage(DAXKamera.INDEX_SP500);
+	
+	if (sp500Image != null)
+	{
+		int iw = sp500Image.getWidth(this);
+		int ih = sp500Image.getHeight(this);
+		
+		int xpos = (d.width-iw) / 2;
+		int ypos = d.height-ih;
+		
+		g.clearRect(xpos,ypos,iw,ih);
+
+		g.drawImage(sp500Image,xpos,ypos,this);
 	}
 }
 

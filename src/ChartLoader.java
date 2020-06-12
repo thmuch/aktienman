@@ -24,7 +24,9 @@ private ChartViewer chartviewer;
 
 
 public ChartLoader(ChartViewer chartviewer, String filename, boolean reload) {
+
 	super();
+
 	this.chartviewer = chartviewer;
 	this.filename = filename;
 	this.reload = reload;
@@ -33,12 +35,14 @@ public ChartLoader(ChartViewer chartviewer, String filename, boolean reload) {
 
 
 public void stopLoading() {
+
 	stopped = true;
 }
 
 
 
 public void run() {
+
 	DataInputStream in;
 
 	chartviewer.setChartLoader(this);

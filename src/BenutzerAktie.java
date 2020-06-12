@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-03-13
+ @version 2000-08-09
 */
 
 import java.awt.*;
@@ -21,10 +21,12 @@ public static final long VALUE_NA      = -2L;
 
 public static final int HTMLCOLS = 12;
 
-private static final String STR_MISSING = "<aktualisieren>";
-private static final String STR_ERROR   = "<Fehler>";
-private static final String STR_NA      = "n/a";
-private static final String STR_1JAHR   = "<1 J.";
+private static final String STR_MISSING   = "<aktualisieren>";
+private static final String STR_ERROR     = "<Fehler>";
+private static final String STR_NA        = "n/a";
+private static final String STR_1JAHR     = "<1 J.";
+private static final String STR_DIVIDENDE = "D+";
+private static final String STR_SPACE     = "  ";
 
 private static final int HEADROWS = 2;
 
@@ -32,12 +34,33 @@ private static final int ZEILENABSTAND = 0;
 private static final int HEADERABSTAND = 3;
 private static final int FOOTERABSTAND = 3;
 
+private static final int X_NAME       =  0;
+private static final int X_STUECKZAHL =  1;
+private static final int X_DIVIDENDE  =  2;
+private static final int X_KAUFKURS   =  3;
+private static final int X_WARNING    =  4;
+private static final int X_AKTKURS    =  5;
+private static final int X_KURSDATUM  =  6;
+private static final int X_ARROW      =  7;
+private static final int X_AKTWERT    =  8;
+private static final int X_DIFFERENZ  =  9;
+private static final int X_LAUFZEIT   = 10;
+private static final int X_PABSOLUT   = 11;
+private static final int X_PJAHR      = 12;
+private static final int X_KAUFDATUM  = 13;
+private static final int X_WKNBOERSE  = 14;
+
+private static final int X_LEN        = X_WKNBOERSE + 1;
+private static final int X_KURSSTART  = X_WARNING;
+private static final int X_KURSLEN    =  2;
+
 private static ADate heute = new ADate();
 
 private transient static long aktsumme = 0L;
 private transient static long kaufsumme = 0L;
 private transient static long difsteuer = 0L;
 private transient static long diffrei = 0L;
+private transient static long dividenden = 0L;
 
 private transient static Label lupdate = null;
 private transient static Color farbeHintergrund;
@@ -48,8 +71,9 @@ private transient Color farbeName;
 private transient Color farbeSelected;
 private transient boolean selected = false;
 private transient AktieInfo infodialog = null;
-private transient BALabel l1,l2,l3,l4,l5,l6,l7,l8,l9,l10,l11,l12;
-private transient BAImageCanvas l13;
+private transient BALabel l1,l2,l3,l4,l5,l6,l7,l8,l9,l10,l11,l12,l15;
+private transient BAImageArrowCanvas l13;
+private transient BAImageWarnCanvas l14;
 
 private String name,wkn,kursdatum;
 private Boersenplatz boersenplatz;
@@ -64,6 +88,9 @@ private long hoechstkurs = VALUE_MISSING;
 private long tiefstkurs = VALUE_MISSING;
 private long handelsvolumen = 0L;
 
+private long dividende = 0L;
+private ADate divdate = null;
+
 private ADate fixDate = null;
 private ADate watchstart = null;
 private long watchhoechst = VALUE_MISSING;
@@ -76,6 +103,7 @@ private String symbol = null;
 private int waehrung = Waehrungen.DEM; /* KaufwŠhrung */
 private int kurswaehrung = Waehrungen.DEM;
 private int spekulationsfrist = 12;
+private int oldWarnType = BAImageWarnCanvas.WARN_INIT;
 
 private boolean nurdiese = false;
 private boolean usegrenze = true;
@@ -611,6 +639,7 @@ public synchronized long getKurs() {
 
 
 public synchronized String getRawVerkaufsKursString() {
+
 	if (getKurs() <= 0L)
 	{
 		return "0";
@@ -683,6 +712,49 @@ public synchronized long getKaufkurs() {
 public synchronized String getKaufkursString() {
 
 	return kurs2String(getKaufkurs(),getKaufwaehrung());
+}
+
+
+
+public synchronized long getDividende() {
+
+	return dividende;
+}
+
+
+
+public synchronized String getDividendeString() {
+
+	return (getDividende() == 0L) ? "" : NumUtil.get00String(getDividende());
+}
+
+
+
+public synchronized String getDividendeDatum() {
+
+	return (divdate == null) ? "" : divdate.toString();
+}
+
+
+
+private synchronized void setDividende(long div, ADate divdate) {
+
+	dividende = (div < 0L) ? 0L : div;
+	
+	this.divdate = divdate;
+}
+
+
+
+private synchronized boolean hasDividende() {
+
+	if (divdate == null) return false;
+	if (nurBeobachten()) return false;
+	if (getDividende() <= 0L) return false;
+	
+	if (getKaufdatum().after(divdate)) return false;
+	
+	return (!heute.before(divdate));
 }
 
 
@@ -840,7 +912,8 @@ public synchronized void changeValues(String newName, String newWKN, Boersenplat
 								boolean newNurDiese, ADate newDate, long newKaufkurs,
 								long newAnz, long newHoch, long newTief, long newGrenze,
 								int neueWaehrung, boolean newUseGrenze, boolean newWatchonly,
-								boolean newDontUpdate, long newAktKurs, ADate newAktDate) {
+								boolean newDontUpdate, long newAktKurs, ADate newAktDate,
+								long newdiv, ADate newdivdate) {
 
 	boolean reset = ((!newWKN.equalsIgnoreCase(getWKNString())) || (!newBp.getKurz().equalsIgnoreCase(getBoerse())));
 	
@@ -861,6 +934,7 @@ public synchronized void changeValues(String newName, String newWKN, Boersenplat
 	
 	setStueckzahl(newAnz);
 	setSymbol(null);
+	setDividende(newdiv,newdivdate);
 
 	setupValues();
 	
@@ -875,6 +949,54 @@ public synchronized void changeValues(String newName, String newWKN, Boersenplat
 	}
 	
 	infoDialogSetValues(true);
+}
+
+
+
+public synchronized void changeKaufkurs(long neuerKaufkurs, int neueKaufwaehrung, ADate neuesKaufdatum) {
+
+	if (neuerKaufkurs > 0L)
+	{
+		kaufkurs  = neuerKaufkurs;
+		kaufdatum = neuesKaufdatum;
+		waehrung  = neueKaufwaehrung;
+
+		setupValues();
+
+		infoDialogSetValues(true);
+	}
+
+	/* neue Anzeige muss von Au§erhalb erfolgen! */
+}
+
+
+
+public synchronized void split(double faktor) {
+
+	if (faktor > 1.0)
+	{
+		setStueckzahl((long)((double)getStueckzahl() * faktor));
+		
+		kaufkurs = Math.round((double)getKaufkurs() / faktor);
+		hochkurs = Math.round((double)getHochkurs() / faktor);
+		tiefkurs = Math.round((double)getTiefkurs() / faktor);
+		
+		kurs = VALUE_MISSING;
+		kursdatum = "";
+
+		vortageskurs = VALUE_MISSING;
+		eroeffnungskurs = VALUE_MISSING;
+		hoechstkurs = VALUE_MISSING;
+		tiefstkurs = VALUE_MISSING;
+
+		watchhoechst = VALUE_MISSING;
+		watchtiefst = VALUE_MISSING;
+		watchhdate = null;
+		watchtdate = null;
+		watchstart = null;
+	}
+
+	/* neue Anzeige muss von Au§erhalb erfolgen! */
 }
 
 
@@ -936,6 +1058,8 @@ public synchronized boolean isSelected() {
 private synchronized void setColorAndRepaint(Color c) {
 
 	l1.setBackground(c);
+	l15.setBackground(c);
+	l14.setBackground(c);
 	l2.setBackground(c);
 	l11.setBackground(c);
 	l12.setBackground(c);
@@ -950,6 +1074,8 @@ private synchronized void setColorAndRepaint(Color c) {
 	l10.setBackground(c);
 	
 	l1.repaint();
+	l15.repaint();
+	l14.repaint();
 	l2.repaint();
 	l11.repaint();
 	l12.repaint();
@@ -1151,6 +1277,11 @@ public synchronized void saveHTML(BufferedWriter out, boolean namenKurz, boolean
 		}
 		out.write("</TD>");
 		out.newLine();
+		
+		if (hasDividende())
+		{
+			dividenden += Waehrungen.exchange(getDividende(),getKaufwaehrung(),Waehrungen.getListenWaehrung()) * getStueckzahl();
+		}
 		
 		out.write("  <TD ALIGN=\"right\">");
 		s = getKaufkursString();
@@ -1408,6 +1539,7 @@ public synchronized static void saveHeaderHTML(BufferedWriter out, String aktual
 	aktsumme = 0L;
 	difsteuer = 0L;
 	diffrei = 0L;
+	dividenden = 0L;
 }
 
 
@@ -1516,6 +1648,27 @@ public synchronized static void saveFooterHTML(BufferedWriter out) {
 		out.write("</TR>");
 		out.newLine();
 		out.newLine();
+
+		if (dividenden > 0L)
+		{
+			out.write("<TR>");
+			out.newLine();
+
+			out.write("  <TD COLSPAN=\"6\" ALIGN=\"right\">Dividenden:</TD>");
+			out.newLine();
+
+			out.write("  <TD ALIGN=\"right\">");
+			out.write(HTMLUtil.toNbspHTML(Waehrungen.getString(dividenden,Waehrungen.getListenWaehrung())));
+			out.write("</TD>");
+			out.newLine();
+
+			out.write("  <TD COLSPAN=\""+(HTMLCOLS-7)+"\">&nbsp;</TD>");
+			out.newLine();
+
+			out.write("</TR>");
+			out.newLine();
+			out.newLine();
+		}
 	}
 	catch (Exception e) {}
 }
@@ -1523,6 +1676,7 @@ public synchronized static void saveFooterHTML(BufferedWriter out) {
 
 
 public synchronized static void addSummen(Panel pTxt, String akt, String dif, String percdif, boolean isRed) {
+
 	AFrame.constrain(pTxt,new Label("Summe aktuell:"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	AFrame.constrain(pTxt,new Label(akt),1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,2,0,0);
 	AFrame.constrain(pTxt,new Label("Differenz zum Kaufwert:"),2,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,18,0,0);
@@ -1540,21 +1694,32 @@ public synchronized static void addSummen(Panel pTxt, String akt, String dif, St
 
 
 public synchronized static void addFooterToPanel(Panel p, int y, Panel pTxt) {
+
 	String akt = Waehrungen.getString(aktsumme,Waehrungen.getListenWaehrung());
-	AFrame.constrain(p,new Label("Summe aktuell:",Label.RIGHT),3,y,3,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,FOOTERABSTAND,10,0,0);
-	AFrame.constrain(p,new Label(akt,Label.RIGHT),6,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,FOOTERABSTAND,10,0,0);
+	AFrame.constrain(p,new Label("Summe aktuell:",Label.RIGHT),X_KURSSTART,y,X_AKTWERT-X_KURSSTART,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,FOOTERABSTAND,10,0,0);
+	AFrame.constrain(p,new Label(akt,Label.RIGHT),X_AKTWERT,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,FOOTERABSTAND,10,0,0);
 
-	AFrame.constrain(p,new Label("Summe Kaufwert:",Label.RIGHT),0,y,2,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,FOOTERABSTAND,10,0,0);
-	AFrame.constrain(p,new Label(Waehrungen.getString(kaufsumme,Waehrungen.getListenWaehrung()),Label.RIGHT),2,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,FOOTERABSTAND,10,0,0);
+	AFrame.constrain(p,new Label("Summe Kaufwert:",Label.RIGHT),0,y,X_KAUFKURS,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,FOOTERABSTAND,10,0,0);
+	AFrame.constrain(p,new Label(Waehrungen.getString(kaufsumme,Waehrungen.getListenWaehrung()),Label.RIGHT),X_KAUFKURS,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,FOOTERABSTAND,10,0,0);
+	
+	int xval   = X_DIFFERENZ;
+	int xstart = X_KURSSTART;
+	int xlen   = xval - xstart;
+	
+	AFrame.constrain(p,new Label("Differenz zum Kaufwert:",Label.RIGHT),xstart,y+1,xlen,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,10,0,0);
 
-	AFrame.constrain(p,new Label("Differenz zum Kaufwert:",Label.RIGHT),3,y+1,4,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,10,0,0);
+	AFrame.constrain(p,new Label("davon steuerfrei (*):",Label.RIGHT),xstart,y+2,xlen,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,10,0,0);
+	AFrame.constrain(p,new Label("davon zu versteuern:",Label.RIGHT),xstart,y+3,xlen,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,10,0,0);
 
-	AFrame.constrain(p,new Label("davon steuerfrei (*):",Label.RIGHT),3,y+2,4,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,10,0,0);
-	AFrame.constrain(p,new Label("davon zu versteuern:",Label.RIGHT),3,y+3,4,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,10,0,0);
+	if (dividenden > 0L)
+	{
+		AFrame.constrain(p,new Label("Dividenden:",Label.RIGHT),xstart,y+4,xlen,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,10,0,0);
+		AFrame.constrain(p,new Label(Waehrungen.getString(dividenden,Waehrungen.getListenWaehrung()),Label.RIGHT),xval,y+4,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,0,0,0);
+	}
 	
 	long d = aktsumme-kaufsumme;
 	String dif = Waehrungen.getString(d,Waehrungen.getListenWaehrung());
-	Label l = new Label("  " + dif,Label.RIGHT);
+	Label l = new Label(STR_SPACE + dif,Label.RIGHT);
 	if (d < 0L)
 	{
 		l.setForeground(Color.red);
@@ -1563,7 +1728,7 @@ public synchronized static void addFooterToPanel(Panel p, int y, Panel pTxt) {
 	{
 		l.setForeground(Color.green.darker());
 	}
-	AFrame.constrain(p,l,7,y+1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,0,0,0);
+	AFrame.constrain(p,l,xval,y+1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,0,0,0);
 	
 	String percdif = "";
 
@@ -1576,7 +1741,7 @@ public synchronized static void addFooterToPanel(Panel p, int y, Panel pTxt) {
 		percdif = "" + ((double)kdif/10.0);
 		if (kdif > 0L) percdif = "+" + percdif;
 		
-		l = new Label("  " + percdif,Label.RIGHT);
+		l = new Label(STR_SPACE + percdif,Label.RIGHT);
 		if (kdif > 0L)
 		{
 			l.setForeground(Color.green.darker());
@@ -1585,11 +1750,11 @@ public synchronized static void addFooterToPanel(Panel p, int y, Panel pTxt) {
 		{
 			l.setForeground(Color.red);
 		}
-		AFrame.constrain(p,l,9,y+1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,0,0,0);
+		AFrame.constrain(p,l,X_PABSOLUT,y+1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,0,0,0);
 	}
 	
 	String steuer = Waehrungen.getString(diffrei,Waehrungen.getListenWaehrung());
-	l = new Label("  " + steuer,Label.RIGHT);
+	l = new Label(STR_SPACE + steuer,Label.RIGHT);
 	if (diffrei < 0L)
 	{
 		l.setForeground(Color.red);
@@ -1598,10 +1763,10 @@ public synchronized static void addFooterToPanel(Panel p, int y, Panel pTxt) {
 	{
 		l.setForeground(Color.green.darker());
 	}
-	AFrame.constrain(p,l,7,y+2,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,0,0,0);
+	AFrame.constrain(p,l,xval,y+2,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,0,0,0);
 
 	steuer = Waehrungen.getString(difsteuer,Waehrungen.getListenWaehrung());
-	l = new Label("  " + steuer,Label.RIGHT);
+	l = new Label(STR_SPACE + steuer,Label.RIGHT);
 	if (difsteuer < 0L)
 	{
 		l.setForeground(Color.red);
@@ -1610,7 +1775,7 @@ public synchronized static void addFooterToPanel(Panel p, int y, Panel pTxt) {
 	{
 		l.setForeground(Color.green.darker());
 	}
-	AFrame.constrain(p,l,7,y+3,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,0,0,0);
+	AFrame.constrain(p,l,xval,y+3,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,0,0,0);
 	
 	addSummen(pTxt,akt,dif,percdif,(d<0.0));
 }
@@ -1618,6 +1783,7 @@ public synchronized static void addFooterToPanel(Panel p, int y, Panel pTxt) {
 
 
 public synchronized static void setLastUpdateAndRepaint(String aktualisierung) {
+
 	if (lupdate != null)
 	{
 		lupdate.setText(aktualisierung);
@@ -1630,19 +1796,19 @@ public synchronized static void setLastUpdateAndRepaint(String aktualisierung) {
 public synchronized static int addHeadingsToPanel(Panel p, String aktualisierung) {
 
 	lupdate = new Label(aktualisierung);
-	AFrame.constrain(p,lupdate,0,0,9,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,0,0,2,0);
+	AFrame.constrain(p,lupdate,0,0,X_LEN,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,0,0,2,0);
 
-	AFrame.constrain(p,new Label(" Aktienname"),0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,0,0,HEADERABSTAND,0);
-	AFrame.constrain(p,new Label("  St\u00fcck",Label.RIGHT),1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
-	AFrame.constrain(p,new Label("  Kaufkurs",Label.RIGHT),2,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
-	AFrame.constrain(p,new Label("  akt. Kurs",Label.RIGHT),3,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
-	AFrame.constrain(p,new Label("  akt. Wert",Label.RIGHT),6,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
-	AFrame.constrain(p,new Label("  Differenz",Label.RIGHT),7,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
-	AFrame.constrain(p,new Label("  Laufzeit",Label.RIGHT),8,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
-	AFrame.constrain(p,new Label("  %absolut",Label.RIGHT),9,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
-	AFrame.constrain(p,new Label("  %Jahr",Label.RIGHT),10,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
-	AFrame.constrain(p,new Label("  Kaufdatum ",Label.RIGHT),11,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
-	AFrame.constrain(p,new Label("  WKN.B\u00f6rse "),12,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,0,0,HEADERABSTAND,0);
+	AFrame.constrain(p,new Label(" Aktienname"),X_NAME,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,0,0,HEADERABSTAND,0);
+	AFrame.constrain(p,new Label(STR_SPACE+"St\u00fcck",Label.RIGHT),X_STUECKZAHL,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
+	AFrame.constrain(p,new Label(STR_SPACE+"Kaufkurs",Label.RIGHT),X_KAUFKURS,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
+	AFrame.constrain(p,new Label(STR_SPACE+"akt. Kurs",Label.RIGHT),X_KURSSTART,1,X_KURSLEN,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
+	AFrame.constrain(p,new Label(STR_SPACE+"akt. Wert",Label.RIGHT),X_AKTWERT,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
+	AFrame.constrain(p,new Label(STR_SPACE+"Differenz",Label.RIGHT),X_DIFFERENZ,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
+	AFrame.constrain(p,new Label(STR_SPACE+"Laufzeit",Label.RIGHT),X_LAUFZEIT,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
+	AFrame.constrain(p,new Label(STR_SPACE+"%absolut",Label.RIGHT),X_PABSOLUT,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
+	AFrame.constrain(p,new Label(STR_SPACE+"%Jahr",Label.RIGHT),X_PJAHR,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
+	AFrame.constrain(p,new Label(STR_SPACE+"Kaufdatum ",Label.RIGHT),X_KAUFDATUM,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,0,0,HEADERABSTAND,0);
+	AFrame.constrain(p,new Label(STR_SPACE+"WKN.B\u00f6rse "),X_WKNBOERSE,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,0,0,HEADERABSTAND,0);
 
 	heute = new ADate();
 
@@ -1650,6 +1816,7 @@ public synchronized static int addHeadingsToPanel(Panel p, String aktualisierung
 	aktsumme = 0L;
 	difsteuer = 0L;
 	diffrei = 0L;
+	dividenden = 0L;
 
 	farbeHintergrund = p.getBackground();
 	konfigspekfrist = 12/*AktienMan.properties.getInt("Konfig.Spekulationsfrist")*/;
@@ -1813,9 +1980,16 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 	
 	checkSpekulationsfrist(konfigspekfrist);
 	
-	/* (0) Aktienname: */
-	
-	l1 = new BALabel(" "+getName(namenKurz),row,Label.LEFT);
+	/* Aktienname: */
+
+	if (l1 == null)
+	{
+		l1 = new BALabel(" "+getName(namenKurz),row,Label.LEFT);
+	}
+	else
+	{
+		l1.setValues(" "+getName(namenKurz),row);
+	}
 	if (doNotUpdate())
 	{
 		l1.setForeground(Color.gray);
@@ -1824,24 +1998,57 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 	{
 		l1.setForeground(farbeName);
 	}
-	AFrame.constrain(p,l1,0,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,ZEILENABSTAND,0,0,0);
+	AFrame.constrain(p,l1,X_NAME,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,ZEILENABSTAND,0,0,0);
 	
-	/* (1) StŸckzahl: */
-
-	if (nurBeobachten())
+	/* StŸckzahl: */
+	
+	s = (nurBeobachten()) ? "" : getStueckzahlString();
+	if (l3 == null)
 	{
-		s = "";
+		l3 = new BALabel(STR_SPACE + s,row);
 	}
 	else
 	{
-		s = getStueckzahlString();
+		l3.setValues(STR_SPACE + s,row);
 	}
-	l3 = new BALabel("  " + s,row);
-	AFrame.constrain(p,l3,1,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
+	AFrame.constrain(p,l3,X_STUECKZAHL,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
+	
+	/* Dividende? */
+	
+	boolean dividendeVorhanden;
+	
+	if (hasDividende())
+	{
+		dividenden += Waehrungen.exchange(getDividende(),getKaufwaehrung(),Waehrungen.getListenWaehrung()) * getStueckzahl();
 
-	/* (2) Kaufkurs: */
+		dividendeVorhanden = true;
+	}
+	else
+	{
+		dividendeVorhanden = false;
+	}
 
-	l8 = new BALabel("  "+getKaufkursString(),row);
+	if (l15 == null)
+	{
+		l15 = new BALabel((dividendeVorhanden) ? STR_SPACE+STR_DIVIDENDE : "",row,Label.LEFT);
+	}
+	else
+	{
+		l15.setValues((dividendeVorhanden) ? STR_SPACE+STR_DIVIDENDE : "",row);
+	}
+	l15.setForeground(Color.gray);
+	AFrame.constrain(p,l15,X_DIVIDENDE,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
+
+	/* Kaufkurs: */
+
+	if (l8 == null)
+	{
+		l8 = new BALabel(STR_SPACE+getKaufkursString(),row);
+	}
+	else
+	{
+		l8.setValues(STR_SPACE+getKaufkursString(),row);
+	}
 	if ((aktKurs > 0L) && (!nurBeobachten()))
 	{
 		diff = Waehrungen.exchange(getKaufkurs(),getKaufwaehrung(),Waehrungen.getListenWaehrung()) * getStueckzahl();
@@ -1851,35 +2058,60 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 	{
 		l8.setForeground(Color.gray);
 	}
-	AFrame.constrain(p,l8,2,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
+	AFrame.constrain(p,l8,X_KAUFKURS,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
 	
-	/* (3,4) akt. Kurs: */
+	/* akt. Kurs: */
+	
+	int warntype = BAImageWarnCanvas.WARN_NONE;
 
-	l2 = new BALabel("  "+kursString,row);
+	if (l2 == null)
+	{
+		l2 = new BALabel(STR_SPACE+kursString,row);
+	}
+	else
+	{
+		l2.setValues(STR_SPACE+kursString,row);
+	}
 	if (aktKurs > 0L)
 	{
 		if ((getTiefkurs() > 0L) && (aktKurs <= Waehrungen.exchange(getTiefkurs(),getKaufwaehrung(),Waehrungen.getListenWaehrung())))
 		{
 			l2.setForeground(Color.red);
+			warntype = BAImageWarnCanvas.WARN_RED;
 		}
 		else if ((!doUseGrenze()) && (getHochkurs() > 0L) && (aktKurs >= Waehrungen.exchange(getHochkurs(),getKaufwaehrung(),Waehrungen.getListenWaehrung())))
 		{
 			l2.setForeground(Color.green.darker());
+			warntype = BAImageWarnCanvas.WARN_GREEN;
 		}
 		else if ((doUseGrenze()) && (gewinngrenze > 0L) && (aktKurs >= Waehrungen.exchange(gewinngrenze,getKaufwaehrung(),Waehrungen.getListenWaehrung())))
 		{
 			l2.setForeground(Color.green.darker());
+			warntype = BAImageWarnCanvas.WARN_GREEN;
 		}
 	}
-	AFrame.constrain(p,l2,3,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
 	
-	l11 = new BALabel(" "+getKursdatumString(),row);
-	AFrame.constrain(p,l11,4,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,ZEILENABSTAND,0,0,0);
+	l14 = new BAImageWarnCanvas(row,warntype,l8);
+	AFrame.constrain(p,l14,X_WARNING,y,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,ZEILENABSTAND,0,0,0);
+	
+	checkWarn(warntype);
 
-	l13 = new BAImageCanvas(row,aktKurs,getVortageskurs(),getKurswaehrung(),l11);
-	AFrame.constrain(p,l13,5,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,ZEILENABSTAND,0,0,0);
+	AFrame.constrain(p,l2,X_AKTKURS,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
 	
-	/* (5) akt. Wert: */
+	if (l11 == null)
+	{
+		l11 = new BALabel(" "+getKursdatumString(),row);
+	}
+	else
+	{
+		l11.setValues(" "+getKursdatumString(),row);
+	}
+	AFrame.constrain(p,l11,X_KURSDATUM,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,ZEILENABSTAND,0,0,0);
+
+	l13 = new BAImageArrowCanvas(row,aktKurs,getVortageskurs(),getKurswaehrung(),l11);
+	AFrame.constrain(p,l13,X_ARROW,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,ZEILENABSTAND,0,0,0);
+	
+	/* akt. Wert: */
 
 	if (nurBeobachten())
 	{
@@ -1897,10 +2129,17 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 	{
 		sk = kursString;
 	}
-	l4 = new BALabel("  "+sk,row);
-	AFrame.constrain(p,l4,6,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
+	if (l4 == null)
+	{
+		l4 = new BALabel(STR_SPACE+sk,row);
+	}
+	else
+	{
+		l4.setValues(STR_SPACE+sk,row);
+	}
+	AFrame.constrain(p,l4,X_AKTWERT,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
 	
-	/* (6) Differenz */
+	/* Differenz */
 
 	if (aktKurs > 0L)
 	{
@@ -1926,7 +2165,14 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 	{
 		sk = kursString;
 	}
-	l12 = new BALabel("  "+sk,row);
+	if (l12 == null)
+	{
+		l12 = new BALabel(STR_SPACE+sk,row);
+	}
+	else
+	{
+		l12.setValues(STR_SPACE+sk,row);
+	}
 	if (nurBeobachten())
 	{
 		l12.setForeground(Color.gray);
@@ -1939,24 +2185,28 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 	{
 		l12.setForeground(Color.red);
 	}
-	AFrame.constrain(p,l12,7,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
+	AFrame.constrain(p,l12,X_DIFFERENZ,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
 	
-	/* (7) Laufzeit: */
+	/* Laufzeit: */
 
 	boolean frei = istSteuerfrei() && (!nurBeobachten());
+	if (l5 == null)
+	{
+		l5 = new BALabel();
+	}
 	if (nameSteuerfrei && frei)
 	{
-		l5 = new BALabel("  steuerfrei",row);
+		l5.setValues(STR_SPACE+"steuerfrei",row);
 		l5.setForeground(farbeSteuerfrei);
 	}
 	else
 	{
-		l5 = new BALabel("  "+getLaufzeitMonateString(),row);
+		l5.setValues(STR_SPACE+getLaufzeitMonateString(),row);
 		if (frei) l5.setForeground(farbeSteuerfrei);
 	}
-	AFrame.constrain(p,l5,8,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
+	AFrame.constrain(p,l5,X_LAUFZEIT,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
 	
-	/* (8) % absolut: */
+	/* % absolut: */
 
 	if (aktKurs > 0L)
 	{
@@ -1983,7 +2233,14 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 		pabs = 0L;
 		sk = kursString;
 	}
-	l6 = new BALabel("  "+sk,row);
+	if (l6 == null)
+	{
+		l6 = new BALabel(STR_SPACE+sk,row);
+	}
+	else
+	{
+		l6.setValues(STR_SPACE+sk,row);
+	}
 	if (pabs > 0L)
 	{
 		l6.setForeground(Color.green.darker());
@@ -1992,9 +2249,9 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 	{
 		l6.setForeground(Color.red);
 	}
-	AFrame.constrain(p,l6,9,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
+	AFrame.constrain(p,l6,X_PABSOLUT,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
 	
-	/* (9) % Jahr: */
+	/* % Jahr: */
 	
 	if (calcJahr || (tageLaufzeit >= 360L))
 	{
@@ -2018,7 +2275,14 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 	{
 		sk = STR_1JAHR;
 	}
-	l7 = new BALabel("  "+sk,row);
+	if (l7 == null)
+	{
+		l7 = new BALabel(STR_SPACE+sk,row);
+	}
+	else
+	{
+		l7.setValues(STR_SPACE+sk,row);
+	}
 	if (tageLaufzeit < 360L)
 	{
 		l7.setForeground(Color.gray);
@@ -2034,21 +2298,35 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 			l7.setForeground(Color.red);
 		}
 	}
-	AFrame.constrain(p,l7,10,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
+	AFrame.constrain(p,l7,X_PJAHR,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
 	
-	/* (10) Kaufdatum: */
+	/* Kaufdatum: */
 	
-	l9 = new BALabel("  "+getKaufdatum().toString()+" ",row);
+	if (l9 == null)
+	{
+		l9 = new BALabel(STR_SPACE+getKaufdatum().toString()+" ",row);
+	}
+	else
+	{
+		l9.setValues(STR_SPACE+getKaufdatum().toString()+" ",row);
+	}
 	if (nurBeobachten())
 	{
 		l9.setForeground(Color.gray);
 	}
-	AFrame.constrain(p,l9,11,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
+	AFrame.constrain(p,l9,X_KAUFDATUM,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,ZEILENABSTAND,0,0,0);
 	
-	/* (11) WKN.Bšrse: */
+	/* WKN.Bšrse: */
 	
-	l10 = new BALabel("  "+getWKNString()+"."+getBoerse()+" ",row,Label.LEFT);
-	AFrame.constrain(p,l10,12,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,ZEILENABSTAND,0,0,0);
+	if (l10 == null)
+	{
+		l10 = new BALabel(STR_SPACE+getWKNString()+"."+getBoerse()+" ",row,Label.LEFT);
+	}
+	else
+	{
+		l10.setValues(STR_SPACE+getWKNString()+"."+getBoerse()+" ",row);
+	}
+	AFrame.constrain(p,l10,X_WKNBOERSE,y,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,1.0,0.0,ZEILENABSTAND,0,0,0);
 	
 	/* */
 	
@@ -2057,7 +2335,30 @@ public synchronized void addToPanel(Panel p, int y, boolean namenKurz, boolean n
 
 
 
+private void checkWarn(int type) {
+
+	int warning = KonfigurationWarnungen.getWarnType();
+
+	if ((oldWarnType != BAImageWarnCanvas.WARN_INIT) && (type != BAImageWarnCanvas.WARN_NONE)
+		&& (warning != KonfigurationWarnungen.WARNTYPE_DISPLAY) && (type != oldWarnType))
+	{
+		if (warning == KonfigurationWarnungen.WARNTYPE_ALERT)
+		{
+			new BeepWarnalert(AktienMan.hauptdialog,type,getName(true),getKursString());
+		}
+		else
+		{
+			Toolkit.getDefaultToolkit().beep();
+		}
+	}
+	
+	oldWarnType = type;
+}
+
+
+
 public synchronized void infoDialogOpen() {
+
 	if (infodialog == null)
 	{
 		infodialog = new AktieInfo(this);
@@ -2079,6 +2380,7 @@ public synchronized void infoDialogOpen() {
 
 
 public synchronized void infoDialogSetValues(boolean draw) {
+
 	if (infodialog != null)
 	{
 		infodialog.setValues(draw);
@@ -2088,6 +2390,7 @@ public synchronized void infoDialogSetValues(boolean draw) {
 
 
 public synchronized void infoDialogClose() {
+
 	if (infodialog != null)
 	{
 		infodialog.dispose();
@@ -2098,6 +2401,7 @@ public synchronized void infoDialogClose() {
 
 
 public synchronized void infoDialogClosed() {
+
 	infodialog = null;
 }
 

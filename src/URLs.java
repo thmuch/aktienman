@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-03-27
+ @version 2000-11-10
 */
 
 
@@ -18,6 +18,9 @@ public static final int URL_AMUPDATE         =  1;
 public static final int URL_AMDOWNLOAD       =  2;
 
 public static final int URL_KAMERA           = 10;
+public static final int URL_KAMERADJI        = 11;
+public static final int URL_KAMERANASDAQ     = 12;
+public static final int URL_KAMERASP500      = 13;
 
 public static final int URL_DAXREALTIME      = 20;
 public static final int URL_CHARTINTRADAY    = 21;
@@ -33,7 +36,13 @@ public static final int URL_KURSECOMDIRECT   = 40;
 public static final int URL_KURSEDEUBA       = 50;
 public static final int URL_CHARTDEUBA       = 51;
 
-public static final int URL_INDEXBBBANK      = 60;
+//public static final int URL_INDEXBBBANK      = 60;
+public static final int URL_BBBINDEXD        = 61;
+public static final int URL_BBBINDEXEU       = 62;
+public static final int URL_BBBINDEXUS       = 63;
+public static final int URL_BBBINDEXASIA     = 64;
+
+public static final int URL_LSDAX30REALTIME  = 70;
 
 
 public static final int CHART_STANDARD       = -1;
@@ -92,8 +101,43 @@ public static final int STR_DEUBA_CHARTSRC   = 53;
 public static final int STR_BBB_INDEXTITLE   = 60;
 public static final int STR_BBB_INDEXSET     = 61;
 public static final int STR_BBB_INDEXENDE    = 62;
-public static final int STR_BBB_INDEXVALUE   = 63;
+//public static final int STR_BBB_INDEXVALUE   = 63;
 
+public static final int STR_LSDAX_KURSANFANG = 70;
+public static final int STR_LSDAX_KURSENDE   = 71;
+public static final int STR_LSDAX_KURSVALID  = 72;
+public static final int STR_LSDAX_JSKANFANG  = 73;
+public static final int STR_LSDAX_JSKENDE    = 74;
+public static final int STR_LSDAX_JSKVALID   = 75;
+
+public static final int STR_INDEX_DAX30      = 80;
+public static final int STR_INDEX_NEMAX50    = 81;
+public static final int STR_INDEX_DOWINDUST  = 82;
+public static final int STR_INDEX_SP500      = 83;
+public static final int STR_INDEX_NASDAQ100  = 84;
+public static final int STR_INDEX_NIKKEI225  = 85;
+public static final int STR_INDEX_DAX100     = 86;
+public static final int STR_INDEX_MDAX       = 87;
+public static final int STR_INDEX_SDAX       = 88;
+public static final int STR_INDEX_EURSTOXX50 = 89;
+public static final int STR_INDEX_STOXX50    = 90;
+public static final int STR_INDEX_NYSECOMP   = 91;
+
+public static final int NUM_LSDAX_NAMELEN    = 10;
+
+public static final int NUM_ICCOM_PIXWIDTH   = 20;
+public static final int NUM_ICCOM_PIXHEIGHT  = 21;
+public static final int NUM_ICCOM_YOFFSET    = 22;
+public static final int NUM_ICCOM_YEND       = 23;
+public static final int NUM_ICCOM_XOFFSET    = 24;
+public static final int NUM_ICCOM_XEND       = 25;
+
+public static final int NUM_ICDB_PIXWIDTH    = 26;
+public static final int NUM_ICDB_PIXHEIGHT   = 27;
+public static final int NUM_ICDB_YOFFSET     = 28;
+public static final int NUM_ICDB_YEND        = 29;
+public static final int NUM_ICDB_XOFFSET     = 30;
+public static final int NUM_ICDB_XEND        = 31;
 
 protected static final int BASE_EXCHANGE     =  1;
 protected static final int BASE_BBBANK       =  2;
@@ -120,7 +164,7 @@ public String getString(int strNr) {
 		return "Gehandelte St&uuml;ck";
 
 	case STR_CD_KURSENDE:
-		return "Java Trader";
+		return "Chart Analyzer";
 
 	case STR_CD_KURSTITEL:
 		return "<th ";
@@ -201,19 +245,122 @@ public String getString(int strNr) {
 		return " src=\'";
 	
 	case STR_BBB_INDEXTITLE:
-		return "\"KA_Charts.htm?";
+		return "chart.html?symm=";
 
 	case STR_BBB_INDEXSET:
-		return "set+";
+		return "<b>Name</b>";
 
 	case STR_BBB_INDEXENDE:
-		return "</tr>";
+		return "Bitte beachten";
 
-	case STR_BBB_INDEXVALUE:
-		return "\"2\">";
+/*	case STR_BBB_INDEXVALUE:
+		return "\"2\">"; */
+
+	case STR_LSDAX_KURSANFANG:
+		return "<PRE>";
+
+	case STR_LSDAX_KURSENDE:
+		return "</PRE>";
+	
+	case STR_LSDAX_KURSVALID:
+		return "<a href=\"javascript:";
+
+	case STR_LSDAX_JSKANFANG:
+		return "tab = new Array()";
+
+	case STR_LSDAX_JSKENDE:
+		return "</script>";
+	
+	case STR_LSDAX_JSKVALID:
+		return "new Array(";
+	
+	case STR_INDEX_DAX30:
+		return "DAX.ETR";
+	
+	case STR_INDEX_NEMAX50:
+		return "NMPX.ETR";
+	
+	case STR_INDEX_DOWINDUST:
+		return "INDU.IND";
+	
+	case STR_INDEX_SP500:
+		return "INX.IND";
+	
+	case STR_INDEX_NASDAQ100:
+		return "NDX.X.IND";
+	
+	case STR_INDEX_NIKKEI225:
+		return "NIKKEI225.TWI";
+		
+	case STR_INDEX_DAX100:
+		return "HDAX.ETR";
+		
+	case STR_INDEX_MDAX:
+		return "MDAX.ETR";
+		
+	case STR_INDEX_SDAX:
+		return "SDXP.ETR";
+		
+	case STR_INDEX_EURSTOXX50:
+		return "SX5T.DJX";
+		
+	case STR_INDEX_STOXX50:
+		return "SX5P.DJX";
+		
+	case STR_INDEX_NYSECOMP:
+		return "NYA.X.IND";
 	}
 	
 	return "";
+}
+
+
+
+public int getNumber(int nnr) {
+
+	switch (nnr)
+	{
+	case NUM_LSDAX_NAMELEN:
+		return 24;
+	
+	case NUM_ICCOM_PIXWIDTH:
+		return 413;
+
+	case NUM_ICCOM_PIXHEIGHT:
+		return 461;
+
+	case NUM_ICCOM_YOFFSET:
+		return 27;
+
+	case NUM_ICCOM_YEND:
+		return 232;
+
+	case NUM_ICCOM_XOFFSET:
+		return 0;
+
+	case NUM_ICCOM_XEND:
+		return 405;
+
+	case NUM_ICDB_PIXWIDTH:
+		return 400;
+
+	case NUM_ICDB_PIXHEIGHT:
+		return 412;
+
+	case NUM_ICDB_YOFFSET:
+		return 32;
+
+	case NUM_ICDB_YEND:
+		return 258;
+
+	case NUM_ICDB_XOFFSET:
+		return 0;
+
+	case NUM_ICDB_XEND:
+		return 399;
+	}
+	
+	return -1;
 }
 
 
@@ -226,7 +373,8 @@ public String getBase(int bnr) {
 		return "http://www.exchange.de/";
 	
 	case BASE_BBBANK:
-		return "http://bbbank.teledata.de:9056/bbbank/";
+//		return "http://bbbank.teledata.de:9056/bbbank/";
+		return "http://bbbank.teledata.de/bbbank/";
 	
 	case BASE_DEUBA:
 		return "http://deuba.teledata.de:9030";
@@ -253,7 +401,16 @@ public String get(int urlNr) {
 	
 	case URL_KAMERA:
 		return getBase(BASE_EXCHANGE) + "parkett/parkett.jpg";
-	
+
+	case URL_KAMERADJI:
+		return "http://rtq.thomsoninvest.net/graphics/intraday/djia_indicy.gif";
+
+	case URL_KAMERANASDAQ:
+		return "http://rtq.thomsoninvest.net/graphics/intraday/nasdaq_indicy.gif";
+
+	case URL_KAMERASP500:
+		return "http://rtq.thomsoninvest.net/graphics/intraday/sp500_indicy.gif";
+
 	case URL_DAXREALTIME:
 		return getBase(BASE_EXCHANGE) + "realtime/dax_d.html";
 	
@@ -261,19 +418,19 @@ public String get(int urlNr) {
 		return getBase(BASE_EXCHANGE) + "realtime/";
 	
 	case URL_DAX30:
-		return getBase(BASE_BBBANK) + "KL_DAX30FFM.htm";
+		return getBase(BASE_BBBANK) + "kursliste.html?sKl=dax30&sType=default&bNoIdx=1&kunde=99999ext";
 
 	case URL_DAX100:
-		return getBase(BASE_BBBANK) + "KL_DAX100.htm";
+		return getBase(BASE_BBBANK) + "kursliste.html?sKl=mdax&sType=default&bNoIdx=1&kunde=99999ext";
 
 	case URL_NMARKT:
-		return getBase(BASE_BBBANK) + "KL_NeuerMarkt.htm";
+		return getBase(BASE_BBBANK) + "kursliste.html?sKl=nemax&sType=default&bNoIdx=1&kunde=99999ext";
 
 	case URL_EURO50:
-		return getBase(BASE_BBBANK) + "KL_EuroStoxx.htm";
+		return getBase(BASE_BBBANK) + "kursliste.html?sKl=eurostoxx50&sType=default&bNoIdx=1&kunde=99999ext";
 
 	case URL_AUSLAND:
-		return getBase(BASE_BBBANK) + "KL_Individuell.htm";
+		return getBase(BASE_BBBANK) + "kursliste.html?sKl=stoxx50&sType=default&bNoIdx=1&kunde=99999ext";
 
 	case URL_KURSECOMDIRECT:
 		return getBase(BASE_COMDIRECT) + "/de/suche/main.html?searchfor=";
@@ -284,8 +441,24 @@ public String get(int urlNr) {
 	case URL_CHARTDEUBA:
 		return getBase(BASE_DEUBA) + "/db/";
 
-	case URL_INDEXBBBANK:
-		return getBase(BASE_BBBANK) + "KL_Indices.htm";
+/*	case URL_INDEXBBBANK:
+		return getBase(BASE_BBBANK) + "KL_Indices.htm"; */
+
+	case URL_BBBINDEXD:
+		return getBase(BASE_BBBANK) + "kursliste.html?sKl=indizes-germany&sType=index&bNoIdx=0&kunde=99999ext";
+
+	case URL_BBBINDEXEU:
+		return getBase(BASE_BBBANK) + "kursliste.html?sKl=indizes-euro&sType=index&bNoIdx=0&kunde=99999ext";
+
+	case URL_BBBINDEXUS:
+		return getBase(BASE_BBBANK) + "kursliste.html?sKl=indizes-us&sType=index&bNoIdx=0&kunde=99999ext";
+
+	case URL_BBBINDEXASIA:
+		return getBase(BASE_BBBANK) + "kursliste.html?sKl=indizes-asia&sType=index&bNoIdx=0&kunde=99999ext";
+
+	case URL_LSDAX30REALTIME:
+//		return "http://212.6.204.101/lang/nbody_dax.cfm?heyde=0.93857015&CFID=7296&CFTOKEN=41289468";
+		return "http://quotecenter.ls-d.de/lang/nbody_nm.cfm?lus=0.23665493&CFID=929612&CFTOKEN=11833536&papier=DAX";
 	}
 
 	return "";
@@ -298,159 +471,6 @@ public String checkWKN(String wkn) {
 /*	if (wkn.equals("849084"))
 	{
 		return "DE0008490848";
-	}
-	else if (wkn.equals("972039"))
-	{
-		return "LU0046900790";
-	}
-	else if (wkn.equals("986012"))
-	{
-		return "LU0066471896";
-	}
-	else if (wkn.equals("988009"))
-	{
-		return "LU0086711412";
-	}
-	else if (wkn.equals("976976"))
-	{
-		return "DE0009769760";
-	}
-	else if (wkn.equals("974587"))
-	{
-		return "LU0062624902";
-	}
-	else if (wkn.equals("987702"))
-	{
-		return "LU0082616367";
-	}
-	else if (wkn.equals("109079"))
-	{
-		return "DE0001090793";
-	}
-	else if (wkn.equals("974433"))
-	{
-		return "GB0001746154";
-	}
-	else if (wkn.equals("971609"))
-	{
-		return "LU0052474979";
-	} */
-
-/*	else if (wkn.equals("843002"))
-	{
-		return "MUV2";
-	}
-	else if (wkn.equals("555750"))
-	{
-		return "DTE";
-	}
-	else if (wkn.equals("710000"))
-	{
-		return "DCX";
-	}
-	else if (wkn.equals("750000"))
-	{
-		return "TKA";
-	}
-	else if (wkn.equals("519000"))
-	{
-		return "BMW";
-	}
-	else if (wkn.equals("519003"))
-	{
-		return "BMW3";
-	}
-	else if (wkn.equals("703703"))
-	{
-		return "RWE3";
-	}
-	else if (wkn.equals("695200"))
-	{
-		return "PRS";
-	}
-	else if (wkn.equals("850000"))
-	{
-		return "GMC";
-	}
-	else if (wkn.equals("871111"))
-	{
-		return "SSY";
-	}
-	else if (wkn.equals("920578"))
-	{
-		return "LYLX";
-	}
-	else if (wkn.equals("920566"))
-	{
-		return "LYLK";
-	}
-	else if (wkn.equals("535000"))
-	{
-		return "DRB";
-	}
-	else if (wkn.equals("922220"))
-	{
-		return "TLT";
-	}
-	else if (wkn.equals("885023"))
-	{
-		return "SMI";
-	}
-	else if (wkn.equals("723610"))
-	{
-		return "SIE";
-	}
-	else if (wkn.equals("899868"))
-	{
-		return "LUC";
-	}
-	else if (wkn.equals("923893"))
-	{
-		return "HBC1";
-	}
-	else if (wkn.equals("872922"))
-	{
-		return "GLX";
-	}
-	else if (wkn.equals("851289"))
-	{
-		return "HNK";
-	}
-	else if (wkn.equals("852062"))
-	{
-		return "PRG";
-	}
-	else if (wkn.equals("760080"))
-	{
-		return "ALT";
-	}
-	else if (wkn.equals("909571"))
-	{
-		return "CTMA";
-	}
-	else if (wkn.equals("566480"))
-	{
-		return "EVT";
-	}
-	else if (wkn.equals("507460"))
-	{
-		return "GSO";
-	}
-	else if (wkn.equals("529650"))
-	{
-		return "WE2";
-	}
-	else if (wkn.equals("354344"))
-	{
-		return "JAAG";
-	}
-	else if (wkn.equals("925475"))
-	{
-		return "MU5";
-	}
-	else if (wkn.equals("934248"))
-	{
-		return "UTS";
 	} */
 
 	return wkn;
@@ -587,8 +607,25 @@ public String getComdirectChartURL(String rel, int type, int charttype) {
 
 public boolean isValidNr(long nr) {
 
-	if ((nr == 270) || (nr == 271) || (nr == 272) || (nr == 339))
+	switch ((int)nr)
 	{
+	case 8:
+	case 32:
+	case 40:
+	case 42:
+	case 92:
+	case 93:
+	case 150:
+	case 151:
+	case 165:
+	case 186:
+	case 229:
+	case 270:
+	case 271:
+	case 272:
+	case 339:
+	case 485:
+
 		return false;
 	}
 

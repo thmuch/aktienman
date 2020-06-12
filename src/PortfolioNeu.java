@@ -63,7 +63,7 @@ public synchronized boolean canOK() {
 
 	if (pofoName.length() == 0)
 	{
-		new Warnalert(this,"Bitte geben Sie einen Portfolionamen ein.");
+		new TextWarnalert(this,"Bitte geben Sie einen Portfolionamen ein.");
 		return false;
 	}
 	
@@ -71,7 +71,7 @@ public synchronized boolean canOK() {
 	
 	if (f.exists())
 	{
-		new Warnalert(this,"Der Portfolioname wird bereits verwendet!|Bitte geben Sie einen neuen Namen ein.");
+		new TextWarnalert(this,"Der Portfolioname wird bereits verwendet!|Bitte geben Sie einen neuen Namen ein.");
 		return false;
 	}
 	

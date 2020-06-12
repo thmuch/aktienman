@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-28
+ @version 2000-08-07
 */
 
 import java.awt.event.*;
@@ -24,7 +24,7 @@ public BoersenListener(int boersenplatz) {
 
 public void actionPerformed(ActionEvent e) {
 
-	AktienMan.hauptdialog.listeAktualisieren(boersenplatz);
+	AktienMan.hauptdialog.listeAktualisieren(boersenplatz,KursQuellen.getPlatzKursQuelle());
 }
 
 }

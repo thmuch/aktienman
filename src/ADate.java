@@ -1,10 +1,11 @@
 /**
  @author Thomas Much
- @version 1999-06-14
+ @version 2000-06-05
 */
 
 import java.util.*;
 import java.io.*;
+
 
 
 
@@ -33,23 +34,38 @@ private int serialDate;
 
 
 
+
 public ADate() {
+
 	Calendar c = Calendar.getInstance(timezone);
 	set(c.get(Calendar.YEAR),c.get(Calendar.MONTH)+1,c.get(Calendar.DATE),c.get(Calendar.HOUR_OF_DAY),c.get(Calendar.MINUTE),c.get(Calendar.SECOND));
 }
 
 
+
 public ADate(int year, int month, int day) {
+
 	set(year,month,day);
 }
 
 
+
+public ADate(int serialdate) {
+
+	set(serialdate);
+}
+
+
+
 public void set(int year, int month, int day) {
+
 	set(year,month,day,0,0,0);
 }
 
 
+
 public void set(int year, int month, int day, int hour, int minute, int second) {
+
 	this.year   = fixYear(year);
 	this.month  = month;
 	this.day    = day;
@@ -62,68 +78,133 @@ public void set(int year, int month, int day, int hour, int minute, int second) 
 }
 
 
+
+public void set(int serialdate) {
+
+	if (serialdate < 0L) return;
+
+	serialDate = serialdate;
+	
+	int y = 1900;
+	
+	int d = getDays(y);
+	
+	while (serialdate >= d)
+	{
+		serialdate -= d;
+
+		d = getDays(++y);
+	}
+	
+	int m = JANUARY;
+	
+	d = getDays(y,m);
+	
+	while (serialdate >= d)
+	{
+		serialdate -= d;
+
+		d = getDays(y,++m);
+	}
+	
+	this.year   = y;
+	this.month  = m;
+	this.day    = serialdate + 1;
+
+	this.hour   = 0;
+	this.minute = 0;
+	this.second = 0;
+}
+
+
+
 public int getSerialDate() {
+
 	return serialDate;
 }
 
 
+
 public int getYear() {
+
 	return year;
 }
 
 
+
 public int getMonth() {
+
 	return month;
 }
 
 
+
 public int getDay() {
+
 	return day;
 }
 
 
+
 public int getHour() {
+
 	return hour;
 }
 
 
+
 public int getMinute() {
+
 	return minute;
 }
 
 
+
 public int getSecond() {
+
 	return second;
 }
 
 
+
 public boolean before(ADate adate) {
+
 	return (adate.getSerialDate() > getSerialDate());
 }
 
 
+
 public boolean after(ADate adate) {
+
 	return (adate.getSerialDate() < getSerialDate());
 }
 
 
+
 public boolean equals(ADate adate) {
+
 	return (adate.getSerialDate() == getSerialDate());
 }
 
 
+
 public String toString() {
+
 	return "" + getDay() + "." + getMonth() + "." + getYear();
 }
 
 
+
 public String timeToString() {
+
 	int m = getMinute();
 	return "" + getHour() + ":" + ((m<10)?"0":"") + m;
 }
 
 
+
 public String toTimestamp(boolean time) {
+
 	int minute = getMinute();
 	int hour = getHour();
 	int month = getMonth();
@@ -140,7 +221,9 @@ public String toTimestamp(boolean time) {
 }
 
 
+
 public static boolean isLeapYear(int year) {
+
 	year = fixYear(year);
 	
 	if ((year % 4) == 0)
@@ -168,7 +251,9 @@ public static boolean isLeapYear(int year) {
 }
 
 
+
 public static int getDays(int year) {
+
 	if (isLeapYear(year))
 	{
 		return 366;
@@ -180,7 +265,9 @@ public static int getDays(int year) {
 }
 
 
+
 public static int getDays(int year, int month) {
+
 	if (month == FEBRUARY)
 	{
 		if (isLeapYear(year))
@@ -215,7 +302,9 @@ public static int getDays(int year, int month) {
 }
 
 
+
 public static ADate parse(String s) throws Exception {
+
 	StringTokenizer st = new StringTokenizer(s.trim(),".,/- ");
 	
 	if (st.hasMoreTokens())
@@ -274,7 +363,9 @@ public static ADate parse(String s) throws Exception {
 }
 
 
+
 private static int fixYear(int year) {
+
 	if (year < 100)
 	{
 		if (year < 80)
@@ -291,7 +382,9 @@ private static int fixYear(int year) {
 }
 
 
+
 private void calculateSerialDate() {
+
 	int jahr = getYear();
 	int monat = getMonth();
 	

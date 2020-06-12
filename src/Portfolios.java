@@ -333,7 +333,7 @@ private synchronized static void setIndex(int i, boolean doSave, boolean doLoad)
 		if (i != INDEX_DEFAULT)
 		{
 			i = INDEX_DEFAULT;
-			new Warnalert(hauptdialog,"Mit der Demoversion k\u00f6nnen Sie nur das Standard-Portfolio verwalten.");
+			new TextWarnalert(hauptdialog,"Mit der Demoversion k\u00f6nnen Sie nur das Standard-Portfolio verwalten.");
 		}
 	}
 	

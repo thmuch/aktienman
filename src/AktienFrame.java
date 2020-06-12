@@ -1,18 +1,21 @@
 /**
  @author Thomas Much
- @version 1999-02-04
+ @version 2000-07-28
 */
 
 
 
-public class AktienFrame extends LockedFrame {
+
+public abstract class AktienFrame extends LockedFrame {
 
 protected int index;
 protected BenutzerAktie ba;
 
 
 
+
 public AktienFrame(String title, int index, BenutzerAktie ba) {
+
 	super(title);
 	
 	this.index = index;
@@ -27,17 +30,23 @@ public AktienFrame(String title, int index, BenutzerAktie ba) {
 }
 
 
+
 public AktienFrame(String title) {
+
 	this(title,-1,null);
 }
 
 
+
 public void setupElements() {
+
 	setLayout(gridbag);
 }
 
 
+
 public void setupElements2() {}
+
 
 public void display() {}
 

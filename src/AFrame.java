@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-07-16
+ @version 2000-11-10
 */
 
 import java.awt.*;
@@ -9,7 +9,7 @@ import java.awt.event.*;
 
 
 
-public class AFrame extends Frame implements WindowListener {
+public class AFrame extends Frame implements WindowListener,KeyListener {
 
 public GridBagLayout gridbag = new GridBagLayout();
 
@@ -32,6 +32,7 @@ public AFrame(String title) {
 	setupFrame();
 	
 	addWindowListener(this);
+	addKeyListener(this);
 	
 	setupElements();
 	
@@ -119,11 +120,27 @@ public void windowClosed(WindowEvent e) {
 
 
 
+public void keyPressed(KeyEvent e) {
+
+	if (((SysUtil.isMacOS()) && (e.getKeyCode() == KeyEvent.VK_W) && (e.isMetaDown()))
+		|| ((e.getKeyCode() == KeyEvent.VK_F4) && (e.isAltDown())))
+	{
+		e.consume();
+
+		doCancel();
+	}
+}
+
+
+
 public void windowActivated(WindowEvent e) {}
 public void windowDeactivated(WindowEvent e) {}
 public void windowDeiconified(WindowEvent e) {}
 public void windowIconified(WindowEvent e) {}
 public void windowOpened(WindowEvent e) {}
+
+public void keyReleased(KeyEvent e) {}
+public void keyTyped(KeyEvent e) {}
 
 
 

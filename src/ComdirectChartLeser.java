@@ -8,6 +8,7 @@ import java.io.*;
 
 
 
+
 public final class ComdirectChartLeser extends Thread {
 
 private String wkn,boerse;
@@ -19,7 +20,9 @@ private ComdirectChartViewer chartviewer;
 
 
 public ComdirectChartLeser(String wkn, String boerse, boolean isFonds, int type, int nextID) {
+
 	super();
+
 	this.wkn = wkn;
 	this.boerse = boerse;
 	this.type = type;
@@ -30,6 +33,7 @@ public ComdirectChartLeser(String wkn, String boerse, boolean isFonds, int type,
 
 
 public void run() {
+
 	BufferedReader in = null;
 	boolean valid = false;
 	

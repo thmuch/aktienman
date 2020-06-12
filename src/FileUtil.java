@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-01-05
+ @version 2000-08-11
 */
 
 import java.io.*;
@@ -14,6 +14,7 @@ public final class FileUtil {
 public static final String EXT_PORTFOLIO = ".lst";
 public static final String EXT_POPUP     = ".pop";
 public static final String EXT_CONFIG    = ".cfg";
+public static final String EXT_INDIZES   = ".ind";
 
 private static final String pathsep = System.getProperty("path.separator");
 private static final String filesep = System.getProperty("file.separator");
@@ -22,6 +23,7 @@ private static final String userDir  = System.getProperty("user.dir") + filesep;
 
 private static String lastFindPath = "";
 private static String homeDir = "";
+private static String moduleDir = null;
 
 
 
@@ -32,6 +34,13 @@ static {
 	File einst = new File(einstr);
 	
 	homeDir = ((einst.exists()) ? einstr : System.getProperty("user.home")) + filesep;
+	
+	String modstr = getWorkingDirectory() + Lang.MODULEDIR;
+	
+	if (new File(modstr).exists())
+	{
+		moduleDir = modstr + filesep;
+	}
 }
 
 
@@ -51,6 +60,13 @@ private static String getHomeDirectory() {
 public static String getWorkingDirectory() {
 
 	return userDir;
+}
+
+
+
+public static String getModuleDirectory() {
+
+	return moduleDir;
 }
 
 
@@ -92,6 +108,13 @@ public static void createAMDirectory() {
 public static String getConfigFile() {
 
 	return getDefaultFile() + EXT_CONFIG;
+}
+
+
+
+public static String getIndexFile() {
+
+	return getDefaultFile() + EXT_INDIZES;
 }
 
 

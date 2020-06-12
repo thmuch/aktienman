@@ -1,31 +1,30 @@
 /**
  @author Thomas Much
- @version 1998-11-13
+ @version 2000-07-27
 */
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
 
 
 
-public class Warnalert extends AFrame {
+
+public abstract class Warnalert extends AFrame {
 
 private AFrame parent;
 private boolean quit;
+private String text;
 
 
 
-public Warnalert(AFrame parent, String text) {
-	this(parent,text,false);
-}
 
+public Warnalert(AFrame parent, String text, boolean quit, boolean doshow) {
 
-public Warnalert(AFrame parent, String text, boolean quit) {
 	super(AktienMan.AMNAME);
 
 	this.parent = parent;
 	this.quit = quit;
+	this.text = text;
 
 	if (parent != null)
 	{	
@@ -36,18 +35,7 @@ public Warnalert(AFrame parent, String text, boolean quit) {
 		});
 	}
 	
-	int y = 0, top = 10;
-	
-	StringTokenizer st = new StringTokenizer(text,"|");
-	
-	while (st.hasMoreTokens())
-	{
-		Label label = new Label(st.nextToken());
-		label.setForeground(Color.red);
-
-		constrain(this,label,0,y++,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,top,10,0,10);
-		top = 0;
-	}
+	int y = addElements();
 
 	Button buttonOK = new Button(Lang.OK);
 	buttonOK.addActionListener(new ActionListener() {
@@ -59,16 +47,35 @@ public Warnalert(AFrame parent, String text, boolean quit) {
 	
 	pack();
 	setupSize();
-	show();
+	
+	if (doshow)
+	{
+		show();
+	}
 }
 
 
+
+protected String getText() {
+
+	return text;
+}
+
+
+
+protected abstract int addElements();
+
+
+
 public void setupElements() {
+
 	setLayout(gridbag);
 }
 
 
+
 public void setupSize() {
+
 	if (parent == null)
 	{
 		super.setupSize();
@@ -85,10 +92,13 @@ public void setupSize() {
 }
 
 
+
 public void display() {}
 
 
+
 public void closed() {
+
 	if (quit) System.exit(0);
 }
 

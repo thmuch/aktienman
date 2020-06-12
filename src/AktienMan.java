@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-04-02
+ @version 2000-11-12
 */
 
 /**
@@ -16,12 +16,12 @@ import java.awt.*;
 public final class AktienMan {
 
 public static final String AMNAME         = "AktienMan";
-public static final String AMVERSION      = "1.80";
+public static final String AMVERSION      = "1.95";
 public static final String AMFENSTERTITEL = AMNAME + " - ";
 
-public static ADate compDate              = new ADate(2000,4,2); /* Compilierdatum */
-public static final int RELEASE           = 18; /* 1.80 (2000-04-02) */
-public static final boolean DEBUG         = false; /**/
+public static ADate compDate              = new ADate(2000,11,12); /* Compilierdatum */
+public static final int RELEASE           = 20; /* 1.95 (2000-11-12) */
+public static final boolean DEBUG         = true; /**/
 
 public static Aktienliste listeDAX        = new Aktienliste();
 public static Aktienliste listeMDAX       = new Aktienliste();
@@ -35,11 +35,13 @@ public static Bankenliste bankenliste     = new Bankenliste();
 
 public static AProperties properties = null;
 
-public static Image daxImage = null;
 public static DAXKamera daxKamera = null;
 public static Konfiguration konfiguration = null;
+public static KonfigurationWarnungen konfigurationWarnungen = null;
+public static KonfigurationIndizes konfigurationIndizes = null;
 public static NeueAktie neueaktie = null;
 public static AktieLoeschen aktieloeschen = null;
+public static AktieSplitten aktiesplitten = null;
 public static AktieVerkaufen aktieverkaufen = null;
 public static AktieAendern aktieaendern = null;
 public static VerkaufserloesLoeschen erloesloeschen = null;
@@ -47,12 +49,15 @@ public static VerkaufserloesSetzen erloessetzen = null;
 public static PortfolioLoeschen portfolioloeschen = null;
 public static PortfolioNeu portfolioneu = null;
 public static PortfolioUmbenennen portfolioumbenennen = null;
+public static PortfolioCopyKaufkurs portfoliocopykaufkurs = null;
 public static About about = null;
 
 public static Hauptdialog hauptdialog = null;
 public static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
 public static URLs url = null;
+
+private static TextWarnalert peng = null;
 
 
 
@@ -125,7 +130,17 @@ public static void main(String a) {
 		System.out.println("Bitte besorgen Sie sich eine neue Demoversion");
 		System.out.println("oder registrieren Sie diese Version!");
 
-		new Warnalert(null,"Diese AktienMan-Demo-Version ist abgelaufen.| |Bitte besorgen Sie sich eine neue Demoversion|oder registrieren Sie diesen Version!",true);
+		new TextWarnalert(null,"Diese AktienMan-Demo-Version ist abgelaufen.| |Bitte besorgen Sie sich eine neue Demoversion|oder registrieren Sie diesen Version!",true);
+	}
+}
+
+
+
+public static synchronized void main(boolean b) {
+
+	if (peng == null)
+	{
+		peng = new TextWarnalert(null,"Ihre AktienMan-Registrierung ist ung\u00fcltig!|Bitte kontaktieren Sie den Support (support@aktienman.de).",b|!b);
 	}
 }
 

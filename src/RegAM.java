@@ -1,10 +1,11 @@
 /**
  @author Thomas Much
- @version 1999-03-28
+ @version 2000-08-09
 */
 
 import java.awt.*;
 import java.awt.event.*;
+
 
 
 
@@ -15,18 +16,25 @@ private TextField nachname,vorname,key1,key2,key3;
 
 
 
+
 public RegAM() {
+
 	super(AktienMan.AMNAME);
+
 	nachname.requestFocus();
 }
 
 
+
 public void setupFrame() {
+
 	setResizable(false);
 }
 
 
+
 public void setupElements() {
+
 	setLayout(gridbag);
 	
 	Panel panelText = new Panel(gridbag);
@@ -72,7 +80,17 @@ public void setupElements() {
 	l.setForeground(Color.red);
 	constrain(panelText,l,0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTH,0.0,0.0,0,0,0,0);
 	
-	TextArea ta = new TextArea("Bitte geben Sie Ihren Namen und Ihre Registriernummer ein, um aus der Demoversion eine Vollversion zu machen, oder starten Sie AktienMan als Demoversion.",3,35,TextArea.SCROLLBARS_NONE);
+	String info = "Bitte geben Sie Ihren Namen und Ihre Registriernummer ein, um aus der Demoversion eine Vollversion zu machen, oder starten Sie AktienMan als Demoversion.";
+	
+	int height = 4;
+	
+	if (SysUtil.isWindows())
+	{
+		info += "\n\nAchtung Windows-Benutzer:\nBitte deaktivieren Sie den fehlerhaften Java-JIT wie auf http://www.aktienman.de/faq.html beschrieben, sonst kann AktienMan nach der Registrierung nicht mehr korrekt starten.";
+		height += 6;
+	}
+	
+	TextArea ta = new TextArea(info,height,35,TextArea.SCROLLBARS_VERTICAL_ONLY);
 	ta.setEditable(false);
 	constrain(panelText,ta,0,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,5,0,0,0);
 	
@@ -124,7 +142,9 @@ public void setupElements() {
 }
 
 
+
 public void checkAllFields() {
+
 	if ((nachname.getText().trim().length() > 1)
 	    && (vorname.getText().trim().length() > 1)
 	    && (key1.getText().trim().length() == 3)
@@ -140,13 +160,17 @@ public void checkAllFields() {
 }
 
 
+
 public boolean canCancel() {
+
 	System.exit(0);
 	return true;
 }
 
 
+
 public static int string(String k1, String k2, String k3) {
+
 	/* #Schlüssel */
 
 	int valid = 5;
@@ -175,10 +199,12 @@ public static int string(String k1, String k2, String k3) {
 }
 
 
+
 public boolean canOK() {
+
 	if (string(key1.getText().trim(),key2.getText().trim(),key3.getText().trim().toUpperCase()) >= 0)
 	{
-		new Warnalert(this,"Bitte geben Sie Ihren Schl\u00fcssel korrekt ein.");
+		new TextWarnalert(this,"Bitte geben Sie Ihren Schl\u00fcssel korrekt ein.");
 		return false;
 	}
 
@@ -186,7 +212,9 @@ public boolean canOK() {
 }
 
 
+
 public void executeOK() {
+
 	/* #Schlüssel */
 
 	buttonOK.setEnabled(false);

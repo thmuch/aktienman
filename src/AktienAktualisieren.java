@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-03-12
+ @version 2000-11-09
 */
 
 import java.awt.*;
@@ -13,19 +13,19 @@ import java.util.zip.*;
 
 public final class AktienAktualisieren extends AFrame {
 
-public static final int INDEX_DAX       = 0;
-public static final int INDEX_MDAX      = 1;
-public static final int INDEX_NMARKT    = 2;
-public static final int INDEX_EUROSTOXX = 3;
-public static final int INDEX_AUSLAND   = 4;
+public static final int INDEX_DAX30       = 0;
+public static final int INDEX_MDAX        = 1;
+public static final int INDEX_NEMAX50     = 2;
+public static final int INDEX_EUROSTOXX50 = 3;
+public static final int INDEX_STOXX50     = 4;
 
-private static final int STATUS_START    =  0;
-private static final int STATUS_FINISHED = -1;
-private static final int STATUS_ERROR    = -2;
+private static final int STATUS_START     =  0;
+private static final int STATUS_FINISHED  = -1;
+private static final int STATUS_ERROR     = -2;
 
 private static final int UPDATE = 10;
 
-private String[] titel = {"DAX","MDAX","Neuer Markt","EuroSTOXX50","Ausland"};
+private String[] titel = {"DAX30","MDAX","NEMAX50","EuroSTOXX50","STOXX50"};
 private int[] count;
 private Panel panelListe;
 private Button buttonOK;
@@ -98,10 +98,11 @@ private void startThreads() {
 	
 	AktienMan.checkURLs();
 	
-	new AktienlistenLeser("DAX",URLs.URL_DAX30,"DAX",this,INDEX_DAX).start();
-	new AktienlistenLeser("Neuer Markt",URLs.URL_NMARKT,"NEMAX",this,INDEX_NMARKT).start();
-	new AktienlistenLeser("EuroSTOXX50",URLs.URL_EURO50,"STOXX",this,INDEX_EUROSTOXX).start();
-	new AktienlistenLeser("Ausland",URLs.URL_AUSLAND,"",this,INDEX_AUSLAND).start();
+	new AktienlistenLeser(URLs.URL_DAX30,"INDEX",this,INDEX_DAX30).start();
+	new AktienlistenLeser(URLs.URL_DAX100,"MDAX",this,INDEX_MDAX).start();
+	new AktienlistenLeser(URLs.URL_NMARKT,"NEMAX",this,INDEX_NEMAX50).start();
+	new AktienlistenLeser(URLs.URL_EURO50,"STOXX",this,INDEX_EUROSTOXX50).start();
+	new AktienlistenLeser(URLs.URL_AUSLAND,"STOXX",this,INDEX_STOXX50).start();
 }
 
 
@@ -174,11 +175,6 @@ public synchronized void setError(int index) {
 		}
 		
 		buttonOK.setEnabled(true);
-	}
-	
-	if (index == INDEX_DAX)
-	{
-		setError(INDEX_MDAX);
 	}
 }
 

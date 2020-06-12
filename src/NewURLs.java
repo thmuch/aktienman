@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-03-27
+ @version 2000-11-09
 */
 
 
@@ -11,22 +11,28 @@ public class NewURLs extends URLs {
 
 
 
-public String getBase(int bnr) {
+/*public String getBase(int bnr) {
 
-	if (bnr == BASE_COMDIRECT)
+	switch (bnr)
 	{
+	case BASE_COMDIRECT:
+
 		return "http://informer2.comdirect.de";
+
+	case BASE_BBBANK:
+
+		return "http://bbbank.teledata.de/bbbank/";
 	}
 
 	return super.getBase(bnr);
-}
+}*/
 
 
 
-public String getComdirectKursURL(String wkn, String boerse) {
+/*public String getComdirectKursURL(String wkn, String boerse) {
 
 	return get(URL_KURSECOMDIRECT) + checkWKN(wkn) + "&searchButton_tol=Tolerant&XsearchWPArt=UKN&XsearchBoersen=" + boerse;
-}
+}*/
 
 
 
@@ -42,15 +48,21 @@ public String getComdirectKursURL(String wkn, String boerse) {
 
 
 
-public String getString(int strNr) {
+/*public String getString(int strNr) {
 
-	if (strNr == STR_CD_LISTEQUOTE)
+	switch (strNr)
 	{
+	case STR_CD_LISTEQUOTE:
+
 		return "/quotes/";
+
+	case STR_CD_KURSENDE:
+
+		return "Chart Analyzer";
 	}
 
 	return super.getString(strNr);
-}
+}*/
 
 
 
@@ -60,110 +72,6 @@ public String getString(int strNr) {
 	{
 		return "DTE";
 	}
-	else if (wkn.equals("972039"))
-	{
-		return "LU0046900790";
-	}
-	else if (wkn.equals("988009"))
-	{
-		return "LU0086711412";
-	}
-	else if (wkn.equals("986012"))
-	{
-		return "LU0066471896";
-	}
-	else if (wkn.equals("976976"))
-	{
-		return "DE0009769760";
-	}
-	else if (wkn.equals("535000"))
-	{
-		return "DRB";
-	}
-	else if (wkn.equals("922220"))
-	{
-		return "TLT";
-	}
-	else if (wkn.equals("974587"))
-	{
-		return "LU0062624902";
-	}
-	else if (wkn.equals("885023"))
-	{
-		return "SMI";
-	}
-	else if (wkn.equals("987702"))
-	{
-		return "LU0082616367";
-	}
-	else if (wkn.equals("723610"))
-	{
-		return "SIE";
-	}
-	else if (wkn.equals("899868"))
-	{
-		return "LUC";
-	}
-	else if (wkn.equals("974433"))
-	{
-		return "GB0001746154";
-	}
-	else if (wkn.equals("971609"))
-	{
-		return "LU0052474979";
-	}
-	else if (wkn.equals("923893"))
-	{
-		return "HBC1";
-	}
-	else if (wkn.equals("872922"))
-	{
-		return "GLX";
-	}
-	else if (wkn.equals("851289"))
-	{
-		return "HNK";
-	}
-	else if (wkn.equals("852062"))
-	{
-		return "PRG";
-	}
-	else if (wkn.equals("760080"))
-	{
-		return "ALT";
-	}
-	else if (wkn.equals("909571"))
-	{
-		return "CTMA";
-	}
-	else if (wkn.equals("566480"))
-	{
-		return "EVT";
-	}
-	else if (wkn.equals("507460"))
-	{
-		return "GSO";
-	}
-	else if (wkn.equals("529650"))
-	{
-		return "WE2";
-	}
-	else if (wkn.equals("354344"))
-	{
-		return "JAAG";
-	}
-	else if (wkn.equals("109079"))
-	{
-		return "DE0001090793";
-	}
-	else if (wkn.equals("925475"))
-	{
-		return "MU5";
-	}
-	else if (wkn.equals("934248"))
-	{
-		return "UTS";
-	}
 
 	return super.checkWKN(wkn);
 } */
@@ -172,8 +80,25 @@ public String getString(int strNr) {
 
 public boolean isValidNr(long nr) {
 
-	if ((nr == 270) || (nr == 271) || (nr == 272) || (nr == 339))
+	switch ((int)nr)
 	{
+	case 8:
+	case 32:
+	case 40:
+	case 42:
+	case 92:
+	case 93:
+	case 150:
+	case 151:
+	case 165:
+	case 186:
+	case 229:
+	case 270:
+	case 271:
+	case 272:
+	case 339:
+	case 485:
+
 		return false;
 	}
 

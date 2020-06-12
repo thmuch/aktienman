@@ -7,19 +7,27 @@ import java.awt.event.*;
 
 
 
+
 public class LockedFrame extends AFrame {
 
 
+
+
 public LockedFrame(String title) {
+
 	super(title);
+
 	AktienMan.hauptdialog.Lock();
 }
+
 
 
 public void cleanupAfterUnlock() {}
 
 
+
 public void windowClosed(WindowEvent e) {
+
 	AktienMan.hauptdialog.Unlock();
 	cleanupAfterUnlock();
 

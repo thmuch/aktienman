@@ -1,4 +1,4 @@
-AktienMan 1.70-beta (2000-03-17)
+AktienMan 1.90-beta (2000-08-19)
 Copyright ©1998-2000 by Thomas Much (thomas@aktienman.de)
 
 
@@ -17,7 +17,6 @@ todo
 // Test auf Online-Verbindung
 // Mehrfachselektion mit <Shift>
 // Spaltenreihenfolge bel. festlegbar
-// Aktie splitten
 // Konfig-Dialog zur Auswahl, welche Spalten angezeigt werden
 // Börsen konfigurierbar machen
 // HTML-Export mit Farben
@@ -46,14 +45,12 @@ todo
 // beim Kaufen optional Gebühren errechnen
 // auch Maximalskurs per Timer anzeigen
 // DAX-Kamera optional im Hauptfenster darstellen
-// Hidden Feature: akt. Kurse als Kaufkurse umkopieren
 // Kurse+Charts auch von bbbank.de, http://www.consors.de, http://www.fimatex.de
 // Kurs- und Chartklassen bei Bedarf von aktienman.de laden
 // Aktienlisten etc. in XML speichern (Strings als UTF8)
 // Prozentualer Anteil der einzelnen Aktien am Gesamtportfolio
 // Charts optional (?) preloaden und auf Platte speichern
 // wenn ein Chart nicht geladen werden konnte, auf letzten verfügbaren (intern merken!) umschalten
-// Splashscreen für alle Systeme
 // SMAX-Liste einlesen (http://charts.smax.de/smax/kurseumsaetze_d.htm)
 // Chartfenstergrößen für Win noch etwas optimieren (ebenso Karteireiter)
 // CSV-Import
@@ -61,15 +58,49 @@ todo
 // Lange "WKNs" (ISINs) zulassen
 // Listeneinträge gleicher WKN farblich unterlegen (grau/weiß)
 //
-Version 1.81 (.04.00)
+Version 2.00 (.12.00)
 // RELEASE erhöhen, DEBUG entfernen
-// SMS/E-Mails verschicken
-// bei Über-/Unterschreiten optional Warndialog (mit Ton)
 // Online-Währung auch US-$ und Yen, dafür Wechselkursleser
 // Aktie Info: Höchst-/Tiefstkurs mit Jahresangabe
 // "Aktie Info": Höchst/Tiefstkurs auch als 52w-Hoch/Tief
 // auch Chartleser teilw. neu programmieren
+// beim Listenupdate immer nur einzelne Zeilen aus der Liste entfernen (nicht mehr removeAll) -> setText?
+// Insets der Liste ändern?
+// Realtime-Kursleser: http://rqc.finec.de/manager/
+// Charts: http://aktiencharts.manager-magazin.de/jumpin.asp?jumpto=/pub/qot_chart.asp%3Fqot_id%3D4877
+// interne 5-Tages-Statistiken
+// Zeilen gleicher WKN zusammenfassen (?)
+// RO-Web-Portfolios
+// Top/Flop-Liste im Extra-Fenster, Kopie per Klick ins aktuelle Portfolio
+// SMS/E-Mails verschicken
+// neue Bankkonditionen (easytrade)
+// UpdateLoader: ProgessBar
+// Mac OS X Version
 // 
+Version 1.95 (12.11.00)
+- neue Comdirect-Ordergebühren
+- die Portfolio-Chartübersicht steht nun für alle Zeittypen zur Verfügung
+- unten in der DAX-Kamera werden nun auch Dow Jones, S&P 500 und NASDAQ angezeigt
+  (abschaltbar über das "Bearbeiten"-Menü)
+- Comdirect-Kurse, Indizes und Aktienlisten werden wieder geladen
+Version 1.90 (19.08.00)
+- Splashscreen für alle Systeme
+- wenn die AM-SerNo gesperrt ist, wird beim Aktualisierungsversuch ein Warnalert angezeigt
+- Windows-Anwender werden bei der Reg. darauf hingewiesen, den JIT zu deaktivieren
+- Speicher-/Objektoptimierung bei der Listendarstellung
+- bei "Aktie verkaufen" wird nun die Verkaufswährung angezeigt
+- "Aktie ändern": Dividende (sichtbar unten in der Liste); HTML-Export daran angepasst; "D+" in der Liste
+- LS-DAX30-Realtimeleser
+- "Aktie splitten"
+- bei Über-/Unterschreiten optional Warndialog (mit Ton) -> "Bearbeiten - Warnungen..."
+- Über-/Unterschreitungen: kleines Bildchen zwischen Kaufkurs und akt. Kurs
+- Intraday-Chartfenster mit allen Werten eines Portfolios (verkleinert); klick; erstes Laden; Name unten
+- wenn man mit gedrückter Shift-Taste auf den "Aktualisieren"-Button klickt, erscheint ein Alert,
+  mit dem man die Kaufkurse auf die aktuellen Kurse setzen kann; das Datum wird dabei immer
+  auf den direkten Vortag gesetzt
+- "Neuer Markt"-Index durch "NEMAX50" ersetzt
+- neue Indizes: S&P, NASDAQ, NIKKEI; konfigurierbar; Werte werden gespeichert
+- 1999er Nichtzahler gesperrt
 Version 1.80 (02.04.00)
 - Comdirect-Kursleser für Fonds verbessert
 - Listendarstellung beschleunigt

@@ -1,4 +1,4 @@
-AktienMan 1.70
+AktienMan 1.95
 Copyright ©1998-2000 Thomas Much
 Ein Programm von AktienMan&Friends (http://www.aktienman.de).
 
@@ -10,7 +10,7 @@ Wer bisher jeden Tag die aktuellen Kurse seiner Aktien aus n-tv, T-Online oder d
 
 Installation
 Systemvoraussetzung für AktienMan/Mac sind ein Apple PowerMacintosh mit mindestens 166 Mhz Systemtakt, das Betriebssystem MacOS in der Version 8.0 oder höher sowie ein fertig installiertes "Macintosh Runtime for Java" (MRJ) in der Version 2.2 (oder höher).
-Normalerweise wird MRJ 2.0 bei der Installation von MacOS 8.1 bzw. 8.5 automatisch mitinstalliert. Diese Version ist jedoch fehlerhaft, so daß wir dringend zu MRJ 2.2 raten müssen. Apple stellt MRJ 2.2 unter http://www.apple.com/java/ zum kostenlosen Download zur Verfügung, ebenso finden Sie auf der AktienMan-Homepage Verweise auf die entsprechenden Archive.
+Normalerweise wird MRJ 2.0 bei der Installation von MacOS 8.x automatisch mitinstalliert. Diese Version ist jedoch fehlerhaft, so daß wir dringend zu MRJ 2.2.3 raten müssen. Apple stellt MRJ 2.2.3 unter http://www.apple.com/java/ zum kostenlosen Download zur Verfügung, ebenso finden Sie auf der AktienMan-Homepage Verweise auf die entsprechenden Archive.
 Die eigentliche Installation von AktienMan ist denkbar einfach: Sie haben das AktienMan-Archiv bereits heruntergeladen und mit StuffIt ausgepackt. Das war es auch schon, eine weitere Installation ist nicht notwendig! Klicken Sie einfach doppelt auf das Programmsymbol "AktienMan". AktienMan wird geladen, und nach wenigen Sekunden - abhängig von der Geschwindigkeit des Rechners - erscheint das Hauptfenster. Wer mit dem Aktienhandel bereits vertraut ist, sollte AktienMan weitestgehend intuitiv bedienen können. Und ansonsten erhält man nach der Registrierung natürlich ein gedrucktes Handbuch.
 
 Einschränkungen der Demo-Version
@@ -29,38 +29,26 @@ AktienMan kennt nun drei unabhängige Währungen, die bei Bedarf automatisch inein
 - die Listenwährung bestimmt, in welcher Währung die Aktien in der Liste des Hauptdialogs angezeigt werden; unten links im Hauptdialog kann man die Listenwährung umschalten.
 
 Versionsübersicht
-1.70 (2000-03-17)
-- Die Kursabfrage bei Comdirect und der Deutschen Bank wurde komplett überarbeitet, so dass sich alle in EUR gehandelten Werte nun problemlos aktualisieren lassen sollten.
-- Das Listen-Kontextmenü und das globale "Aktie"-Menü bieten zwei Optionen zum Kopieren und Verschieben eines Wertes in ein anderes Portfolio.
-- Der "Aktie verkaufen"-Dialog kann einen Wert in ein bel. Portfolio verschieben.
-- Die Sortierung der Liste ist auch nach abs. Differenz, Kaufdatum und fixiertem Datum möglich.
-- Die Namen von fixierten Werten werden grau dargestellt.
-- Wenn im AktienMan-Verzeichnis manuell ein Ordner "Einstellungen" angelegt wird, werden alle Konfigurationsdateien von dort gelesen und dort gespeichert.
-- In den "Voreinstellungen" kann die maximale Zahl gleichzeitiger Kursanfragen beschränkt werden, um Problemen bei der Aktualisierung vorzubeugen.
-- "Aktienmenüs aktualisieren" wurde vom "Bearbeiten"-Menü in den "Aktie kaufen"-Dialog verschoben.
-- Von den Portfolio-Dateien wird beim Speichern automatisch ein Backup angelegt.
-- [Bugfix] Ein fixierter Wert hatte die Aktualisierung eines anderen Wertes mit gleicher WKN und gleichem Börsenplatz verhindert.
-1.60 (1999-12-13)
-- Unten links im Hauptfenster kann man die Sortierung der Liste einstellen (alphabetisch bzw. nach absoluten Prozentdifferenzen).
-- Über den "Liste exportieren"-Menüpunkt kann man die Aktienliste nun auch als CSV-Datei exportieren.
-- Wird im "Aktie ändern"-Dialog das Feld "nicht aktualisieren" aktiviert, muss im "Datum"-Feld ein gültiges Datum eingegeben werden, damit die Laufzeit korrekt berechnet werden kann.
-- Der HTML-Export trennt WKN und Börse nicht mehr mit einem <BR>.
-- Bei steuerfreien Aktien wird hinter der Laufzeit ein Sternchen angezeigt.
-- Comdirect-Kurse mit Tausender-Punkt werden korrekt erkannt.
-- Workaround für die WKN 871111 (Sun/SSY) eingebaut.
-1.50 (1999-07-19)
-- Hinter dem aktuellen Kurs wird in der Aktienliste ein Pfeil für die Differenz zum Vortag angezeigt. Auf- und absteigende Pfeile gibt es ab +/- 0,1% Differenz zum Vortag, Pfeile nach oben und unten ab +/- 1,0% Differenz.
-- Auch im "Aktie Info"-Dialog wird die Kursdifferenz zum Vortagesschlußkurs ausgegeben (absolut und prozentual).
-- Als Währung steht nun auch öS (ATS) zur Verfügung.
-- In der Liste wird die Differenz zum Kaufwert nun auch aufgesplittet nach "steuerfrei" und "zu versteuern" ausgegeben.
-- Wenn im "Aktie ändern"-Dialog das Feld "nicht aktualisieren" aktiviert ist, kann der aktuelle Kurs dort nun manuell eingegeben werden. Das Datumsfeld ist dabei eine beliebige Zeichenkette.
-- Beim HTML-Export wird der Dateiname nun mit dem Portfolionamen vorbelegt.
-- Der HTML-Export speichert einen passenden HTML-DOCTYPE und den Portfolio-Titel.
-- Beim Einlesen der Aktienliste "Neuer Markt" werden die NEMAX-Indizes ignoriert.
-- Fonds können nicht mehr an anderen Börsenplätzen als DFK aktualisiert werden, sie werden also automatisch wie "nur an dieser Börse" behandelt. Bei Auswahl von DFK wird bei "Aktie kaufen" und "Aktie ändern" entsprechend die "nur an dieser Börse"-Checkbox disabled.
-- Workaround für die WKNs 519003 (BMW3) und 703703 (RWE3) eingebaut.
-- Die Namenskürzung wurde weiter verbessert.
-- Deuba-Charts werden wieder geladen.
+1.95 (2000-11-12)
+- Die Portfolio-Chartübersicht steht nun für alle Zeittypen zur Verfügung. 
+- Im DAX-Kamera-Fenster werden unten nun auch Dow Jones, S&P 500 und NASDAQ angezeigt. Die neuen Indizes können im Bearbeiten-Menü des Kamera-Fensters einzeln ausgeschaltet werden. 
+- Bei der Bankgebührenberechnung werden die neuen Comdirect-Gebühren berücksichtigt. 
+- [Bugfix] Indizes, Aktienlisten und Comdirect-Kurse werden wieder aktualisiert. 
+1.90 (2000-08-19)
+- Aktiensplits
+- bei "Aktie ändern" kann für jeden Wert eine Dividende eingetragen werden
+- im Portfolio-Menü kann ein Fenster mit allen Intraday-Charts des aktuellen Portfolios aufgerufen werden
+- die Warnungen bei Über-/Unterschreiten eines Grenzwertes können unter "Bearbeiten - Warnungen..." konfiguriert werden (optisch, akustisch)
+- unter "Bearbeiten - Indizes" können die angezeigten Indizes konfiguriert werden
+- die Indexwerte werden am Programmende automatisch gespeichert
+- bei "Aktie verkaufen" wird nun die Verkaufswährung angezeigt
+- für Veränderungsbeobachtungen kann der Kaufkurs aller beobachteten Aktien auf den aktuellen Kurs gesetzt werden; dazu muss beim Anklicken des "Aktualisieren"-Buttons die Shift-Taste gedrückt werden
+1.80 (2000-04-02)
+- Die Listendarstellung wurde beschleunigt. 
+- Fondsabfrage bei Comdirect verbessert.
+- Die Sortierreihenfolge wird nun für jedes Portfolio separat gespeichert. 
+- [Bugfix] Während ein modaler Dialog angezeigt wird, kann die Sortierreihenfolge nicht mehr umgeschaltet werden. 
+- [Bugfix] "Aktualisieren an" funktioniert wieder.
 
 Kontakt
 Bestellungen richten Sie bitte an bestellung@aktienman.de, am besten wickeln Sie Ihre Bestellung aber über die AktienMan-Homepage http://www.aktienman.de ab. Supportanfragen beantwortet support@aktienman.de.

@@ -1,11 +1,12 @@
 /**
  @author Thomas Much
- @version 1999-01-19
+ @version 2000-11-09
 */
 
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+
 
 
 
@@ -16,12 +17,16 @@ private Label label;
 
 
 
+
 public AktienPofosErzeugen() {
+
 	super(AktienMan.AMFENSTERTITEL+"Portfolios erzeugen");
 }
 
 
+
 public void setupElements() {
+
 	setLayout(gridbag);
 
 	label = new Label("Sollen die Standard-Portfolios jetzt erzeugt werden?");
@@ -48,20 +53,24 @@ public void setupElements() {
 }
 
 
+
 public synchronized void executeOK() {
+
 	buttonJa.setEnabled(false);
 	
-	createPortfolio("DAX",AktienMan.listeDAX);
+	createPortfolio("DAX30",AktienMan.listeDAX);
 	createPortfolio("MDAX",AktienMan.listeMDAX);
-	createPortfolio("Neuer Markt",AktienMan.listeNMarkt);
-	createPortfolio("EuroSTOXX 50",AktienMan.listeEuroSTOXX);
-	createPortfolio("Ausland",AktienMan.listeAusland);
+	createPortfolio("NEMAX50",AktienMan.listeNMarkt);
+	createPortfolio("EuroSTOXX50",AktienMan.listeEuroSTOXX);
+	createPortfolio("STOXX50",AktienMan.listeAusland);
 	
 	System.out.println("Fertig.");
 }
 
 
+
 private void createPortfolio(String name, Aktienliste liste) {
+
 	String datei = FileUtil.getWorkingDirectory() + name + FileUtil.EXT_PORTFOLIO;
 
 	System.out.println("Erzeuge Portfolio \"" + datei + "\" ...");

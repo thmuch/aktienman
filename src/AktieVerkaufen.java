@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-03-12
+ @version 2000-08-12
 */
 
 import java.awt.*;
@@ -40,8 +40,10 @@ public void setupElements2() {
 
 	Panel panelOben = new Panel(gridbag);
 	Panel panelButtons = new Panel(gridbag);
+	
+	String vkwaehrung = Waehrungen.getKuerzel(Waehrungen.getVerkaufsWaehrung());
 
-	constrain(panelOben,new Label("Aktie \""+ba.getName(BenutzerListe.useShortNames())+"\":"),0,0,4,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,0,0,10,0);
+	constrain(panelOben,new Label("Aktie \""+ba.getName(BenutzerListe.useShortNames())+"\":"),0,0,5,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,0,0,10,0);
 	
 	anzahl = new TextField(ba.getStueckzahlString(),8);
 	anzahl.addTextListener(new TextListener() {
@@ -82,6 +84,7 @@ public void setupElements2() {
 		}
 	});
 	constrain(panelOben,verkaufskurs,3,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
+	constrain(panelOben,new Label(vkwaehrung),4,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,2,0,0);
 	
 	constrain(panelOben,new Label("Datum:"),2,2,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,5,15,0,0);
 	
@@ -101,6 +104,7 @@ public void setupElements2() {
 
 	gebuehren = new TextField(AktienMan.properties.getString("Konfig.StdGebuehren"),10);
 	constrain(panelOben,gebuehren,3,3,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,5,5,0,0);
+	constrain(panelOben,new Label(vkwaehrung),4,3,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,5,2,0,0);
 
 	constrain(panelOben,new Label("Bankgeb\u00fchren:"),2,4,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,5,15,0,0);
 
@@ -137,7 +141,7 @@ public void setupElements2() {
 	cbErloes = new Checkbox("Gesamtaufwand berechnen",true);
 	constrain(panelErloes,cbErloes,0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
 
-	constrain(panelOben,panelErloes,2,5,2,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,5,15,0,0);
+	constrain(panelOben,panelErloes,2,5,3,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,5,15,0,0);
 	
 	Panel panelAction = new Panel(gridbag);
 
@@ -160,7 +164,7 @@ public void setupElements2() {
 	constrain(panelAction,cbMove,0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	constrain(panelAction,pofoMove,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 
-	constrain(panelOben,panelAction,1,6,3,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,20,0,0,0);
+	constrain(panelOben,panelAction,1,6,4,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,20,0,0,0);
 	
 	Label achtung = new Label();
 	if (!ba.istSteuerfrei())
@@ -418,13 +422,13 @@ public synchronized boolean canOK() {
 	}
 	catch (NumberFormatException e)
 	{
-		new Warnalert(this,"Bitte geben Sie beim Verkaufskurs eine g\u00fcltige Zahl ein.");
+		new TextWarnalert(this,"Bitte geben Sie beim Verkaufskurs eine g\u00fcltige Zahl ein.");
 		return false;
 	}
 	
 	if (db <= 0L)
 	{
-		new Warnalert(this,"Bitte geben Sie einen g\u00fcltigen Verkaufskurs ein.");
+		new TextWarnalert(this,"Bitte geben Sie einen g\u00fcltigen Verkaufskurs ein.");
 		return false;
 	}
 	
@@ -438,13 +442,13 @@ public synchronized boolean canOK() {
 		}
 		catch (NumberFormatException e)
 		{
-			new Warnalert(this,"Bitte geben Sie bei den Geb\u00fchren eine g\u00fcltige Zahl ein.");
+			new TextWarnalert(this,"Bitte geben Sie bei den Geb\u00fchren eine g\u00fcltige Zahl ein.");
 			return false;
 		}
 		
 		if (db < 0L)
 		{
-			new Warnalert(this,"Bitte geben Sie g\u00fcltige Geb\u00fchren ein.");
+			new TextWarnalert(this,"Bitte geben Sie g\u00fcltige Geb\u00fchren ein.");
 			return false;
 		}
 	}
@@ -457,13 +461,13 @@ public synchronized boolean canOK() {
 			
 			if (verkaufd.after(new ADate()))
 			{
-				new Warnalert(this,"Ein Verkaufsdatum in der Zukunft ist nicht erlaubt.");
+				new TextWarnalert(this,"Ein Verkaufsdatum in der Zukunft ist nicht erlaubt.");
 				return false;
 			}
 		}
 		catch (Exception e)
 		{
-			new Warnalert(this,"Bitte geben Sie ein g\u00fcltiges Verkaufsdatum ein.");
+			new TextWarnalert(this,"Bitte geben Sie ein g\u00fcltiges Verkaufsdatum ein.");
 			return false;
 		}
 	}

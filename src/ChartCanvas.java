@@ -7,6 +7,7 @@ import java.awt.*;
 
 
 
+
 public final class ChartCanvas extends Component {
 
 private ChartViewer chartviewer;
@@ -14,15 +15,19 @@ private boolean canScale;
 
 
 
+
 public ChartCanvas(ChartViewer chartviewer, boolean canScale) {
+
 	super();
+
 	this.chartviewer = chartviewer;
 	this.canScale = canScale;
 }
 
 
-public void paint(Graphics g)
-{
+
+public void paint(Graphics g) {
+
 	Dimension d = getSize();
 	g.clearRect(0,0,d.width,d.height);
 
@@ -44,7 +49,9 @@ public void paint(Graphics g)
 }
 
 
+
 public Dimension getPreferredSize() {
+
 	return new Dimension(300,100);
 }
 

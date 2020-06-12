@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-06-14
+ @version 2000-11-10
 */
 
 import java.awt.*;
@@ -16,11 +16,16 @@ public abstract class ImageFrame extends AFrame implements ImageObserver {
 
 private String dlgtitle,ext,filetype;
 
+private MenuBar menubar;
+private Menu    editMenu;
+
 
 
 
 public ImageFrame(String title, String dlgtitle, String ext, String filetype) {
+
 	super(title);
+
 	this.dlgtitle = dlgtitle;
 	this.ext = ext;
 	this.filetype = filetype;
@@ -29,9 +34,11 @@ public ImageFrame(String title, String dlgtitle, String ext, String filetype) {
 
 
 public void setupFrame() {
+
 	setResizable(true);
 	
-	MenuBar menubar = new MenuBar();
+	menubar = new MenuBar();
+
 	setMenuBar(menubar);
 
 	Menu fileMenu = new Menu(Lang.FILEMENUTITLE,true);
@@ -71,7 +78,24 @@ public void setupFrame() {
 
 
 
+protected Menu getEditMenu() {
+
+	if (menubar == null) return null;
+	
+	if (editMenu == null)
+	{
+		editMenu = new Menu(Lang.EDITMENUTITLE,true);
+	
+		menubar.add(editMenu);
+	}
+	
+	return editMenu;
+}
+
+
+
 private void sichern() {
+
 	byte[] imageData = getImageData();
 	
 	if (imageData == null) return;
@@ -146,6 +170,7 @@ private void sichern() {
 
 
 private void drucken() {
+
 	Image image = getImage();
 	
 	if (image == null) return;
@@ -184,6 +209,7 @@ private void drucken() {
 
 
 protected String getExt() {
+
 	return ext;
 }
 

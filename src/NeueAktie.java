@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-03-12
+ @version 2000-11-09
 */
 
 import java.awt.*;
@@ -25,7 +25,9 @@ private boolean watchonly = false;
 
 
 public NeueAktie() {
+
 	super(AktienMan.AMFENSTERTITEL+"Aktie kaufen");
+
 	aktienWKN.requestFocus();
 
 	if ((AktienMan.listeDAX.getChoice(false).getItemCount() < 1) ||
@@ -34,13 +36,14 @@ public NeueAktie() {
 		(AktienMan.listeEuroSTOXX.getChoice(false).getItemCount() < 1) ||
 		(AktienMan.listeAusland.getChoice(false).getItemCount() < 1))
 	{
-		new Warnalert(this,"Bitte gehen Sie online und rufen dann den Men\u00fcpunkt|\"Aktienmen\u00fcs aktualisieren\" im Men\u00fc \""+Lang.EDITMENUTITLE+"\" auf,|damit Sie Aktien per Name (und nicht nur per WKN)|ausw\u00e4hlen k\u00f6nnen.");
+		new TextWarnalert(this,"Bitte gehen Sie online und rufen dann den Men\u00fcpunkt|\"Aktienmen\u00fcs aktualisieren\" im Men\u00fc \""+Lang.EDITMENUTITLE+"\" auf,|damit Sie Aktien per Name (und nicht nur per WKN)|ausw\u00e4hlen k\u00f6nnen.");
 	}
 }
 
 
 
 public void setupElements() {
+
 	setLayout(gridbag);
 	
 	Panel panelAktie = new Panel(gridbag);
@@ -52,11 +55,11 @@ public void setupElements() {
 
 	constrain(panelAktie,new Label("Aktie"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 
-	daxCheckbox = new Checkbox("DAX:",false,aktienGruppe);
+	daxCheckbox = new Checkbox("DAX30:",false,aktienGruppe);
 	mdaxCheckbox = new Checkbox("MDAX:",false,aktienGruppe);
-	nmarktCheckbox = new Checkbox("Neuer Markt:",false,aktienGruppe);
+	nmarktCheckbox = new Checkbox("NEMAX50:",false,aktienGruppe);
 	stoxxCheckbox = new Checkbox("EuroSTOXX50:",false,aktienGruppe);
-	auslandCheckbox = new Checkbox("Ausland:",false,aktienGruppe);
+	auslandCheckbox = new Checkbox("STOXX50:",false,aktienGruppe);
 	wknCheckbox = new Checkbox("per WKN:",false,aktienGruppe);
 	
 	constrain(panelAktie,daxCheckbox,0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
@@ -417,7 +420,7 @@ public synchronized boolean canOK() {
 	{
 		if (AktienMan.hauptdialog.getAnzahlAktien() > 2)
 		{
-			new Warnalert(this,"Die Demoversion kann maximal drei Aktien verwalten.");
+			new TextWarnalert(this,"Die Demoversion kann maximal drei Aktien verwalten.");
 			return false;
 		}
 	}
@@ -428,7 +431,7 @@ public synchronized boolean canOK() {
 		
 		if (s.length() == 0)
 		{
-			new Warnalert(this,"Bitte geben Sie die WKN ein oder w\u00e4hlen Sie eine Aktie aus.");
+			new TextWarnalert(this,"Bitte geben Sie die WKN ein oder w\u00e4hlen Sie eine Aktie aus.");
 			return false;
 		}
 		
@@ -436,7 +439,7 @@ public synchronized boolean canOK() {
 		{
 			if (s.length() != 6)
 			{
-				new Warnalert(this,"WKN ung\u00fcltig. Die WKN mu\u00df aus exakt sechs Ziffern bestehen.");
+				new TextWarnalert(this,"WKN ung\u00fcltig. Die WKN mu\u00df aus exakt sechs Ziffern bestehen.");
 				return false;			
 			}
 			
@@ -444,7 +447,7 @@ public synchronized boolean canOK() {
 			{
 				if (!Character.isDigit(s.charAt(i)))
 				{
-					new Warnalert(this,"WKN ung\u00fcltig. Die WKN mu\u00df aus exakt sechs Ziffern bestehen.");
+					new TextWarnalert(this,"WKN ung\u00fcltig. Die WKN mu\u00df aus exakt sechs Ziffern bestehen.");
 					return false;			
 				}
 			}
@@ -453,7 +456,7 @@ public synchronized boolean canOK() {
 		{
 			if (s.length() < 3)
 			{
-				new Warnalert(this,"K\u00fcrzel ung\u00fcltig. Ein K\u00fcrzel mu\u00df mindestens drei Zeichen lang sein.");
+				new TextWarnalert(this,"K\u00fcrzel ung\u00fcltig. Ein K\u00fcrzel mu\u00df mindestens drei Zeichen lang sein.");
 				return false;			
 			}
 
@@ -461,14 +464,14 @@ public synchronized boolean canOK() {
 			{
 				if (!Character.isLetterOrDigit(s.charAt(i)))
 				{
-					new Warnalert(this,"K\u00fcrzel ung\u00fcltig. Ein K\u00fcrzel darf nur aus Buchstaben und Ziffern bestehen.");
+					new TextWarnalert(this,"K\u00fcrzel ung\u00fcltig. Ein K\u00fcrzel darf nur aus Buchstaben und Ziffern bestehen.");
 					return false;
 				}
 			}
 		}
 		else
 		{
-			new Warnalert(this,"Bitte geben sie einen g\u00fcltigen Wert im Feld \"WKN\" ein.");
+			new TextWarnalert(this,"Bitte geben sie einen g\u00fcltigen Wert im Feld \"WKN\" ein.");
 			return false;
 		}
 	}
@@ -483,13 +486,13 @@ public synchronized boolean canOK() {
 		}
 		catch (NumberFormatException e)
 		{
-			new Warnalert(this,"Bitte geben Sie beim Kaufkurs eine g\u00fcltige Zahl ein.");
+			new TextWarnalert(this,"Bitte geben Sie beim Kaufkurs eine g\u00fcltige Zahl ein.");
 			return false;
 		}
 		
 		if (db <= 0L)
 		{
-			new Warnalert(this,"Bitte geben Sie einen g\u00fcltigen Kaufkurs ein.");
+			new TextWarnalert(this,"Bitte geben Sie einen g\u00fcltigen Kaufkurs ein.");
 			return false;
 		}
 	}
@@ -504,13 +507,13 @@ public synchronized boolean canOK() {
 		}
 		catch (NumberFormatException e)
 		{
-			new Warnalert(this,"Bitte geben Sie bei der St\u00fcckzahl eine g\u00fcltige Zahl ein.");
+			new TextWarnalert(this,"Bitte geben Sie bei der St\u00fcckzahl eine g\u00fcltige Zahl ein.");
 			return false;
 		}
 
 		if (i <= 0)
 		{
-			new Warnalert(this,"Bitte geben Sie eine g\u00fcltige St\u00fcckzahl ein.");
+			new TextWarnalert(this,"Bitte geben Sie eine g\u00fcltige St\u00fcckzahl ein.");
 			return false;
 		}
 	}
@@ -525,13 +528,13 @@ public synchronized boolean canOK() {
 			
 			if (d.after(new ADate()))
 			{
-				new Warnalert(this,"Ein Kaufdatum in der Zukunft ist nicht erlaubt.");
+				new TextWarnalert(this,"Ein Kaufdatum in der Zukunft ist nicht erlaubt.");
 				return false;
 			}
 		}
 		catch (Exception e)
 		{
-			new Warnalert(this,"Bitte geben Sie ein g\u00fcltiges Kaufdatum ein.");
+			new TextWarnalert(this,"Bitte geben Sie ein g\u00fcltiges Kaufdatum ein.");
 			return false;
 		}
 	}
@@ -546,13 +549,13 @@ public synchronized boolean canOK() {
 		}
 		catch (NumberFormatException e)
 		{
-			new Warnalert(this,"Bitte geben Sie bei der Gewinngrenze eine g\u00fcltige Zahl ein.");
+			new TextWarnalert(this,"Bitte geben Sie bei der Gewinngrenze eine g\u00fcltige Zahl ein.");
 			return false;
 		}
 
 		if (db <= 0L)
 		{
-			new Warnalert(this,"Bitte geben Sie eine g\u00fcltige Gewinngrenze ein oder lassen Sie das Feld leer.");
+			new TextWarnalert(this,"Bitte geben Sie eine g\u00fcltige Gewinngrenze ein oder lassen Sie das Feld leer.");
 			return false;
 		}
 	}
@@ -567,13 +570,13 @@ public synchronized boolean canOK() {
 		}
 		catch (NumberFormatException e)
 		{
-			new Warnalert(this,"Bitte geben Sie beim Tiefkurs eine g\u00fcltige Zahl ein.");
+			new TextWarnalert(this,"Bitte geben Sie beim Tiefkurs eine g\u00fcltige Zahl ein.");
 			return false;
 		}
 
 		if (tk <= 0L)
 		{
-			new Warnalert(this,"Bitte geben Sie einen g\u00fcltigen Tiefkurs ein oder lassen Sie das Feld leer.");
+			new TextWarnalert(this,"Bitte geben Sie einen g\u00fcltigen Tiefkurs ein oder lassen Sie das Feld leer.");
 			return false;
 		}
 	}
@@ -588,19 +591,19 @@ public synchronized boolean canOK() {
 		}
 		catch (NumberFormatException e)
 		{
-			new Warnalert(this,"Bitte geben Sie beim Hochkurs eine g\u00fcltige Zahl ein.");
+			new TextWarnalert(this,"Bitte geben Sie beim Hochkurs eine g\u00fcltige Zahl ein.");
 			return false;
 		}
 
 		if (db <= 0L)
 		{
-			new Warnalert(this,"Bitte geben Sie einen g\u00fcltigen Hochkurs ein oder lassen Sie das Feld leer.");
+			new TextWarnalert(this,"Bitte geben Sie einen g\u00fcltigen Hochkurs ein oder lassen Sie das Feld leer.");
 			return false;
 		}
 		
 		if ((tk > 0L) && (db <= tk))
 		{
-			new Warnalert(this,"Der Hochkurs mu\u00df h\u00f6her als der Tiefkurs liegen.");
+			new TextWarnalert(this,"Der Hochkurs mu\u00df h\u00f6her als der Tiefkurs liegen.");
 			return false;
 		}
 	}

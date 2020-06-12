@@ -8,6 +8,7 @@ import java.io.*;
 
 
 
+
 public final class AProperties extends Properties {
 
 private static final String KOMMENTAR = AktienMan.AMNAME + " " + AktienMan.AMVERSION + " Konfigurationsdatei";
@@ -16,13 +17,18 @@ private String filename = FileUtil.getConfigFile();
 
 
 
+
 public AProperties() {
+
 	super();
+
 	loadParameters();
 }
 
 
+
 public String getString(String key) {
+
 	String s = getProperty(key,"");
 
 	if (s == null)
@@ -36,17 +42,23 @@ public String getString(String key) {
 }
 
 
+
 public void setString(String key, String value) {
+
 	put(key,value);
 }
 
 
+
 public int getInt(String key) {
+
 	return getInt(key,-1);
 }
 
 
+
 public int getInt(String key, int defval) {
+
 	String s = getProperty(key,"");
 
 	if (s == null)
@@ -67,17 +79,23 @@ public int getInt(String key, int defval) {
 }
 
 
+
 public void setInt(String key, int value) {
+
 	put(key,new Integer(value).toString());
 }
 
 
+
 public boolean getBoolean(String key) {
+
 	return getBoolean(key,false);
 }
 
 
+
 public boolean getBoolean(String key, boolean defval) {
+
 	String s = getProperty(key,"");
 
 	if (s == null)
@@ -95,12 +113,16 @@ public boolean getBoolean(String key, boolean defval) {
 }
 
 
+
 public void setBoolean(String key, boolean value) {
+
 	put(key,new Boolean(value).toString());
 }
 
 
+
 public void loadParameters() {
+
 	FileInputStream in = null;
 	
 	try
@@ -129,7 +151,9 @@ public void loadParameters() {
 }
 
 
+
 public void saveParameters() {
+
 	FileOutputStream out = null;
 	
 	try

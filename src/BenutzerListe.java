@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-03-21
+ @version 2000-08-01
 */
 
 import java.util.*;
@@ -22,7 +22,8 @@ private static final int SORT_KAUFDATUM =  3;
 private static final int SORT_FIXDATUM  =  4;
 
 private ADate letzteAktualisierung = null;
-private String festeBoerse = "";
+private String festeBoerse = null;
+private String kommentar = null;
 private long verkaufserloes = 0L;
 private int erloesWaehrung = Waehrungen.DEM;
 private int portfoliover = 0;
@@ -88,10 +89,11 @@ public synchronized BenutzerAktie getAt(int index) {
 
 
 
-public synchronized void setDate(String boerse) {
+public synchronized void setDate(String boerse, String rem) {
 
 	letzteAktualisierung = new ADate();
 	festeBoerse = boerse;
+	kommentar = rem;
 }
 
 
@@ -112,17 +114,24 @@ private synchronized ADate getDate() {
 
 public synchronized String getFesteBoerse() {
 
-	if (festeBoerse == null)
+	return (festeBoerse == null) ? "" : festeBoerse;
+}
+
+
+
+private synchronized String getKommentar() {
+
+	if (kommentar == null)
 	{
 		return "";
 	}
-	else if (festeBoerse.length() == 0)
+	else if (kommentar.length() == 0)
 	{
 		return "";
 	}
 	else
 	{
-		return " ("+festeBoerse+")";
+		return " ("+kommentar+")";
 	}
 }
 
@@ -139,7 +148,7 @@ public synchronized String getDateString() {
 	}
 	else
 	{
-		s = " Letzte Aktualisierung am "+d.toString()+" um "+d.timeToString()+getFesteBoerse()+".";
+		s = " Letzte Aktualisierung am "+d.toString()+" um "+d.timeToString()+getKommentar()+".";
 	}
 	
 	return s;
@@ -420,7 +429,7 @@ public synchronized static boolean calcProzJahr() {
 
 
 
-public static boolean store(BenutzerListe benutzerliste){
+public static boolean store(BenutzerListe benutzerliste) {
 
 	ObjectOutputStream out = null;
 

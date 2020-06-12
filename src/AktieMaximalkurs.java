@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-03-14
+ @version 2000-08-09
 */
 
 import java.awt.*;
@@ -187,7 +187,7 @@ private synchronized void setKurs(int index, long kurs, int nextID) {
 		System.out.println("Fehler beim Einlesen der Maximalkurse  -> "+nextID);
 	}
 
-	if (nextID == KursQuellen.QUELLE_NONE)
+	if ((nextID == KursQuellen.QUELLE_NONE) || (index < 0))
 	{
 		setKurs(index,kurs);
 	}
@@ -210,20 +210,28 @@ private synchronized void setKurs(int index, long kurs) {
 
 private synchronized void setKurs(int index, long kurs, String datum, int waehrung, long hvolumen) {
 
-	kurse[index] = kurs;
-	kwaehrung[index] = waehrung;
-	volumen[index] = hvolumen;
+	if (index >= 0)
+	{
+		kurse[index] = kurs;
+		kwaehrung[index] = waehrung;
+		volumen[index] = hvolumen;
 
-	if (datum.length() > 0) kdatum[index] = "("+datum+")";
+		if (datum.length() > 0) kdatum[index] = "("+datum+")";
 	
-	fillKursPanel(true);
+		fillKursPanel(true);
+	}
 }
 
 
 
-private int getIndex(String platz) {
+private int getIndex(String wkn, String platz) {
 
-	return AktienMan.boersenliste.getBoersenIndex(platz);
+	if (!wkn.equalsIgnoreCase(ba.getWKNString()))
+	{
+		return -1;
+	}
+
+	return AktienMan.boersenliste.getBoersenIndex(platz,-1);
 }
 
 
@@ -235,7 +243,7 @@ public synchronized void listeNeuerAktienkurs(String wkn, String kurz, String pl
 												long handelsvolumen, int waehrung,
 												boolean sofortZeichnen) {
 
-	setKurs(getIndex(platz),kurs,kursdatum,waehrung,handelsvolumen);
+	setKurs(getIndex(wkn,platz),kurs,kursdatum,waehrung,handelsvolumen);
 }
 
 
@@ -243,7 +251,7 @@ public synchronized void listeNeuerAktienkurs(String wkn, String kurz, String pl
 public synchronized void listeAktienkursNA(String wkn, String kurz, String platz, String name,
 											boolean sofortZeichnen) {
 
-	setKurs(getIndex(platz),BenutzerAktie.VALUE_NA);
+	setKurs(getIndex(wkn,platz),BenutzerAktie.VALUE_NA);
 }
 
 
@@ -258,7 +266,7 @@ public synchronized void listeAktienkursNA(String wkn, String kurz, String platz
 public synchronized void listeAnfrageFehler(String request, String wkn, String platz,
 												boolean sofortZeichnen, int nextID) {
 
-	setKurs(getIndex(platz),BenutzerAktie.VALUE_ERROR,nextID);
+	setKurs(getIndex(wkn,platz),BenutzerAktie.VALUE_ERROR,nextID);
 }
 
 }

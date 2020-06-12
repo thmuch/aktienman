@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-07-13
+ @version 2000-10-24
 */
 
 import java.awt.*;
@@ -18,35 +18,56 @@ private static final long HIGHLOW = 200L;
 
 private FontMetrics metrics = null;
 
-private String title,symbol,datum,nummax;
+private String symbol = null;
+private String title,datum,nummax;
 private String[] titlemax;
 private long punkte,vortag;
+private int symidx;
 
 
 
 
-public IndexCanvas(String title, String symbol) {
+public IndexCanvas(String title, int symidx) {
 
-	this(title,symbol,new String[] {title},"9,99");
+	this(title,symidx,new String[] {title},"9,99");
 }
 
 
 
-public IndexCanvas(String title, String symbol, String[] titlemax, String nummax) {
+public IndexCanvas(String title, int symidx, String[] titlemax, String nummax) {
+
+	this(title,symidx,titlemax,nummax,0L,0L,"");
+}
+
+
+
+public IndexCanvas(String title, int symidx, String[] titlemax, String nummax, long punkte, long vortag, String datum) {
 
 	super();
 
 	this.title = title;
-	this.symbol = symbol;
+	this.symidx = symidx;
 	this.nummax = nummax;
 	this.titlemax = titlemax;
 		
-	setValues(0L,0L,"");
+	setValues(punkte,vortag,datum);
+}
+
+
+
+public int getIndex() {
+
+	return symidx;
 }
 
 
 
 public boolean hasSymbol(String testSymbol) {
+
+	if (symbol == null)
+	{
+		symbol = AktienMan.url.getString(getIndex());
+	}
 	
 	return symbol.equalsIgnoreCase(testSymbol);
 }
@@ -70,12 +91,14 @@ private int max(int a, int b) {
 
 
 private String getTitle() {
+
 	return title + TITEL;
 }
 
 
 
 private synchronized String getDatum() {
+
 	return " (" + datum + ") ";
 }
 
@@ -115,18 +138,18 @@ private synchronized String getDiff() {
 
 private synchronized int getWidth() {
 
-	if (metrics == null)
-	{
-		metrics = getFontMetrics(getFont());
-	}
+	checkMetrics();
 	
 	int x = 0, breite = 0;
 	
 	for (int i = 0; i < titlemax.length; i++)
 	{
-		int sw = metrics.stringWidth(titlemax[i]+TITEL);
+		if (titlemax[i] != null)
+		{
+			int sw = metrics.stringWidth(titlemax[i] + TITEL);
 		
-		if (sw > breite) breite = sw;
+			if (sw > breite) breite = sw;
+		}
 	}
 	
 	x += breite;
@@ -148,10 +171,7 @@ public synchronized void paint(Graphics g)
 {
 	super.paint(g);
 	
-	if (metrics == null)
-	{
-		metrics = getFontMetrics(getFont());
-	}
+	checkMetrics();
 	
 	int x = 0;
 	int y = metrics.getAscent();
@@ -164,9 +184,12 @@ public synchronized void paint(Graphics g)
 	
 	for (int i = 0; i < titlemax.length; i++)
 	{
-		int sw = metrics.stringWidth(titlemax[i]+TITEL);
+		if (titlemax[i] != null)
+		{
+			int sw = metrics.stringWidth(titlemax[i] + TITEL);
 		
-		if (sw > breite) breite = sw;
+			if (sw > breite) breite = sw;
+		}
 	}
 	
 	x += breite;
@@ -232,10 +255,7 @@ public synchronized void paint(Graphics g)
 
 public Dimension getPreferredSize() {
 
-	if (metrics == null)
-	{
-		metrics = getFontMetrics(getFont());
-	}
+	checkMetrics();
 
 	return new Dimension(getWidth(),metrics.getHeight());
 }
@@ -245,6 +265,25 @@ public Dimension getPreferredSize() {
 public Dimension getMinimumSize() {
 
 	return getPreferredSize();
+}
+
+
+
+private void checkMetrics() {
+
+	if (metrics == null)
+	{
+		Font f = getFont();
+		
+		if (f == null)
+		{
+			f = new Font("Dialog",Font.PLAIN,10);
+			
+			setFont(f);
+		}
+
+		metrics = getFontMetrics(f);
+	}
 }
 
 }

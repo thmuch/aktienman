@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-03-13
+ @version 2000-11-11
 */
 
 import java.awt.*;
@@ -12,9 +12,9 @@ import java.awt.event.*;
 public final class Konfiguration extends AFrame {
 
 private Choice plaetze,waehrung,bank,quelle,charts,connections;
-private Checkbox cbAktualisieren,cbKamera,cbAktiennamen,cbKuerzen,cbSteuerfrei,cbTimeout,cbJahr,cbIndex;
+private Checkbox cbAktualisieren,cbKamera,cbAktiennamen,cbKuerzen,cbSteuerfrei,cbTimeout,cbJahr,cbIntraday;
 //private Checkbox rb6Monate,rb12Monate;
-private TextField tfStdGewinn,tfStdGebuehren,tfMinuten;
+private TextField tfStdGewinn,tfStdGebuehren,tfMinuten,tfIntraMinuten;
 
 
 
@@ -41,11 +41,13 @@ public void setupElements() {
 	cbSteuerfrei = new Checkbox("\"steuerfrei\" statt Laufzeit anzeigen",BenutzerListe.useSteuerfrei());
 	cbTimeout = new Checkbox("Liste automatisch aktualisieren alle",AktienMan.properties.getBoolean("Konfig.KursTimeout"));
 	cbJahr = new Checkbox("%Jahr erst nach 360 Tagen Laufzeit berechnen",BenutzerListe.calcProzJahr());
-	cbIndex = new Checkbox("Indizes regelm\u00e4\u00dfig aktualisieren",IndexQuelle.autoIndexOn());
+//	cbIndex = new Checkbox("Indizes regelm\u00e4\u00dfig aktualisieren",IndexQuelle.autoIndexOn());
+	cbIntraday = new Checkbox("Intraday-†bersicht automatisch aktualisieren alle",ChartPofoLeser.getIntradayTimeout());
 	
 	tfStdGewinn = new TextField(AktienMan.properties.getString("Konfig.StdGewinn"),6);
 	tfStdGebuehren = new TextField(AktienMan.properties.getString("Konfig.StdGebuehren"),6);
 	tfMinuten = new TextField(KursDemon.getTimeoutMinutenString(),3);
+	tfIntraMinuten = new TextField(ChartPofoLeser.getTimeoutMinutenString(),3);
 	
 	constrain(panelOben,cbAktualisieren,0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	constrain(panelOben,cbKamera,0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
@@ -55,8 +57,15 @@ public void setupElements() {
 	constrain(timeoutPanel,tfMinuten,1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 	constrain(timeoutPanel,new Label("Minuten"),2,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 	
+	Panel intradayPanel = new Panel(gridbag);
+	constrain(intradayPanel,cbIntraday,0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(intradayPanel,tfIntraMinuten,1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
+	constrain(intradayPanel,new Label("Minuten"),2,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
+	
 	constrain(panelOben,timeoutPanel,0,2,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
-	constrain(panelOben,cbIndex,0,3,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(panelOben,intradayPanel,0,3,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+//	constrain(panelOben,cbIndex,0,4,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(panelOben,new Label(),0,4,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	
 	Panel quellePanel = new Panel(gridbag);
 
@@ -70,19 +79,19 @@ public void setupElements() {
 	constrain(quellePanel,charts,0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	constrain(quellePanel,new Label("als Quelle f\u00fcr die Online-Charts verwenden"),1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 	
-	constrain(panelOben,quellePanel,0,4,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
+	constrain(panelOben,quellePanel,0,5,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
 	
 	Panel connPanel = new Panel(gridbag);
 	
 	connections = Connections.getPopup();
 
-	constrain(connPanel,new Label("Gleichzeitige Kursanfragen:"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(connPanel,new Label("Gleichzeitige Kurs- und Chartanfragen:"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	constrain(connPanel,connections,1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 
-	constrain(panelOben,connPanel,0,5,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
+	constrain(panelOben,connPanel,0,6,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
 	
-	constrain(panelOben,cbAktiennamen,0,6,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
-	constrain(panelOben,cbKuerzen,0,7,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(panelOben,cbAktiennamen,0,7,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
+	constrain(panelOben,cbKuerzen,0,8,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 
 /*	Panel spekuPanel = new Panel(gridbag);
 	CheckboxGroup spekuGroup = new CheckboxGroup();
@@ -103,8 +112,8 @@ public void setupElements() {
 	constrain(spekuPanel,rb12Monate,2,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 	constrain(panelOben,spekuPanel,0,6,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0); */
 
-	constrain(panelOben,cbSteuerfrei,0,8,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
-	constrain(panelOben,cbJahr,0,9,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(panelOben,cbSteuerfrei,0,9,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
+	constrain(panelOben,cbJahr,0,10,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	
 	constrain(panelStandard,new Label("Vorgaben f\u00fcr neu zu kaufende Aktien:"),0,0,4,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	constrain(panelStandard,new Label("Standard-B\u00f6rse:"),0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
@@ -170,13 +179,13 @@ public boolean canOK() {
 	}
 	catch (NumberFormatException e)
 	{
-		new Warnalert(this,"Bitte geben Sie bei den Minuten eine g\u00fcltige Zahl ein.");
+		new TextWarnalert(this,"Bitte geben Sie bei den Minuten eine g\u00fcltige Zahl ein.");
 		return false;
 	}
 
 	if (i <= 0)
 	{
-		new Warnalert(this,"Bitte geben Sie eine Minutenanzahl gr\u00f6\u00dfer Null ein.");
+		new TextWarnalert(this,"Bitte geben Sie eine Minutenanzahl gr\u00f6\u00dfer Null ein.");
 		return false;
 	}
 
@@ -198,9 +207,9 @@ public void executeOK() {
 	AktienMan.properties.setInt("Konfig.StdBoerse",plaetze.getSelectedIndex());
 	AktienMan.properties.setInt("Konfig.StdWaehrung",waehrung.getSelectedIndex());
 	AktienMan.properties.setInt("Konfig.StdBank",bank.getSelectedIndex());
-	AktienMan.properties.setBoolean("Konfig.Index",cbIndex.getState());
+//	AktienMan.properties.setBoolean("Konfig.Index",cbIndex.getState());
 //	AktienMan.properties.setInt("Konfig.Spekulationsfrist",(rb12Monate.getState()) ? 12 : 6);
-	
+
 	KursQuellen.setKursQuelleIndex(quelle.getSelectedIndex());
 	ChartQuellen.setChartQuelleIndex(charts.getSelectedIndex());
 	
@@ -208,10 +217,18 @@ public void executeOK() {
 	
 	boolean timeoutAktiv = cbTimeout.getState();
 	AktienMan.properties.setBoolean("Konfig.KursTimeout",timeoutAktiv);
+
+	ChartPofoLeser.setIntradayTimeout(cbIntraday.getState());
 	
 	try
 	{
 		KursDemon.setTimeoutMinuten(Integer.parseInt(tfMinuten.getText().trim()));
+	}
+	catch (NumberFormatException e) {}
+
+	try
+	{
+		ChartPofoLeser.setTimeoutMinuten(Integer.parseInt(tfIntraMinuten.getText().trim()));
 	}
 	catch (NumberFormatException e) {}
 	
@@ -221,6 +238,8 @@ public void executeOK() {
 	
 	KursDemon.deleteKursDemon();
 	if (timeoutAktiv) KursDemon.createKursDemon();
+	
+	AktienMan.hauptdialog.preferencesChanged();
 }
 
 
