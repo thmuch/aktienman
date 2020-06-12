@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2003-04-09
+ @version 2003-04-11
 */
 
 /**
@@ -20,7 +20,7 @@ public static final String AMVERSION       = "1.99";
 public static final String AMFENSTERTITEL  = AMNAME + " - ";
 public static final String HOMEPAGE        = "http://www.aktienman.de/";
 
-public static final ADate compDate         = new ADate(2003,4,9); /* Compilierdatum */
+public static final ADate compDate         = new ADate(2003,4,11); /* Compilierdatum */
 public static final int RELEASE            = 23; /* 1.98 (2002-10-10) */
 public static final boolean DEBUG          = true; /**/
 

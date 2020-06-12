@@ -1,6 +1,9 @@
 /**
  @author Thomas Much
- @version 2003-03-04
+ @version 2003-04-11
+ 
+ 2003-04-11
+ 	GBP wird als WŠhrung erkannt
 */
 
 import java.io.*;
@@ -540,6 +543,10 @@ private static int getWaehrung(final String cd) {
 	else if ("USD".equals(cd))
 	{
 		return Waehrungen.USD;
+	}
+	else if ("GBP".equals(cd))
+	{
+		return Waehrungen.GBP;
 	}
 	
 	return Waehrungen.NONE;

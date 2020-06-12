@@ -164,6 +164,9 @@ HEUTE
 - der HTML-Export speichert die Währungssymbole nun mit korrekter HTML-Kodierung
 - der CSV-Export trennt WKN und Börse und speichert (falls verfügbar) die ISIN
 
+- der Comdirect-Kursleser erkennt nun auch GBP-Kurse (sofern sie korrekt als solche ausgezeichnet sind)
+
+
 
 Version 1.98 (10.10.02)
 - Comdirect-Kurse und -charts werden wieder geladen
