@@ -1,5 +1,5 @@
 AktienMan 1.99-beta (2003-01-27)
-Copyright ©1998-2003 by Thomas Much (thomas@aktienman.de)
+Copyright ©1998-2003 by Thomas Much
 
 
 History

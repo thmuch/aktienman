@@ -1,6 +1,6 @@
 AktienMan 1.98
 Copyright ©1998-2002 Thomas Much
-Ein Programm von AktienMan & Friends (http://www.aktienman.de).
+Ein Programm von AktienMan & Friends.
 
 Zielsetzung
 AktienMan ist ein modernes Programm, das die Verwaltung der eigenen Aktien ermöglicht. Es ermittelt jederzeit alle aktuellen Kurse des persönlichen Portfolios (Aktienwerte) aus dem Internet. An keiner Stelle erfolgt die Bekanntgabe des eigenen Portfolios oder der Anzahl der Aktien an Dritte.
@@ -15,12 +15,6 @@ Die eigentliche Installation von AktienMan ist denkbar einfach: Sie haben das Ak
 
 Einschränkungen der Demo-Version
 Die Demo-Version kann nur das Standardportfolio mit maximal drei Aktien verwalten. Die registrierte Vollversion besitzt dagegen keine Einschränkung bei der Zahl der Portfolios oder der zu verwaltenden Aktien.
-
-Bestellung der Vollversion
-Sie können jederzeit eine aktuelle Version von AktienMan aus dem Internet von der Seite http://www.aktienman.de herunterladen. Wenn Sie Gefallen an AktienMan gefunden haben und dauerhaft benutzen möchten, können Sie das komplette Handbuch und einen Schlüssel zur Freischaltung von AktienMan bei AktienMan&Friends direkt im Internet bestellen. AktienMan&Friends liefert dann die Anleitung und den notwendigen Freischalt-Schlüssel mit einer Rechnung über € 39,-- (DM 76,28) inkl. 16% Mwst. an Ihre Adresse. Mit der Bestellung sind Sie automatisch für AktienMan bei AktienMan&Friends registriert.
-
-Rechtliches
-AktienMan kann auf einem beliebigen Rechner/Betriebssystem eingesetzt werden. Es muß lediglich gewährleistet sein, daß AktienMan nur vom registrierten Benutzer zum Einsatz kommt. Jeder registrierte Benutzer kann für jeweils € 25,-- (DM 48,90) inkl. 16% Mwst. weitere Schlüssel von AktienMan&Friends bestellen.
 
 Wichtiger Hinweis: Da AktienMan alle Kursinformationen von Rechnern im Internet abfragt, auf die wir keinen Einfluss haben, können wir für die Zuverlässigkeit und Genauigkeit der Daten keine Garantie übernehmen. Relevant für Ihre Käufe und Verkäufe sind einzig und allein die Daten, die Ihnen von Ihrer Bank beim Kauf bzw. Verkauf übermittelt werden.
 
@@ -42,8 +36,5 @@ Versionsübersicht
 - Die Indizes werden wieder aktualisiert.
 - [Bugfix] Nullreferenzzugriff bei der DAX-Kamera beseitigt.
 - [Bugfix] Bei Fehlern im Comdirect-Kursleser wurde nicht immer automatisch auf einen anderen Kursleser umgeschaltet.
-
-Kontakt
-Bestellungen richten Sie bitte an bestellung@aktienman.de, am besten wickeln Sie Ihre Bestellung aber über die AktienMan-Homepage http://www.aktienman.de ab. Supportanfragen beantwortet support@aktienman.de.
 
 Viel Spaß & Erfolg mit AktienMan!
