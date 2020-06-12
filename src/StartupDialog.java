@@ -36,7 +36,7 @@ public StartupDialog() {
 	Dimension d = getSize();
 	setBounds((AktienMan.screenSize.width-d.width)/2,(AktienMan.screenSize.height-d.height)/2,d.width,d.height);
 	
-	show();
+	setVisible(true);
 }
 
 

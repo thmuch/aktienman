@@ -10,7 +10,7 @@ import java.io.*;
 
 
 
-public final class ChartLoader extends Thread {
+public final class ChartLoader extends Thread /* TODO: implements Runnable? */ {
 
 private static final long TIMEOUT = 120000L;
 

@@ -17,7 +17,7 @@ private int waehrung;
 
 
 public Aktie(String name, String kurz, int wkn) {
-	this(name,kurz,wkn,Waehrungen.getOnlineWaehrung());
+	this(name,kurz,wkn,Waehrungen.EUR/* TODO: wozu brauchen wir das Ÿberhaupt?*/);
 }
 
 

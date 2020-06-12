@@ -1,6 +1,9 @@
 /**
  @author Thomas Much
- @version 2000-08-13
+ @version 2003-02-21
+
+ 2003-02-21
+ 	Anpassung an IndexQuelle.ID_*
 */
 
 import java.awt.*;
@@ -45,7 +48,7 @@ public void setupElements() {
 	buttonAlle.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 
-			for (int i = 0; i < IndexQuelle.iIndex.length; i++)
+			for (int i = 0; i < IndexQuelle.COUNT; i++)
 			{
 				icb[i].setState(true);
 			}
@@ -55,7 +58,7 @@ public void setupElements() {
 	buttonKeine.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 
-			for (int i = 0; i < IndexQuelle.iIndex.length; i++)
+			for (int i = 0; i < IndexQuelle.COUNT; i++)
 			{
 				icb[i].setState(false);
 			}
@@ -65,11 +68,11 @@ public void setupElements() {
 	constrain(panelOben,buttonAlle,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,15,0,0);
 	constrain(panelOben,buttonKeine,2,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 	
-	icb = new Checkbox[IndexQuelle.iIndex.length];
+	icb = new Checkbox[IndexQuelle.COUNT];
 	
-	for (int i = 0; i < IndexQuelle.iIndex.length; i++)
+	for (int i = 0; i < icb.length; i++)
 	{
-		icb[i] = new Checkbox(IndexQuelle.iDescr[i],IndexQuelle.isIndexOn(IndexQuelle.iIndex[i]));
+		icb[i] = new Checkbox(IndexQuelle.iDescr[i],IndexQuelle.isIndexOn(i));
 
 		constrain(panelOben,icb[i],0,2+i,3,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	}
@@ -104,15 +107,15 @@ public void setupElements() {
 
 public void executeOK() {
 
-	for (int i = 0; i < IndexQuelle.iIndex.length; i++)
+	for (int i = 0; i < icb.length; i++)
 	{
 		if (icb[i].getState())
 		{
-			IndexQuelle.addIndex(IndexQuelle.iIndex[i]);
+			IndexQuelle.addIndex(i);
 		}
 		else
 		{
-			IndexQuelle.removeIndex(IndexQuelle.iIndex[i]);
+			IndexQuelle.removeIndex(i);
 		}
 	}
 	

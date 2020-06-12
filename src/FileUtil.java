@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2001-11-05
+ @version 2003-02-03
 */
 
 import java.io.*;
@@ -15,6 +15,7 @@ public static final String EXT_PORTFOLIO = ".lst";
 public static final String EXT_POPUP     = ".pop";
 public static final String EXT_CONFIG    = ".cfg";
 public static final String EXT_INDIZES   = ".ind";
+public static final String EXT_XCHGRATE  = ".xch";
 
 private static final String pathsep = System.getProperty("path.separator");
 private static final String filesep = System.getProperty("file.separator");
@@ -141,6 +142,13 @@ public static String getConfigFile() {
 
 
 
+public static String getExchangeRateFile() {
+
+	return getDefaultFile() + EXT_XCHGRATE;
+}
+
+
+
 public static String getIndexFile() {
 
 	return getDefaultFile() + EXT_INDIZES;
@@ -177,6 +185,7 @@ public static String findLocalFile(String filename) {
 	StringTokenizer st = new StringTokenizer(System.getProperty("java.class.path"),pathsep);
 	
 	while (st.hasMoreTokens()) {
+
 		String s = st.nextToken();
 		
 		if ((!s.endsWith(".zip")) && (!s.endsWith(".jar")))

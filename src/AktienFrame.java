@@ -25,8 +25,7 @@ public AktienFrame(String title, int index, BenutzerAktie ba) {
 	
 	pack();
 	setupSize();
-	show();
-
+	setVisible(true);
 }
 
 

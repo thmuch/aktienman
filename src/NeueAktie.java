@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-11-09
+ @version 2003-04-03
 */
 
 import java.awt.*;
@@ -14,10 +14,10 @@ public final class NeueAktie extends LockedFrame {
 
 private TextField kaufdatum,kaufkurs,stueckzahl,aktienWKN,gewinngrenze,hochkurs,tiefkurs;
 private CheckboxGroup aktienGruppe,gewinnGruppe;
-private Checkbox daxCheckbox,mdaxCheckbox,nmarktCheckbox;
-private Checkbox stoxxCheckbox,auslandCheckbox,wknCheckbox;
+private Checkbox dax30Checkbox,mdaxCheckbox,tecdaxCheckbox;
+private Checkbox eurostoxx50Checkbox,stoxx50Checkbox,wknCheckbox;
 private Checkbox boerseNurDiese,gewinnAbs,gewinnProz;
-private Choice plaetze,aktienDAX,aktienMDAX,aktienNMarkt,aktienSTOXX,aktienAusland,waehrung;
+private Choice plaetze,aktienDAX30,aktienMDAX,aktienTecDAX,aktienEuroSTOXX50,aktienSTOXX50,waehrung;
 private Button buttonOK,buttonBeobachten;
 private boolean watchonly = false;
 
@@ -30,11 +30,11 @@ public NeueAktie() {
 
 	aktienWKN.requestFocus();
 
-	if ((AktienMan.listeDAX.getChoice(false).getItemCount() < 1) ||
+	if ((AktienMan.listeDAX30.getChoice(false).getItemCount() < 1) ||
 		(AktienMan.listeMDAX.getChoice(false).getItemCount() < 1) ||
-		(AktienMan.listeNMarkt.getChoice(false).getItemCount() < 1) ||
-		(AktienMan.listeEuroSTOXX.getChoice(false).getItemCount() < 1) ||
-		(AktienMan.listeAusland.getChoice(false).getItemCount() < 1))
+		(AktienMan.listeTecDAX.getChoice(false).getItemCount() < 1) ||
+		(AktienMan.listeEuroSTOXX50.getChoice(false).getItemCount() < 1) ||
+		(AktienMan.listeSTOXX50.getChoice(false).getItemCount() < 1))
 	{
 		new TextWarnalert(this,"Bitte gehen Sie online und rufen dann den Men\u00fcpunkt|\"Aktienmen\u00fcs aktualisieren\" im Men\u00fc \""+Lang.EDITMENUTITLE+"\" auf,|damit Sie Aktien per Name (und nicht nur per WKN)|ausw\u00e4hlen k\u00f6nnen.");
 	}
@@ -55,64 +55,69 @@ public void setupElements() {
 
 	constrain(panelAktie,new Label("Aktie"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 
-	daxCheckbox = new Checkbox("DAX30:",false,aktienGruppe);
+	dax30Checkbox = new Checkbox("DAX30:",false,aktienGruppe);
 	mdaxCheckbox = new Checkbox("MDAX:",false,aktienGruppe);
-	nmarktCheckbox = new Checkbox("NEMAX50:",false,aktienGruppe);
-	stoxxCheckbox = new Checkbox("EuroSTOXX50:",false,aktienGruppe);
-	auslandCheckbox = new Checkbox("STOXX50:",false,aktienGruppe);
+	tecdaxCheckbox = new Checkbox("TecDAX:",false,aktienGruppe);
+	eurostoxx50Checkbox = new Checkbox("EuroSTOXX50:",false,aktienGruppe);
+	stoxx50Checkbox = new Checkbox("STOXX50:",false,aktienGruppe);
 	wknCheckbox = new Checkbox("per WKN:",false,aktienGruppe);
 	
-	constrain(panelAktie,daxCheckbox,0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(panelAktie,dax30Checkbox,0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	constrain(panelAktie,mdaxCheckbox,0,2,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
-	constrain(panelAktie,nmarktCheckbox,0,3,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
-	constrain(panelAktie,stoxxCheckbox,0,4,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
-	constrain(panelAktie,auslandCheckbox,0,5,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(panelAktie,tecdaxCheckbox,0,3,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(panelAktie,eurostoxx50Checkbox,0,4,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+	constrain(panelAktie,stoxx50Checkbox,0,5,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	constrain(panelAktie,wknCheckbox,0,6,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	
-	aktienDAX = AktienMan.listeDAX.getChoice(false);
-	aktienDAX.addItemListener(new ItemListener() {
+	aktienDAX30 = AktienMan.listeDAX30.getChoice(false);
+	aktienDAX30.addItemListener(new ItemListener() {
 		public void itemStateChanged(ItemEvent e) {
-			aktienGruppe.setSelectedCheckbox(daxCheckbox);
+			aktienWKN.setText( AktienMan.listeDAX30.getAktie(aktienDAX30.getSelectedIndex()).getWKNString() );
+			aktienGruppe.setSelectedCheckbox(dax30Checkbox);
 		}
 	});
-	if (aktienDAX.getItemCount() < 1) daxCheckbox.setEnabled(false);
-	constrain(panelAktie,aktienDAX,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,0,0,0);
+	if (aktienDAX30.getItemCount() < 1) dax30Checkbox.setEnabled(false);
+	constrain(panelAktie,aktienDAX30,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,0,0,0);
 	
 	aktienMDAX = AktienMan.listeMDAX.getChoice(false);
 	aktienMDAX.addItemListener(new ItemListener() {
 		public void itemStateChanged(ItemEvent e) {
+			aktienWKN.setText( AktienMan.listeMDAX.getAktie(aktienMDAX.getSelectedIndex()).getWKNString() );
 			aktienGruppe.setSelectedCheckbox(mdaxCheckbox);
 		}
 	});
 	if (aktienMDAX.getItemCount() < 1) mdaxCheckbox.setEnabled(false);
 	constrain(panelAktie,aktienMDAX,1,2,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,0,0,0);
 
-	aktienNMarkt = AktienMan.listeNMarkt.getChoice(false);
-	aktienNMarkt.addItemListener(new ItemListener() {
+	aktienTecDAX = AktienMan.listeTecDAX.getChoice(false);
+	aktienTecDAX.addItemListener(new ItemListener() {
 		public void itemStateChanged(ItemEvent e) {
-			aktienGruppe.setSelectedCheckbox(nmarktCheckbox);
+			aktienWKN.setText( AktienMan.listeTecDAX.getAktie(aktienTecDAX.getSelectedIndex()).getWKNString() );
+			aktienGruppe.setSelectedCheckbox(tecdaxCheckbox);
 		}
 	});
-	if (aktienNMarkt.getItemCount() < 1) nmarktCheckbox.setEnabled(false);
-	constrain(panelAktie,aktienNMarkt,1,3,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,0,0,0);
+	if (aktienTecDAX.getItemCount() < 1) tecdaxCheckbox.setEnabled(false);
+	constrain(panelAktie,aktienTecDAX,1,3,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,0,0,0);
 
-	aktienSTOXX = AktienMan.listeEuroSTOXX.getChoice(false);
-	aktienSTOXX.addItemListener(new ItemListener() {
+	aktienEuroSTOXX50 = AktienMan.listeEuroSTOXX50.getChoice(false);
+	aktienEuroSTOXX50.addItemListener(new ItemListener() {
 		public void itemStateChanged(ItemEvent e) {
-			aktienGruppe.setSelectedCheckbox(stoxxCheckbox);
+			aktienWKN.setText( AktienMan.listeEuroSTOXX50.getAktie(aktienEuroSTOXX50.getSelectedIndex()).getWKNString() );
+			aktienGruppe.setSelectedCheckbox(eurostoxx50Checkbox);
 		}
 	});
-	if (aktienSTOXX.getItemCount() < 1) stoxxCheckbox.setEnabled(false);
-	constrain(panelAktie,aktienSTOXX,1,4,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,0,0,0);
+	if (aktienEuroSTOXX50.getItemCount() < 1) eurostoxx50Checkbox.setEnabled(false);
+	constrain(panelAktie,aktienEuroSTOXX50,1,4,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,0,0,0);
 
-	aktienAusland = AktienMan.listeAusland.getChoice(false);
-	aktienAusland.addItemListener(new ItemListener() {
+	aktienSTOXX50 = AktienMan.listeSTOXX50.getChoice(false);
+	aktienSTOXX50.addItemListener(new ItemListener() {
 		public void itemStateChanged(ItemEvent e) {
-			aktienGruppe.setSelectedCheckbox(auslandCheckbox);
+			aktienWKN.setText( AktienMan.listeSTOXX50.getAktie(aktienSTOXX50.getSelectedIndex()).getWKNString() );
+			aktienGruppe.setSelectedCheckbox(stoxx50Checkbox);
 		}
 	});
-	if (aktienAusland.getItemCount() < 1) auslandCheckbox.setEnabled(false);
-	constrain(panelAktie,aktienAusland,1,5,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,0,0,0);
+	if (aktienSTOXX50.getItemCount() < 1) stoxx50Checkbox.setEnabled(false);
+	constrain(panelAktie,aktienSTOXX50,1,5,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,0,0,0);
 
 	aktienWKN = new TextField(7);
 	aktienWKN.addTextListener(new TextListener() {
@@ -136,7 +141,7 @@ public void setupElements() {
 	constrain(panelAktie,boerseNurDiese,1,8,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	
 	constrain(panelAktie,new Label("Kaufw\u00e4hrung:"),0,9,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,5,0,0,0);
-	waehrung = AktienMan.waehrungen.getChoice(true);
+	waehrung = Waehrungen.getChoice();
 	waehrung.select(Waehrungen.getStandardKaufwaehrung());
 	constrain(panelAktie,waehrung,1,9,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,5,0,0,0);
 	
@@ -246,25 +251,25 @@ public void setupElements() {
 	constrain(this,panelRest,1,0,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHEAST,0.0,0.0,10,10,5,10);
 	constrain(this,panelButtons,0,1,2,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.SOUTHEAST,0.0,0.0,15,10,10,10);
 
-	if (aktienDAX.getItemCount() > 0)
+	if (aktienDAX30.getItemCount() > 0)
 	{
-		aktienGruppe.setSelectedCheckbox(daxCheckbox);
+		aktienGruppe.setSelectedCheckbox(dax30Checkbox);
 	}
 	else if (aktienMDAX.getItemCount() > 0)
 	{
 		aktienGruppe.setSelectedCheckbox(mdaxCheckbox);
 	}
-	else if (aktienNMarkt.getItemCount() > 0)
+	else if (aktienTecDAX.getItemCount() > 0)
 	{
-		aktienGruppe.setSelectedCheckbox(nmarktCheckbox);
+		aktienGruppe.setSelectedCheckbox(tecdaxCheckbox);
 	}
-	else if (aktienSTOXX.getItemCount() > 0)
+	else if (aktienEuroSTOXX50.getItemCount() > 0)
 	{
-		aktienGruppe.setSelectedCheckbox(stoxxCheckbox);
+		aktienGruppe.setSelectedCheckbox(eurostoxx50Checkbox);
 	}
-	else if (aktienAusland.getItemCount() > 0)
+	else if (aktienSTOXX50.getItemCount() > 0)
 	{
-		aktienGruppe.setSelectedCheckbox(auslandCheckbox);
+		aktienGruppe.setSelectedCheckbox(stoxx50Checkbox);
 	}
 	else
 	{
@@ -302,9 +307,9 @@ public synchronized void executeOK() {
 	
 	Checkbox cb = aktienGruppe.getSelectedCheckbox();
 	
-	if (cb == daxCheckbox)
+	if (cb == dax30Checkbox)
 	{
-		Aktie a = AktienMan.listeDAX.getAktie(aktienDAX.getSelectedIndex());
+		Aktie a = AktienMan.listeDAX30.getAktie(aktienDAX30.getSelectedIndex());
 		
 		name = a.getName();
 		wkn = a.getWKNString();
@@ -316,23 +321,23 @@ public synchronized void executeOK() {
 		name = a.getName();
 		wkn = a.getWKNString();
 	}
-	else if (cb == nmarktCheckbox)
+	else if (cb == tecdaxCheckbox)
 	{
-		Aktie a = AktienMan.listeNMarkt.getAktie(aktienNMarkt.getSelectedIndex());
+		Aktie a = AktienMan.listeTecDAX.getAktie(aktienTecDAX.getSelectedIndex());
 		
 		name = a.getName();
 		wkn = a.getWKNString();
 	}
-	else if (cb == stoxxCheckbox)
+	else if (cb == eurostoxx50Checkbox)
 	{
-		Aktie a = AktienMan.listeEuroSTOXX.getAktie(aktienSTOXX.getSelectedIndex());
+		Aktie a = AktienMan.listeEuroSTOXX50.getAktie(aktienEuroSTOXX50.getSelectedIndex());
 		
 		name = a.getName();
 		wkn = a.getWKNString();
 	}
-	else if (cb == auslandCheckbox)
+	else if (cb == stoxx50Checkbox)
 	{
-		Aktie a = AktienMan.listeAusland.getAktie(aktienAusland.getSelectedIndex());
+		Aktie a = AktienMan.listeSTOXX50.getAktie(aktienSTOXX50.getSelectedIndex());
 		
 		name = a.getName();
 		wkn = a.getWKNString();

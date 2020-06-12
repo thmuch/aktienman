@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-03-14
+ @version 2003-02-27
 */
 
 
@@ -9,7 +9,7 @@ public interface KursReceiver {
 
 
 
-public void listeNeuerAktienkurs(String wkn, String kurz, String platz,
+public void listeNeuerAktienkurs(String wkn, String isin, String kurz, String platz,
 									String name, long kurs, String kursdatum,
 									long vortageskurs, long eroeffnungskurs,
 									long hoechstkurs, long tiefstkurs,
@@ -19,9 +19,7 @@ public void listeNeuerAktienkurs(String wkn, String kurz, String platz,
 public void listeAktienkursNA(String wkn, String kurz, String platz, String name,
 									boolean sofortZeichnen);
 
-//public void listeAnfrageFalsch(String wkn, String platz, boolean sofortZeichnen);
-
 public void listeAnfrageFehler(String request, String wkn, String platz,
-									boolean sofortZeichnen, int nextID);
-	
+									boolean sofortZeichnen, KursQuelle first, KursQuelle current);
+
 }

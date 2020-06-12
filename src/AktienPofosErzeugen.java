@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-11-09
+ @version 2003-04-01
 */
 
 import java.awt.*;
@@ -58,11 +58,11 @@ public synchronized void executeOK() {
 
 	buttonJa.setEnabled(false);
 	
-	createPortfolio("DAX30",AktienMan.listeDAX);
+	createPortfolio("DAX30",AktienMan.listeDAX30);
 	createPortfolio("MDAX",AktienMan.listeMDAX);
-	createPortfolio("NEMAX50",AktienMan.listeNMarkt);
-	createPortfolio("EuroSTOXX50",AktienMan.listeEuroSTOXX);
-	createPortfolio("STOXX50",AktienMan.listeAusland);
+	createPortfolio("TecDAX",AktienMan.listeTecDAX);
+	createPortfolio("EuroSTOXX50",AktienMan.listeEuroSTOXX50);
+	createPortfolio("STOXX50",AktienMan.listeSTOXX50);
 	
 	System.out.println("Fertig.");
 }

@@ -1,6 +1,9 @@
 /**
  @author Thomas Much
- @version 2000-07-27
+ @version 2003-01-24
+
+ 2003-01-24
+ 	addElements verwendet StrTokenizer
 */
 
 import java.awt.*;
@@ -32,7 +35,7 @@ protected int addElements() {
 
 	int y = 0, top = 10;
 	
-	StringTokenizer st = new StringTokenizer(getText(),"|");
+	StrTokenizer st = new StrTokenizer(getText(),'|');
 	
 	while (st.hasMoreTokens())
 	{

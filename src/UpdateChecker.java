@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 1999-05-23
+ @version 2003-02-03
 */
 
 import java.net.*;
@@ -9,18 +9,19 @@ import java.util.*;
 
 
 
-public final class UpdateChecker extends Thread {
+public final class UpdateChecker implements Runnable {
 
 private static boolean checked = false;
 
 
 
-public UpdateChecker() {
-	super();
-}
+
+private UpdateChecker() {}
+
 
 
 public void run() {
+
 	BufferedReader in = null;
 	boolean valid = false;
 	
@@ -94,20 +95,19 @@ public void run() {
 }
 
 
+
 public synchronized static void check() {
+
 	if (!checked)
 	{
-		checked = true;
-		
 		try
 		{
-			new UpdateChecker().start();
+			new Thread(new UpdateChecker()).start();
+			checked = true;
 		}
-		catch (Exception e)
-		{
-			checked = false;
-		}
+		catch (Exception e) {}
 	}
 }
+
 
 }

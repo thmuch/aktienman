@@ -1,9 +1,20 @@
 /**
  @author Thomas Much
- @version 2002-01-13
+ @version 2003-04-09
 
+ 2003-04-09
+ 	saveCSV trennt WKN und Börse und speichert (falls verfügbar) die ISIN
+ 	saveHTML speichert die Währungssymbole nun als HTML-Entities
+ 	addFooterToPanel und saveFooterHTML geben den steuerfreien Betrag nicht mehr aus
+ 	istSteuerfrei liefert immer false zurück
+ 	getLaufzeitMonateString gibt nun ein Kurzformat inkl. Jahren aus
+ 2003-02-27
+ 	setValues bekommt nun die ISIN übergeben (oder null)
+ 	getOnlineKursString
+ 	isin, getISIN
+ 	saveXML, readXML
  2002-01-13
-    infoDialogClose ruft vor dispose nun setVisible(false) auf
+ 	infoDialogClose ruft vor dispose nun setVisible(false) auf
 */
 
 import java.awt.*;
@@ -27,9 +38,12 @@ public static final int HTMLCOLS = 12;
 private static final String STR_MISSING   = "<aktualisieren>";
 private static final String STR_ERROR     = "<Fehler>";
 private static final String STR_NA        = "n/a";
+private static final String STR_CURRENCY  = "<W\u00e4hrung?>";
 private static final String STR_1JAHR     = "<1 J.";
 private static final String STR_DIVIDENDE = "D+";
 private static final String STR_SPACE     = "  ";
+
+private static final long FONDSANTEILE = 10000L;
 
 private static final int HEADROWS = 2;
 
@@ -78,7 +92,7 @@ private transient BALabel l1,l2,l3,l4,l5,l6,l7,l8,l9,l10,l11,l12,l15;
 private transient BAImageArrowCanvas l13;
 private transient BAImageWarnCanvas l14;
 
-private String name,wkn,kursdatum;
+private String name,wkn,kursdatum,isin;
 private Boersenplatz boersenplatz;
 private ADate kaufdatum;
 private ADate steuerfrei;
@@ -137,10 +151,20 @@ public BenutzerAktie(String name, String wkn, Boersenplatz platz, boolean nurdie
 	setSymbol(null);
 
 	kursdatum = "";
+	isin = "";
 
 	spekulationsfrist = 12/*AktienMan.properties.getInt("Konfig.Spekulationsfrist")*/;
 	
 	setupValues();
+	setColors();
+}
+
+
+
+private BenutzerAktie() {
+
+	usegrenze = false;
+
 	setColors();
 }
 
@@ -344,6 +368,13 @@ public synchronized String getTiefkursString() {
 public synchronized ADate getKaufdatum() {
 
 	return (kaufdatum == null) ? new ADate() : kaufdatum;
+}
+
+
+
+public synchronized String getISIN() {
+
+	return (isin == null) ? "" : isin;
 }
 
 
@@ -655,7 +686,7 @@ public synchronized String getRawVerkaufsKursString() {
 
 
 
-private String kurs2String(long k, int w) {
+private String kurs2String(long k, int kWaehrung, int zielWaehrung) {
 
 	if (k == VALUE_MISSING)
 	{
@@ -669,10 +700,21 @@ private String kurs2String(long k, int w) {
 	{
 		return STR_ERROR;
 	}
+	else if (!Waehrungen.isValid(kWaehrung))
+	{
+		return STR_CURRENCY;
+	}
 	else
 	{
-		return Waehrungen.getString(Waehrungen.exchange(k,w,Waehrungen.getListenWaehrung()),Waehrungen.getListenWaehrung());
+		return Waehrungen.getString(Waehrungen.exchange(k,kWaehrung,zielWaehrung),zielWaehrung);
 	}
+}
+
+
+
+private String kurs2String(long k, int kWaehrung) {
+
+	return kurs2String(k,kWaehrung,Waehrungen.getListenWaehrung());
 }
 
 
@@ -680,6 +722,19 @@ private String kurs2String(long k, int w) {
 public synchronized String getKursString() {
 
 	return kurs2String(getKurs(),getKurswaehrung());
+}
+
+
+
+public synchronized String getOnlineKursString() {
+
+	if (getKurs() <= 0) return null;
+
+	if (getKurswaehrung() == Waehrungen.NONE) return null;
+
+	if (getKurswaehrung() == Waehrungen.getListenWaehrung()) return null;
+
+	return "Online-W\u00e4hrung ist " + Waehrungen.index2Id(getKurswaehrung()) + ", akt. Kurs: " + Waehrungen.getString(getKurs(),getKurswaehrung());
 }
 
 
@@ -821,14 +876,16 @@ private synchronized boolean isEqual(String wkn, String kurz) {
 
 public synchronized boolean istSteuerfrei() {
 
-	if ((doNotUpdate()) && (fixDate != null))
+	return false;
+
+/*	if ((doNotUpdate()) && (fixDate != null))
 	{
 		return fixDate.after(steuerfrei);
 	}
 	else
 	{
 		return heute.after(steuerfrei);
-	}
+	} */
 }
 
 
@@ -842,12 +899,12 @@ public synchronized void setValues(long kurs) {
 
 public synchronized void setValues(String name, long kurs) {
 
-	setValues(name,kurs,"",VALUE_NA,VALUE_NA,VALUE_NA,VALUE_NA,0L,getKurswaehrung());
+	setValues(name,null,kurs,"",VALUE_NA,VALUE_NA,VALUE_NA,VALUE_NA,0L,getKurswaehrung());
 }
 
 
 
-public synchronized void setValues(String name, long kurs, String kursdatum,
+public synchronized void setValues(String name, String isin, long kurs, String kursdatum,
 									long vortageskurs, long eroeffnungskurs,
 									long hoechstkurs, long tiefstkurs,
 									long handelsvolumen, int kurswaehrung) {
@@ -855,10 +912,16 @@ public synchronized void setValues(String name, long kurs, String kursdatum,
 	{
 		if (name.length() > 0)
 		{
+			// TODO: wo kommt <aktualisieren> her?
 			if ((this.name.length() == 0) || BenutzerListe.useOnlineNames())
 			{
 				this.name = name;
 			}
+		}
+
+		if (ISIN.isValid(isin))
+		{
+			this.isin = isin;
 		}
 
 		this.kurswaehrung = kurswaehrung;
@@ -1233,7 +1296,9 @@ public synchronized void saveCSV(BufferedWriter out, boolean namenKurz, boolean 
 
 		out.write(getKaufdatum().toString() + ";");
 
-		out.write("\"" + getWKNString() + "." + getBoerse() + "\"");
+		out.write("\"" + getISIN() + "\";");
+		out.write("\"" + getWKNString() + "\";");
+		out.write("\"" + getBoerse() + "\"");
 		
 		out.newLine();
 	}
@@ -1616,7 +1681,7 @@ public synchronized static void saveFooterHTML(BufferedWriter out) {
 		out.newLine();
 		out.newLine();
 		
-		out.write("<TR>");
+/*		out.write("<TR>");
 		out.newLine();
 
 		out.write("  <TD COLSPAN=\"6\" ALIGN=\"right\">davon steuerfrei (*):</TD>");
@@ -1650,7 +1715,7 @@ public synchronized static void saveFooterHTML(BufferedWriter out) {
 		
 		out.write("</TR>");
 		out.newLine();
-		out.newLine();
+		out.newLine(); */
 
 		if (dividenden > 0L)
 		{
@@ -1674,6 +1739,229 @@ public synchronized static void saveFooterHTML(BufferedWriter out) {
 		}
 	}
 	catch (Exception e) {}
+}
+
+
+
+public synchronized void saveXML(PrintWriter out) {
+
+	out.println("<value type=\"basic\">");
+	
+	out.println("<name>" + XMLUtil.escapeString(name) + "</name>");
+	out.println("<symbol>" + XMLUtil.escapeString(symbol) + "</symbol>");
+	out.println("<wkn>" + XMLUtil.escapeString(wkn) + "</wkn>");
+	out.println("<isin>" + XMLUtil.escapeString(isin) + "</isin>");
+
+	out.println("<stueckzahl>" + (stueckzahl * FONDSANTEILE) + "</stueckzahl>");
+	out.println("<kaufkurs>" + kaufkurs + "</kaufkurs>");
+	out.println("<kaufdatum>" + ((kaufdatum == null) ? "" : kaufdatum.toTimestamp(true,true)) + "</kaufdatum>");
+	out.println("<steuerfrei>" + ((steuerfrei == null) ? "" : steuerfrei.toTimestamp(true,true)) + "</steuerfrei>");
+	out.println("<spekulationsfrist>" + spekulationsfrist + "</spekulationsfrist>");
+	out.println("<waehrung>" + Waehrungen.index2Id(waehrung) + "</waehrung>");
+	out.println("<kurswaehrung>" + Waehrungen.index2Id(kurswaehrung) + "</kurswaehrung>");
+	out.println("<boersenplatz>" + ((boersenplatz == null) ? "" : boersenplatz.getKurz()) + "</boersenplatz>");
+
+	out.println("<kurs>" + kurs + "</kurs>");
+	out.println("<kursdatum>" + XMLUtil.escapeString(kursdatum) + "</kursdatum>");
+	out.println("<fixDate>" + ((fixDate == null) ? "" : fixDate.toTimestamp(true,true)) + "</fixDate>");
+	out.println("<vortageskurs>" + vortageskurs + "</vortageskurs>");
+	out.println("<eroeffnungskurs>" + eroeffnungskurs + "</eroeffnungskurs>");
+	out.println("<hoechstkurs>" + hoechstkurs + "</hoechstkurs>");
+	out.println("<tiefstkurs>" + tiefstkurs + "</tiefstkurs>");
+	out.println("<handelsvolumen>" + handelsvolumen + "</handelsvolumen>");
+
+	out.println("<hochkurs>" + hochkurs + "</hochkurs>");
+	out.println("<tiefkurs>" + tiefkurs + "</tiefkurs>");
+	out.println("<gewinngrenze>" + gewinngrenze + "</gewinngrenze>");
+	out.println("<prozgrenze>" + prozgrenze + "</prozgrenze>");
+	out.println("<oldWarnType>" + oldWarnType + "</oldWarnType>");
+	
+	out.println("<watchstart>" + ((watchstart == null) ? "" : watchstart.toTimestamp(true,true)) + "</watchstart>");
+	out.println("<watchhoechst>" + watchhoechst + "</watchhoechst>");
+	out.println("<watchtiefst>" + watchtiefst + "</watchtiefst>");
+	out.println("<watchhdate>" + XMLUtil.escapeString(watchhdate) + "</watchhdate>");
+	out.println("<watchtdate>" + XMLUtil.escapeString(watchtdate) + "</watchtdate>");
+	out.println("<watchwaehrung>" + Waehrungen.index2Id(watchwaehrung) + "</watchwaehrung>");
+
+	out.println("<dividende>" + dividende + "</dividende>");
+	out.println("<divdate>" + ((divdate == null) ? "" : divdate.toTimestamp(true,true)) + "</divdate>");
+
+	if (nurdiese) out.println("<nurdiese />");
+	if (usegrenze) out.println("<usegrenze />");
+	if (watchonly) out.println("<watchonly />");
+	if (dontUpdate) out.println("<dontUpdate />");
+
+	out.println("</value>");
+	out.println();
+}
+
+
+
+public static BenutzerAktie readXML(BufferedReader in) throws Exception {
+
+	/* dieser XML-Leser kann keine allgemeinen wohlgeformten XML-Dokumente
+	 * lesen, sondern nur die speziell formatierten AktienMan-xml-Dateien!
+	 */
+
+	String s = XMLUtil.nextDataLine(in);
+
+	BenutzerAktie ba = new BenutzerAktie();
+	
+	while (!s.startsWith("</value"))
+	{
+		if (s.startsWith("<boersenplatz"))
+		{
+			ba.boersenplatz = AktienMan.boersenliste.getBoerse( XMLUtil.getValue(s,true) );
+		}
+		else if (s.startsWith("<divdate"))
+		{
+			ba.divdate = ADate.parseTimestamp( XMLUtil.getValue(s,true) );
+		}
+		else if (s.startsWith("<dividende"))
+		{
+			ba.dividende = XMLUtil.getLongValue(s);
+		}
+		else if (s.startsWith("<dontUpdate"))
+		{
+			ba.dontUpdate = true;
+		}
+		else if (s.startsWith("<eroeffnungskurs"))
+		{
+			ba.eroeffnungskurs = XMLUtil.getLongValue(s);
+		}
+		else if (s.startsWith("<fixDate"))
+		{
+			ba.fixDate = ADate.parseTimestamp( XMLUtil.getValue(s,true) );
+		}
+		else if (s.startsWith("<gewinngrenze"))
+		{
+			ba.gewinngrenze = XMLUtil.getLongValue(s);
+		}
+		else if (s.startsWith("<handelsvolumen"))
+		{
+			ba.handelsvolumen = XMLUtil.getLongValue(s);
+		}
+		else if (s.startsWith("<hochkurs"))
+		{
+			ba.hochkurs = XMLUtil.getLongValue(s);
+		}
+		else if (s.startsWith("<hoechstkurs"))
+		{
+			ba.hoechstkurs = XMLUtil.getLongValue(s);
+		}
+		else if (s.startsWith("<isin"))
+		{
+			ba.isin = XMLUtil.unescapeString( XMLUtil.getValue(s,false) );
+		}
+		else if (s.startsWith("<kaufdatum"))
+		{
+			ba.kaufdatum = ADate.parseTimestamp( XMLUtil.getValue(s,true) );
+		}
+		else if (s.startsWith("<kaufkurs"))
+		{
+			ba.kaufkurs = XMLUtil.getLongValue(s);
+		}
+		else if (s.startsWith("<kursdatum"))
+		{
+			ba.kursdatum = XMLUtil.unescapeString( XMLUtil.getValue(s,false) );
+		}
+		else if (s.startsWith("<kurswaehrung"))
+		{
+			ba.kurswaehrung = Waehrungen.id2Index( XMLUtil.getValue(s,true) );
+		}
+		else if (s.startsWith("<kurs"))
+		{
+			ba.kurs = XMLUtil.getLongValue(s);
+		}
+		else if (s.startsWith("<name"))
+		{
+			ba.name = XMLUtil.unescapeString( XMLUtil.getValue(s,false) );
+		}
+		else if (s.startsWith("<nurdiese"))
+		{
+			ba.nurdiese = true;
+		}
+		else if (s.startsWith("<oldWarnType"))
+		{
+			ba.oldWarnType = XMLUtil.getIntValue(s);
+		}
+		else if (s.startsWith("<prozgrenze"))
+		{
+			ba.prozgrenze = XMLUtil.getLongValue(s);
+		}
+		else if (s.startsWith("<spekulationsfrist"))
+		{
+			ba.spekulationsfrist = XMLUtil.getIntValue(s);
+		}
+		else if (s.startsWith("<steuerfrei"))
+		{
+			ba.steuerfrei = ADate.parseTimestamp( XMLUtil.getValue(s,true) );
+		}
+		else if (s.startsWith("<stueckzahl"))
+		{
+			ba.stueckzahl = XMLUtil.getLongValue(s) / FONDSANTEILE;
+		}
+		else if (s.startsWith("<symbol"))
+		{
+			ba.symbol = XMLUtil.unescapeString( XMLUtil.getValue(s,true) );
+		}
+		else if (s.startsWith("<tiefkurs"))
+		{
+			ba.tiefkurs = XMLUtil.getLongValue(s);
+		}
+		else if (s.startsWith("<tiefstkurs"))
+		{
+			ba.tiefstkurs = XMLUtil.getLongValue(s);
+		}
+		else if (s.startsWith("<usegrenze"))
+		{
+			ba.usegrenze = true;
+		}
+		else if (s.startsWith("<vortageskurs"))
+		{
+			ba.vortageskurs = XMLUtil.getLongValue(s);
+		}
+		else if (s.startsWith("<waehrung"))
+		{
+			ba.waehrung = Waehrungen.id2Index( XMLUtil.getValue(s,true) );
+		}
+		else if (s.startsWith("<watchhdate"))
+		{
+			ba.watchhdate = XMLUtil.unescapeString( XMLUtil.getValue(s,true) );
+		}
+		else if (s.startsWith("<watchhoechst"))
+		{
+			ba.watchhoechst = XMLUtil.getLongValue(s);
+		}
+		else if (s.startsWith("<watchonly"))
+		{
+			ba.watchonly = true;
+		}
+		else if (s.startsWith("<watchstart"))
+		{
+			ba.watchstart = ADate.parseTimestamp( XMLUtil.getValue(s,true) );
+		}
+		else if (s.startsWith("<watchtdate"))
+		{
+			ba.watchtdate = XMLUtil.unescapeString( XMLUtil.getValue(s,true) );
+		}
+		else if (s.startsWith("<watchtiefst"))
+		{
+			ba.watchtiefst = XMLUtil.getLongValue(s);
+		}
+		else if (s.startsWith("<watchwaehrung"))
+		{
+			ba.watchwaehrung = Waehrungen.id2Index( XMLUtil.getValue(s,true) );
+		}
+		else if (s.startsWith("<wkn"))
+		{
+			ba.wkn = XMLUtil.unescapeString( XMLUtil.getValue(s,false) );
+		}
+
+		s = XMLUtil.nextDataLine(in);
+	}
+
+	return ba;
 }
 
 
@@ -1711,13 +1999,13 @@ public synchronized static void addFooterToPanel(Panel p, int y, Panel pTxt) {
 	
 	AFrame.constrain(p,new Label("Differenz zum Kaufwert:",Label.RIGHT),xstart,y+1,xlen,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,10,0,0);
 
-	AFrame.constrain(p,new Label("davon steuerfrei (*):",Label.RIGHT),xstart,y+2,xlen,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,10,0,0);
-	AFrame.constrain(p,new Label("davon zu versteuern:",Label.RIGHT),xstart,y+3,xlen,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,10,0,0);
+//	AFrame.constrain(p,new Label("davon steuerfrei (*):",Label.RIGHT),xstart,y+2,xlen,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,10,0,0);
+//	AFrame.constrain(p,new Label("davon zu versteuern:",Label.RIGHT),xstart,y+3,xlen,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,10,0,0);
 
 	if (dividenden > 0L)
 	{
-		AFrame.constrain(p,new Label("Dividenden:",Label.RIGHT),xstart,y+4,xlen,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,10,0,0);
-		AFrame.constrain(p,new Label(Waehrungen.getString(dividenden,Waehrungen.getListenWaehrung()),Label.RIGHT),xval,y+4,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,0,0,0);
+		AFrame.constrain(p,new Label("Dividenden:",Label.RIGHT),xstart,y+2/*4*/,xlen,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,10,0,0);
+		AFrame.constrain(p,new Label(Waehrungen.getString(dividenden,Waehrungen.getListenWaehrung()),Label.RIGHT),xval,y+2/*4*/,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,0,0,0);
 	}
 	
 	long d = aktsumme-kaufsumme;
@@ -1756,7 +2044,7 @@ public synchronized static void addFooterToPanel(Panel p, int y, Panel pTxt) {
 		AFrame.constrain(p,l,X_PABSOLUT,y+1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,0,0,0);
 	}
 	
-	String steuer = Waehrungen.getString(diffrei,Waehrungen.getListenWaehrung());
+/*	String steuer = Waehrungen.getString(diffrei,Waehrungen.getListenWaehrung());
 	l = new Label(STR_SPACE + steuer,Label.RIGHT);
 	if (diffrei < 0L)
 	{
@@ -1778,7 +2066,7 @@ public synchronized static void addFooterToPanel(Panel p, int y, Panel pTxt) {
 	{
 		l.setForeground(Color.green.darker());
 	}
-	AFrame.constrain(p,l,xval,y+3,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,0,0,0);
+	AFrame.constrain(p,l,xval,y+3,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHEAST,1.0,0.0,0,0,0,0);*/
 	
 	addSummen(pTxt,akt,dif,percdif,(d<0.0));
 }
@@ -1829,10 +2117,10 @@ public synchronized static int addHeadingsToPanel(Panel p, String aktualisierung
 
 
 
-private synchronized String getLaufzeitTageString(long tageLaufzeit) {
+/*private synchronized String getLaufzeitTageString(long tageLaufzeit) {
 
 	return "" + tageLaufzeit + ((tageLaufzeit == 1L) ? " Tag" : " Tage");
-}
+}*/
 
 
 
@@ -1893,12 +2181,28 @@ private synchronized String getLaufzeitMonateString() {
 		tage += (ADate.getDays(kaufjahr,kaufmonat) - kauftag) + tag;
 	}
 	
-	String tstr = "" + tage + ((tage==1)?" Tag":" Tage");
+	String tstr = tage + " T";
+	
+	if (monate > 0)
+	{
+/*		int jahre = monate / 12;
+
+		monate %= 12; */
+		
+		tstr = monate + " M " + tstr;
+		
+/*		if (jahre > 0)
+		{
+			tstr = jahre + " J " + tstr;
+		} */
+	}
+	
+/*	String tstr = "" + tage + ((tage==1)?" Tag":" Tage");
 	
 	if (monate > 0)
 	{
 		tstr = "" + monate + ((monate==1)?" Monat ":" Monate ") + tstr;
-	}
+	} */
 	
 	if (istSteuerfrei() && (!nurBeobachten()))
 	{
@@ -2370,7 +2674,7 @@ public synchronized void infoDialogOpen() {
 
 		if (infodialog != null)
 		{
-			infodialog.show();
+			infodialog.setVisible(true);
 			AktienMan.hauptdialog.windowToFront(infodialog);
 		}
 	}

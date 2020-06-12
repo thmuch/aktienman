@@ -77,7 +77,7 @@ public void setupElements2() {
 	constrain(panelMitte,boerseNurDiese,1,2,2,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,2,0,0);
 	
 	constrain(panelMitte,new Label("Kaufw\u00e4hrung:"),0,3,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,10,0,0,0);
-	waehrung = AktienMan.waehrungen.getChoice(true);
+	waehrung = Waehrungen.getChoice();
 	waehrung.select(ba.getKaufwaehrung());
 	constrain(panelMitte,waehrung,1,3,2,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,10,2,0,0);
 

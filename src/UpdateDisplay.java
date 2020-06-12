@@ -37,7 +37,7 @@ public UpdateDisplay(String archiv, String filename) {
 	
 	setProgress(0,0);
 	
-	show();
+	setVisible(true);
 	
 	loader = new UpdateLoader(this,archiv,filename);
 	loader.start();

@@ -21,9 +21,9 @@ public PofoChartMenu() {
 
 
 
-protected void action(int type) {
+protected void action(int time) {
 
-	AktienMan.hauptdialog.portfolioIntradayCharts(type);
+	AktienMan.hauptdialog.portfolioIntradayCharts(time);
 }
 
 }

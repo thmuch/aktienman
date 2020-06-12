@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-11-10
+ @version 2003-04-03
 */
 
 import java.net.*;
@@ -19,19 +19,19 @@ private static final int STATUS_WAIT4DATA =  0;
 private static final int STATUS_READNAME  =  1;
 private static final int STATUS_READWKN   =  2;
 
-private String ignore;
-private int index,request;
+private static final String[] liste  = { "dax30", "mdax", "TecDAX-etr", "eurostoxx50", "stoxx50" };
+private static final String[] ignore = { "DAX",   "MDAX", "TecDAX",     "STOXX",       "STOXX"   };
+
+private int index;
 private AktienAktualisieren aadialog;
 
 
 
 
-public AktienlistenLeser(int request, String ignore, AktienAktualisieren aadialog, int index) {
+public AktienlistenLeser(int index, AktienAktualisieren aadialog) {
 
-	this.request = request;
-	this.ignore = ignore.toUpperCase();
-	this.aadialog = aadialog;
 	this.index = index;
+	this.aadialog = aadialog;
 }
 
 
@@ -45,18 +45,18 @@ public void run() {
 		Connections.getConnection();
 
 		Aktienliste aktienliste = new Aktienliste();
+		
+		String request = "http://bbbank.teledata.de/bbbank/kursliste.html?sKl=" + liste[index] + "&sType=default&bNoIdx=1&kunde=";
+		
+		System.out.println("AKTIENLISTE: " + request); // TODO
 
-		URL url = new URL(AktienMan.url.get(request));
+		URL url = new URL(request);
 		
 		in = new BufferedReader(new InputStreamReader(url.openStream()));
 
-		String str_data  = AktienMan.url.getString(URLs.STR_BBB_INDEXSET);
-		String str_title = AktienMan.url.getString(URLs.STR_BBB_INDEXTITLE);
-		String str_ende  = AktienMan.url.getString(URLs.STR_BBB_INDEXENDE);
-
 		String s, name = "";
 
-		boolean skip = (ignore.length() > 0);
+		boolean skip = (ignore[index].length() > 0);
 		boolean readWKN = false;
 		boolean valid = false;
 		
@@ -64,20 +64,20 @@ public void run() {
 		
 		while (((s = in.readLine()) != null) && (status != STATUS_FINISHED))
 		{
-			if (s.indexOf(str_ende) >= 0)
+			if (s.indexOf("Bitte beachten") >= 0)
 			{
 				status = STATUS_FINISHED;
 			}
 			else if (status == STATUS_WAIT4DATA)
 			{
-				if (s.indexOf(str_data) >= 0)
+				if (s.indexOf("<b>Name</b>") >= 0)
 				{
 					status = STATUS_READNAME;
 				}
 			}
 			else if (status == STATUS_READNAME)
 			{
-				int i = s.indexOf(str_title);
+				int i = s.indexOf("chart.html?symm=");
 
 				if (i >= 0)
 				{
@@ -86,7 +86,7 @@ public void run() {
 					
 					name = s.substring(i2+1,i3).trim();
 					
-					if ((!skip) || (name.toUpperCase().indexOf(ignore) < 0))
+					if ((!skip) || (name.indexOf(ignore[index]) < 0))
 					{
 						status = STATUS_READWKN;
 					}
@@ -123,23 +123,23 @@ public void run() {
 			switch (index)
 			{
 			case AktienAktualisieren.INDEX_DAX30:
-				AktienMan.listeDAX = aktienliste;
+				AktienMan.listeDAX30 = aktienliste;
 				break;
 			
 			case AktienAktualisieren.INDEX_MDAX:
 				AktienMan.listeMDAX = aktienliste;
 				break;
 			
-			case AktienAktualisieren.INDEX_NEMAX50:
-				AktienMan.listeNMarkt = aktienliste;
+			case AktienAktualisieren.INDEX_TECDAX:
+				AktienMan.listeTecDAX = aktienliste;
 				break;
 			
 			case AktienAktualisieren.INDEX_EUROSTOXX50:
-				AktienMan.listeEuroSTOXX = aktienliste;
+				AktienMan.listeEuroSTOXX50 = aktienliste;
 				break;
 			
 			case AktienAktualisieren.INDEX_STOXX50:
-				AktienMan.listeAusland = aktienliste;
+				AktienMan.listeSTOXX50 = aktienliste;
 				break;
 			}
 
@@ -150,18 +150,11 @@ public void run() {
 			aadialog.setError(index);
 		}
 	}
-	catch (MalformedURLException e)
-	{
-		System.out.println("Aktienlisten-URL fehlerhaft.");
-		aadialog.setError(index);
-	}
-	catch (NullPointerException e)
+	catch (Exception e)
 	{
 		aadialog.setError(index);
-	}
-	catch (IOException e)
-	{
-		aadialog.setError(index);
+
+		AktienMan.errlog("Fehler im Aktienlistenleser", e);
 	}
 	finally
 	{
@@ -172,11 +165,11 @@ public void run() {
 				in.close();
 			}
 			catch (IOException e) {}
-		
-			in = null;
 		}
 
 		Connections.releaseConnection();
+
+		System.out.println("Aktienliste " + liste[index] + " fertig."); // TODO
 	}
 }
 

@@ -1,5 +1,5 @@
-AktienMan 1.96-beta (2001-11-07)
-Copyright ©1998-2001 by Thomas Much (thomas@aktienman.de)
+AktienMan 1.99-beta (2003-01-27)
+Copyright ©1998-2003 by Thomas Much (thomas@aktienman.de)
 
 
 History
@@ -30,13 +30,11 @@ todo
 // € statt EUR anzeigen (oder Zeichen[kette] einstellbar machen)
 // Spalte für +/-% zum Vortag (direkt von Comdirect übernehmen)
 // Info: Button "Zurücksetzen"
-// Maximalkurs: Button "Aktualisieren"
 // Speicherung von x Börsentagen incl. Mini-Chart (gleitender Durchschnitt)
 // Konfiguration: Allgemein, Anzeige, Spezial (Browser etc.)
 // S-DAX-Popup (im Sommer)
-// FSE-Abschaffung vorbereiten
-// separate Quelle für Fonds
-// KursQuelle incl. Abfrage der verfügbaren Börsenplätze
+// FSE-Abschaffung vorbereiten (???)
+// separate Quelle für Fonds (???)
 // Online-Währung aus den Kursdaten ermitteln (jeder Kurs hat eigene Währung)
 // Suche nach WKN (via Comdirect) -> Liste der Ergebnisse anzeigen
 // Anzeige unwichtiger Spalten ausschaltbar
@@ -44,7 +42,6 @@ todo
 // bei jedem Aktualisieren Thread starten, der aktuelle Umtauschkurse ermittelt
 // nach HTML-Export Browser (derzeit nur Netscape) nachstarten (nur Mac, ab MRJ 2.1)
 // Aktien sofort nach Kauf bei Kaufwert-Summe berücksichtigen
-// Yahoo-Kursleser
 // beim Kaufen optional Gebühren errechnen
 // auch Maximalskurs per Timer anzeigen
 // DAX-Kamera optional im Hauptfenster darstellen
@@ -77,7 +74,7 @@ Version 2.00 (.12.00)
 // Top/Flop-Liste im Extra-Fenster, Kopie per Klick ins aktuelle Portfolio
 // SMS/E-Mails verschicken
 // 
-Version 1.99 (.02.02)
+Version 1.99 (.01.03)
 // RELEASE erhöhen, DEBUG entfernen
 // neue Bankkonditionen (easytrade)
 // UpdateLoader: ProgessBar, längere Kommentare zum Update, Messages an alle Kunden
@@ -90,15 +87,84 @@ Version 1.99 (.02.02)
 // Charts unter Linux etwas höher
 // PoFo-Umschaltbuttons
 // Menü "Zur AM-Anwender-Seite", falls registriert
-// US$ als Währung zulassen, Kurs aus dem Web ermitteln
 // bei unbekannten Währungen: Fehler!!!
 // Fonds-Anteile
+// beim Umschalten Währung des Portfolios merken + restaurieren
 // $ und Yen korrekt umwandeln (Wechselkursleser), andere Währungen -> Fehler
+// neuer Leser für Aktienlisten? (auch updatebar)
+// Indizes von Yahoo einlesen?
+// AGB-Modul als Plugin
+// ISINs eingebbar
 // Update-Progressbar
+// neue Börsenplätze: Wien, Zürich, London, Paris (US?)
+// Nachrichten im "Aktie Info"-Dialog anzeigen
+// Description(String)+Version(int?) für jede Quelle
+// YahooCom-Kursleser? RT-Leser?
 //
-Version 1.99 (.12.02)
+Version 1.99 (.04.03)
 // RELEASE erhöhen, DEBUG entfernen
-//
+// neuer Updater für neue Versionen und einzelne Klassen
+// Aktualisierungsprotokoll (statt Konsole), das in einem Fenster angezeigt werden kann?
+// ISINs intern speichern, falls verfügbar
+// System.gc()-Aufrufe wieder entfernen
+
+// URLs.CHART_* entfernen -> oder können wir jetzt schon URLs und NewURLs entfernen? (wäre gut)
+
+// checkURLs -> initOnlineSession o.ä.
+
+
+
+HEUTE
+// Höchst-/Tiefststand durch vom Server geliefertes 52-Wochen-Hoch/Tief ersetzen
+// Pofo-Charts
+
+
+
+// Pfund-Kurse von Comdirect (? gibt's da nicht...)
+ --> besser: Währung pro Aktie fixierbar (oder autom. wie bisher)
+
+---> CD-Charts: erst direkt bei innovative-Software versuchen, danach umständlichen HTML-Weg?
+  ----> eher nicht, aber vielleicht Redirect sparen?
+---> ISIN.isValid()
+// falsche Währungen und andere Fehler von den Lesern besser melden
+// Fehlermeldungen statt Aktienname anzeigen
+
+// Aktienman.jar doppelklickbar machen
+
+// macht listeAktienkursNA(...) überhaupt Sinn?
+  --> sollte listeNeuerAktienkurs (oder besser BA) selbst darauf reagieren?
+
+
+
+- Yahoo.de-Chartleser
+- Yahoo.de-Kursleser
+- auch USD, GBP, CHF und JPY stehen nun als Währungen zur Verfügung; alle Umrechnungen zwischen
+  zwei nicht-EUR-Kursen finden über den EUR-Umweg statt!
+- sichereres Speichern der Portfolios (synchronized, XML)
+- im Maximalkursdialog wird statt "offline" nun "nicht verfügbar" angezeigt
+- im Maximalkursdialog gibt es einen "Aktualisieren"-Button
+- der Maximalkursdialog nutzt nun auch die gebündelten Yahoo-Kursabfragen
+- "Aktie Info" zeigt nun an, wenn die dargestellte Währung nicht der Währung der Online-Daten entspricht
+- "Bearbeiten - Wechselkurse"
+- Indizes werden von Yahoo.de eingelesen (wieder inkl. Datum)
+- Comdirect-Chartleser
+- Comdirect-Kursleser (erkennt ISINs)
+- "Aktie Info" zeigt die ISIN an (falls der Wert mit dem neuen Comdirect-Leser aktualisiert wurde)
+- Workaround für Provider wie Freenet verbessert
+- unter Windows taucht das Aktien-Rechtsklickpopup nur noch einmal auf
+- CD-Kurse/Charts funktionieren nun auch unter Windows zuverlässig
+- TecDAX und NIKKEI225 als Indizes (Indizes dafür evtl. neu auswählen)
+- im "Aktie kaufen"-Dialog steht nun anstelle der NEMAX-Liste die TecDAX-Liste zur Verfügung (dafür
+  müssen die Listen evtl. mit "Aktienmenüs online aktualisieren" auf den neuen Stand gebracht werden)
+- Freenet-Workaround nochmals verbessert (die Ladezeit beim ersten Aktualisieren verringert)
+- die Laufzeit wird in einem kompakteren Format angezeigt
+- der Yahoo-Kursleser akzeptiert Ergebnisse nicht mehr, die überhaupt keine Währungskennzeichnung
+  besitzen (dadurch werden dann z.B. Zertifikate von Comdirect abgefragt)
+- die Steuerfreiheit wird aufgrund neuer gesetzlicher Regelungen nicht mehr berechnet
+- der HTML-Export speichert die Währungssymbole nun mit korrekter HTML-Kodierung
+- der CSV-Export trennt WKN und Börse und speichert (falls verfügbar) die ISIN
+
+
 Version 1.98 (10.10.02)
 - Comdirect-Kurse und -charts werden wieder geladen
 - [MOSX 10.2] das Programmicon wird wieder angezeigt

@@ -1,6 +1,10 @@
 /**
  @author Thomas Much
- @version 2000-06-05
+ @version 2003-01-17
+
+ 2003-01-17
+ 	parseTimestamp
+ 	toTimestamp kann nun auch Sekunden und das serielle Datum ausgeben
 */
 
 import java.util.*;
@@ -53,6 +57,28 @@ public ADate(int year, int month, int day) {
 public ADate(int serialdate) {
 
 	set(serialdate);
+}
+
+
+
+private ADate(int year, int month, int day, int hour, int minute, int second, int serialDate) {
+
+	this.year   = fixYear(year);
+	this.month  = month;
+	this.day    = day;
+
+	this.hour   = hour;
+	this.minute = minute;
+	this.second = second;
+	
+	if (serialDate < 0)
+	{
+		calculateSerialDate();
+	}
+	else
+	{
+		this.serialDate = serialDate;
+	}
 }
 
 
@@ -190,7 +216,7 @@ public boolean equals(ADate adate) {
 
 public String toString() {
 
-	return "" + getDay() + "." + getMonth() + "." + getYear();
+	return getDay() + "." + getMonth() + "." + getYear();
 }
 
 
@@ -198,23 +224,38 @@ public String toString() {
 public String timeToString() {
 
 	int m = getMinute();
-	return "" + getHour() + ":" + ((m<10)?"0":"") + m;
+	return getHour() + ":" + ((m<10)?"0":"") + m;
 }
 
 
 
 public String toTimestamp(boolean time) {
 
-	int minute = getMinute();
-	int hour = getHour();
+	return toTimestamp(time,false);
+}
+
+
+
+public String toTimestamp(boolean time, boolean complete) {
+
 	int month = getMonth();
 	int day = getDay();
 	
-	String t = "" + getYear() + ((month<10)?"0":"") + month + ((day<10)?"0":"") + day;
+	String t = getYear() + ((month<10)?"0":"") + month + ((day<10)?"0":"") + day;
 	
 	if (time)
 	{
+		int minute = getMinute();
+		int hour = getHour();
+
 		t += "-" + ((hour<10)?"0":"") + hour + ((minute<10)?"0":"") + minute;
+		
+		if (complete)
+		{
+			int secs = getSecond();
+
+			t += ((secs<10)?"0":"") + secs + "-" + getSerialDate();
+		}
 	}
 	
 	return t;
@@ -360,6 +401,35 @@ public static ADate parse(String s) throws Exception {
 	{
 		throw new Exception();
 	}
+}
+
+
+
+public static ADate parseTimestamp(String s) throws Exception {
+
+	if (s == null) return null;
+	
+	if (s.length() < 8) throw new Exception("UngŸltiges Datum: " + s);
+
+	int year  = Integer.parseInt(s.substring(0,4));
+	int month = Integer.parseInt(s.substring(4,6));
+	int day   = Integer.parseInt(s.substring(6,8));
+	
+	int hour = 0, minute = 0, second = 0, serialDate = -1;
+	
+	if (s.length() >= 15)
+	{
+		hour   = Integer.parseInt(s.substring(9,11));
+		minute = Integer.parseInt(s.substring(11,13));
+		second = Integer.parseInt(s.substring(13,15));
+		
+		if (s.length() > 16)
+		{
+			serialDate = Integer.parseInt(s.substring(16));
+		}
+	}
+
+	return new ADate(year,month,day,hour,minute,second,serialDate);
 }
 
 

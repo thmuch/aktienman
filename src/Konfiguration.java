@@ -1,6 +1,9 @@
 /**
  @author Thomas Much
- @version 2000-11-11
+ @version 2003-04-08
+ 
+ 2003-04-08
+ 	"steuerfrei..."-Checkbox entfernt
 */
 
 import java.awt.*;
@@ -12,7 +15,7 @@ import java.awt.event.*;
 public final class Konfiguration extends AFrame {
 
 private Choice plaetze,waehrung,bank,quelle,charts,connections;
-private Checkbox cbAktualisieren,cbKamera,cbAktiennamen,cbKuerzen,cbSteuerfrei,cbTimeout,cbJahr,cbIntraday;
+private Checkbox cbAktualisieren,cbKamera,cbAktiennamen,cbKuerzen/*,cbSteuerfrei*/,cbTimeout,cbJahr,cbIntraday;
 //private Checkbox rb6Monate,rb12Monate;
 private TextField tfStdGewinn,tfStdGebuehren,tfMinuten,tfIntraMinuten;
 
@@ -38,7 +41,7 @@ public void setupElements() {
 	cbKamera = new Checkbox("DAX-Kamera beim Programmstart automatisch anzeigen",AktienMan.properties.getBoolean("Konfig.Kamera"));
 	cbAktiennamen = new Checkbox("Aktiennamen aus Onlinedaten \u00fcbernehmen",BenutzerListe.useOnlineNames());
 	cbKuerzen = new Checkbox("Aktiennamen k\u00fcrzen",BenutzerListe.useShortNames());
-	cbSteuerfrei = new Checkbox("\"steuerfrei\" statt Laufzeit anzeigen",BenutzerListe.useSteuerfrei());
+//	cbSteuerfrei = new Checkbox("\"steuerfrei\" statt Laufzeit anzeigen",BenutzerListe.useSteuerfrei());
 	cbTimeout = new Checkbox("Liste automatisch aktualisieren alle",AktienMan.properties.getBoolean("Konfig.KursTimeout"));
 	cbJahr = new Checkbox("%Jahr erst nach 360 Tagen Laufzeit berechnen",BenutzerListe.calcProzJahr());
 //	cbIndex = new Checkbox("Indizes regelm\u00e4\u00dfig aktualisieren",IndexQuelle.autoIndexOn());
@@ -112,8 +115,8 @@ public void setupElements() {
 	constrain(spekuPanel,rb12Monate,2,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 	constrain(panelOben,spekuPanel,0,6,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0); */
 
-	constrain(panelOben,cbSteuerfrei,0,9,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
-	constrain(panelOben,cbJahr,0,10,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
+//	constrain(panelOben,cbSteuerfrei,0,9,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8,0,0,0);
+	constrain(panelOben,cbJahr,0,9/*10*/,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,8/*0*/,0,0,0);
 	
 	constrain(panelStandard,new Label("Vorgaben f\u00fcr neu zu kaufende Aktien:"),0,0,4,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	constrain(panelStandard,new Label("Standard-B\u00f6rse:"),0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
@@ -128,7 +131,7 @@ public void setupElements() {
 
 	constrain(panelStandard,new Label("Standard-Kaufw\u00e4hrung:"),0,3,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
 
-	waehrung = AktienMan.waehrungen.getChoice(true);
+	waehrung = Waehrungen.getChoice();
 	waehrung.select(Waehrungen.getStandardKaufwaehrung());
 	constrain(panelStandard,waehrung,1,3,2,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 	
@@ -200,7 +203,7 @@ public void executeOK() {
 	AktienMan.properties.setBoolean("Konfig.Kamera",cbKamera.getState());
 	AktienMan.properties.setBoolean("Konfig.Aktiennamen",cbAktiennamen.getState());
 	AktienMan.properties.setBoolean("Konfig.Aktiennamen.kuerzen",cbKuerzen.getState());
-	AktienMan.properties.setBoolean("Konfig.Steuerfrei",cbSteuerfrei.getState());
+//	AktienMan.properties.setBoolean("Konfig.Steuerfrei",cbSteuerfrei.getState());
 	AktienMan.properties.setBoolean("Konfig.ProzJahr",cbJahr.getState());
 	AktienMan.properties.setString("Konfig.StdGewinn",tfStdGewinn.getText());
 	AktienMan.properties.setString("Konfig.StdGebuehren",tfStdGebuehren.getText());

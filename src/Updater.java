@@ -28,7 +28,7 @@ public Updater(int newrelease, String archiv, String text) {
 
 	pack();
 	setupSize();
-	show();
+	setVisible(true);
 
 	AktienMan.properties.setInt("Update.Release",newrelease);
 }
@@ -92,7 +92,7 @@ public void executeOK() {
 	FileDialog fd = new FileDialog(this,AktienMan.AMFENSTERTITEL+"Update herunterladen...",FileDialog.SAVE);
 
 	fd.setFile(archiv);
-	fd.show();
+	fd.setVisible(true);
 	
 	String pfad = fd.getDirectory();
 	String datei = fd.getFile();

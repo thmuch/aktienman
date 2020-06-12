@@ -65,7 +65,7 @@ public void display() {
 
 	pack();
 	setupSize();
-	show();
+	setVisible(true);
 }
 
 

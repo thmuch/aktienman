@@ -1,6 +1,10 @@
 /**
  @author Thomas Much
- @version 1999-06-28
+ @version 2003-01-28
+
+ 2003-01-28
+ 	die Maxkurs-Methoden entfernt; der Maximalkursdialog verwendet nun die normalen Routinen
+ 	priority, getPriority
 */
 
 
@@ -9,16 +13,17 @@
 public abstract class KursQuelle {
 
 private String name;
-private int id, nextID;
+private long id;
+private int priority;
 
 
 
 
-public KursQuelle(String name, int id, int nextID) {
+protected KursQuelle(String name, long id, int priority) {
 
-	this.name = name;
-	this.id = id;
-	this.nextID = nextID;
+	this.name     = name;
+	this.id       = id;
+	this.priority = priority;
 }
 
 
@@ -30,16 +35,16 @@ public String getName() {
 
 
 
-public int getID() {
+public int getPriority() {
 
-	return id;
+	return priority;
 }
 
 
 
-public int getNextID(boolean firstCall) {
+public long getID() {
 
-	return (firstCall ? nextID : KursQuellen.QUELLE_NONE);
+	return id;
 }
 
 
@@ -48,45 +53,36 @@ public abstract void flush();
 
 
 
-public abstract void sendRequest(String request, String baWKN,
-                                  String baBoerse, boolean sofortZeichnen, boolean firstCall);
+public abstract void sendRequest(KursReceiver receiver, String request, String baWKN, String baBoerse, boolean sofortZeichnen, KursQuelle first);
 
 
 
-public synchronized void sendRequest(String request, String baWKN, String baBoerse) {
+public synchronized void sendRequest(KursReceiver receiver, String request, String baWKN, String baBoerse, boolean sofortZeichnen) {
 
-	sendRequest(request,baWKN,baBoerse,false,true);
+	sendRequest(receiver,request,baWKN,baBoerse,sofortZeichnen,this);
 }
 
 
 
-public synchronized void sendSingleRequest(String request, String baWKN,
-                                            String baBoerse, boolean sofortZeichnen, boolean firstCall) {
+public synchronized void sendRequest(KursReceiver receiver, String request, String baWKN, String baBoerse) {
 
-	sendRequest(request,baWKN,baBoerse,sofortZeichnen,firstCall);
+	sendRequest(receiver,request,baWKN,baBoerse,false,this);
+}
+
+
+
+public synchronized void sendSingleRequest(KursReceiver receiver, String request, String baWKN, String baBoerse, boolean sofortZeichnen, KursQuelle first) {
+
+	sendRequest(receiver,request,baWKN,baBoerse,sofortZeichnen,first);
 	flush();
 }
 
 
 
-public synchronized void sendSingleRequest(String request, String baWKN, String baBoerse) {
+public synchronized void sendSingleRequest(KursReceiver receiver, String request, String baWKN, String baBoerse) {
 
-	sendSingleRequest(request,baWKN,baBoerse,true,true);
+	sendSingleRequest(receiver, request,baWKN,baBoerse,true,this);
 }
 
-
-
-public abstract void sendSingleMaxkursRequest(AktieMaximalkurs parent, String request, String baWKN, String baBoerse,
-																									boolean firstCall);
-
-
-
-public synchronized void sendSingleMaxkursRequest(AktieMaximalkurs parent, String request, String baWKN, String baBoerse) {
-
-	sendSingleMaxkursRequest(parent,request,baWKN,baBoerse,true);
-}
-
-
-// verfügbare Börsenplätze abfragen
 
 }

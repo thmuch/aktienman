@@ -1,6 +1,11 @@
 /**
  @author Thomas Much
- @version 1999-07-13
+ @version 2003-02-27
+
+ 2003-02-27
+ 	falls verfŸgbar, wird die ISIN angezeigt (sonst "n/a")
+ 	wenn die Daten nicht in der Online-WŠhrung dargestellt werden, wird diese zusŠtzlich ausgegeben
+ 	  (inkl. Umrechnungskurs gegenŸber EUR)
 */
 
 import java.awt.*;
@@ -18,7 +23,9 @@ private BenutzerAktie ba;
 
 
 public AktieInfo(BenutzerAktie ba) {
+
 	super(AktienMan.AMFENSTERTITEL+"Info");
+
 	this.ba = ba;
 
 	setupElements2();
@@ -30,6 +37,7 @@ public AktieInfo(BenutzerAktie ba) {
 
 
 public void setupElements() {
+
 	setLayout(gridbag);
 }
 
@@ -40,6 +48,7 @@ public void display() {}
 
 
 public synchronized void setupElements2() {
+
 	panelInfo = new Panel(gridbag);
 	
 	Button buttonOK = new Button(Lang.OK);
@@ -56,16 +65,25 @@ public synchronized void setupElements2() {
 
 
 public void closed() {
+
 	ba.infoDialogClosed();
 }
 
 
 
 public synchronized void setValues(boolean draw) {
+
 	if (draw) panelInfo.removeAll();
 
 	constrain(panelInfo,new Label(ba.getName(false)),0,0,3,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
-	constrain(panelInfo,new Label(ba.getWKNString()+"."+ba.getBoerse()),0,1,3,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,10,0);
+
+	String symbol = ba.getISIN();
+	
+	if (symbol.length() == 0) symbol = "n/a";
+	
+	symbol = "WKN: " + ba.getWKNString() + "   ISIN: " + symbol + "   B\u00f6rse: " + ba.getBoerse();
+
+	constrain(panelInfo,new Label(symbol),0,1,3,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,10,0);
 	
 	constrain(panelInfo,new Label("Kaufkurs:"),0,2,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	constrain(panelInfo,new Label(ba.getKaufkursString()),1,2,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
@@ -112,6 +130,21 @@ public synchronized void setValues(boolean draw) {
 	constrain(panelInfo,new Label("gehandelte St\u00fcck:"),0,9,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
 	constrain(panelInfo,new Label(ba.getHandelsvolumenString()),1,9,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 	
+	Panel exchange = null;
+	String onlineKurs = ba.getOnlineKursString();
+
+	if (onlineKurs != null)
+	{
+		int wTo = (ba.getKurswaehrung() == Waehrungen.EUR) ? Waehrungen.getListenWaehrung() : ba.getKurswaehrung();
+		
+		exchange = new Panel( new GridLayout(2,1) );
+		
+		exchange.add( new Label(onlineKurs) );
+		exchange.add( new Label( Waehrungen.getExchangeRateEUR2X( wTo )));
+	}
+	
+	int ypos;
+	
 	String seit = ba.getWatchStartString();
 	
 	if (seit.length() > 0)
@@ -125,6 +158,17 @@ public synchronized void setValues(boolean draw) {
 		constrain(panelInfo,new Label("Tiefstkurs:"),0,12,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,0,0,0);
 		constrain(panelInfo,new Label(ba.getWatchTiefstString()),1,12,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,5,0,0);
 		constrain(panelInfo,new Label(ba.getWatchTiefstDatumString()),2,12,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,0,0);
+		
+		ypos = 13;
+	}
+	else
+	{
+		ypos = 10;
+	}
+
+	if (exchange != null)
+	{
+		constrain(panelInfo,exchange,0,ypos,3,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,10,0,0,0);
 	}
 
 	pack();
@@ -139,5 +183,6 @@ public synchronized void setValues(boolean draw) {
 		setupSize();
 	}
 }
+
 
 }

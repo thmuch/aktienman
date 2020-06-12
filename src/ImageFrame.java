@@ -103,7 +103,7 @@ private void sichern() {
 	FileDialog fd = new FileDialog(this,AktienMan.AMFENSTERTITEL+dlgtitle+" sichern...",FileDialog.SAVE);
 
 	fd.setFile(getDefaultFilename());
-	fd.show();
+	fd.setVisible(true);
 	
 	String pfad = fd.getDirectory();
 	String datei = fd.getFile();

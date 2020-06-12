@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2000-11-09
+ @version 2003-04-03
 */
 
 import java.awt.*;
@@ -15,7 +15,7 @@ public final class AktienAktualisieren extends AFrame {
 
 public static final int INDEX_DAX30       = 0;
 public static final int INDEX_MDAX        = 1;
-public static final int INDEX_NEMAX50     = 2;
+public static final int INDEX_TECDAX      = 2;
 public static final int INDEX_EUROSTOXX50 = 3;
 public static final int INDEX_STOXX50     = 4;
 
@@ -25,7 +25,8 @@ private static final int STATUS_ERROR     = -2;
 
 private static final int UPDATE = 10;
 
-private String[] titel = {"DAX30","MDAX","NEMAX50","EuroSTOXX50","STOXX50"};
+private final String[] titel = { "DAX30", "MDAX", "TecDAX", "EuroSTOXX50", "STOXX50" };
+
 private int[] count;
 private Panel panelListe;
 private Button buttonOK;
@@ -44,7 +45,7 @@ public AktienAktualisieren() {
 	
 	pack();
 	setupSize();
-	show();
+	setVisible(true);
 	
 	startThreads();
 }
@@ -98,11 +99,11 @@ private void startThreads() {
 	
 	AktienMan.checkURLs();
 	
-	new AktienlistenLeser(URLs.URL_DAX30,"INDEX",this,INDEX_DAX30).start();
-	new AktienlistenLeser(URLs.URL_DAX100,"MDAX",this,INDEX_MDAX).start();
-	new AktienlistenLeser(URLs.URL_NMARKT,"NEMAX",this,INDEX_NEMAX50).start();
-	new AktienlistenLeser(URLs.URL_EURO50,"STOXX",this,INDEX_EUROSTOXX50).start();
-	new AktienlistenLeser(URLs.URL_AUSLAND,"STOXX",this,INDEX_STOXX50).start();
+	new AktienlistenLeser(INDEX_DAX30,this).start();
+	new AktienlistenLeser(INDEX_MDAX,this).start();
+	new AktienlistenLeser(INDEX_TECDAX,this).start();
+	new AktienlistenLeser(INDEX_EUROSTOXX50,this).start();
+	new AktienlistenLeser(INDEX_STOXX50,this).start();
 }
 
 
@@ -189,11 +190,11 @@ private synchronized void savePopups() {
 		FileOutputStream fos = new FileOutputStream(FileUtil.getPopupFile());
 		GZIPOutputStream gzos = new GZIPOutputStream(fos);
 		out = new ObjectOutputStream(fos);
-		out.writeObject(AktienMan.listeDAX);
+		out.writeObject(AktienMan.listeDAX30);
 		out.writeObject(AktienMan.listeMDAX);
-		out.writeObject(AktienMan.listeNMarkt);
-		out.writeObject(AktienMan.listeEuroSTOXX);
-		out.writeObject(AktienMan.listeAusland);
+		out.writeObject(AktienMan.listeTecDAX);
+		out.writeObject(AktienMan.listeEuroSTOXX50);
+		out.writeObject(AktienMan.listeSTOXX50);
 		out.flush();
 	}
 	catch (Exception e)
@@ -238,11 +239,11 @@ public synchronized static void loadPopups() {
 		
 		GZIPInputStream gzis = new GZIPInputStream(fis);
 		in = new ObjectInputStream(fis);
-		AktienMan.listeDAX = (Aktienliste)in.readObject();
+		AktienMan.listeDAX30 = (Aktienliste)in.readObject();
 		AktienMan.listeMDAX = (Aktienliste)in.readObject();
-		AktienMan.listeNMarkt = (Aktienliste)in.readObject();
-		AktienMan.listeEuroSTOXX = (Aktienliste)in.readObject();
-		AktienMan.listeAusland = (Aktienliste)in.readObject();
+		AktienMan.listeTecDAX = (Aktienliste)in.readObject();
+		AktienMan.listeEuroSTOXX50 = (Aktienliste)in.readObject();
+		AktienMan.listeSTOXX50 = (Aktienliste)in.readObject();
 	}
 	catch (ClassNotFoundException e)
 	{

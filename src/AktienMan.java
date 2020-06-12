@@ -1,11 +1,11 @@
 /**
  @author Thomas Much
- @version 2002-12-16
+ @version 2003-04-09
 */
 
 /**
  AktienMan Portfolio-Management-Software
- Copyright (c)1998-2002 by Thomas Much (thomas@snailshell.de)
+ Copyright (c)1998-2003 by Thomas Much (thomas@snailshell.de)
  Hauptprogramm (main)
 */
 
@@ -15,23 +15,23 @@ import java.awt.*;
 
 public final class AktienMan {
 
-public static final String AMNAME         = "AktienMan";
-public static final String AMVERSION      = "1.99";
-public static final String AMFENSTERTITEL = AMNAME + " - ";
+public static final String AMNAME          = "AktienMan";
+public static final String AMVERSION       = "1.99";
+public static final String AMFENSTERTITEL  = AMNAME + " - ";
+public static final String HOMEPAGE        = "http://www.aktienman.de/";
 
-public static ADate compDate              = new ADate(2002,12,16); /* Compilierdatum */
-public static final int RELEASE           = 23; /* 1.98 (2002-10-10) */
-public static final boolean DEBUG         = true; /**/
+public static final ADate compDate         = new ADate(2003,4,9); /* Compilierdatum */
+public static final int RELEASE            = 23; /* 1.98 (2002-10-10) */
+public static final boolean DEBUG          = true; /**/
 
-public static Aktienliste listeDAX        = new Aktienliste();
-public static Aktienliste listeMDAX       = new Aktienliste();
-public static Aktienliste listeNMarkt     = new Aktienliste();
-public static Aktienliste listeEuroSTOXX  = new Aktienliste();
-public static Aktienliste listeAusland    = new Aktienliste();
+public static Aktienliste listeDAX30       = new Aktienliste();
+public static Aktienliste listeMDAX        = new Aktienliste();
+public static Aktienliste listeTecDAX      = new Aktienliste();
+public static Aktienliste listeEuroSTOXX50 = new Aktienliste();
+public static Aktienliste listeSTOXX50     = new Aktienliste();
 
-public static Boersenliste boersenliste   = new Boersenliste();
-public static Waehrungen waehrungen       = new Waehrungen();
-public static Bankenliste bankenliste     = new Bankenliste();
+public static Boersenliste boersenliste    = new Boersenliste();
+public static Bankenliste bankenliste      = new Bankenliste();
 
 public static AProperties properties = null;
 
@@ -50,6 +50,7 @@ public static PortfolioLoeschen portfolioloeschen = null;
 public static PortfolioNeu portfolioneu = null;
 public static PortfolioUmbenennen portfolioumbenennen = null;
 public static PortfolioCopyKaufkurs portfoliocopykaufkurs = null;
+public static Wechselkurse wechselkurse = null;
 public static About about = null;
 
 public static Hauptdialog hauptdialog = null;
@@ -59,6 +60,8 @@ public static URLs url = null;
 
 private static TextWarnalert peng = null;
 
+private static final Object errlock = new Object();
+
 
 
 
@@ -66,13 +69,13 @@ public synchronized static void checkURLs() {
 
 	if (url == null)
 	{
-		NetUtil.loadRawURL(URLs.MC_WORKAROUND);
-		
+		NetUtil.loadRawURL(HOMEPAGE+"update/workaround",false,100);
+
 		try
 		{
-			URLClassLoader loader = new URLClassLoader(URLs.URLCLASSURL);
+			URLClassLoader loader = new URLClassLoader(HOMEPAGE+"classes/");
 
-			url = (URLs)loader.loadClass(URLs.URLCLASSNAME,true).newInstance();
+			url = (URLs)loader.loadClass("NewURLs",true).newInstance();
 		}
 		catch (Exception e) {}
 		finally
@@ -90,11 +93,30 @@ public synchronized static void checkURLs() {
 public static void doOnlineChecks() {
 
 	UpdateChecker.check();
+	Waehrungen.check(false);
 }
 
 
 
 private static void registerCheck() {}
+
+
+
+public static void errlog(String msg, Exception e) {
+
+	synchronized(errlock)
+	{
+		System.err.print("[AKTIENMAN] " + msg);
+		
+		if (e != null)
+		{
+			System.err.println(":");
+			e.printStackTrace(System.err);
+		}
+
+		System.err.println();
+	}
+}
 
 
 
@@ -111,7 +133,7 @@ public static void main(String a) {
 	{
 		main(0);
 
-		hauptdialog.show();
+		hauptdialog.setVisible(true);
 
 		if (properties.getBoolean("Konfig.Aktualisieren")) hauptdialog.listeAktualisieren();
 
@@ -153,6 +175,8 @@ public static void main(String args[]) {
 	FileUtil.createAMDirectory();
 	
 	properties = new AProperties();
+	
+	Plugins.reload();
 	
 	AktienAktualisieren.loadPopups();
 

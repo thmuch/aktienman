@@ -1,6 +1,6 @@
 /**
  @author Thomas Much
- @version 2002-12-16
+ @version 2003-04-03
 */
 
 
@@ -9,10 +9,9 @@ public class URLs {
 
 public static final String AMHOMEPAGE        = "http://www.aktienman.de";
 
-public static final String URLCLASSURL       = AMHOMEPAGE + "/classes/";
-public static final String URLCLASSNAME      = "NewURLs";
-
-public static final String MC_WORKAROUND     = AMHOMEPAGE + "/info/index.html";
+//public static final String URLCLASSURL       = AMHOMEPAGE + "/classes/";
+//public static final String URLCLASSNAME      = "NewURLs";
+//public static final String MC_WORKAROUND     = AMHOMEPAGE + "/info/index.html";
 
 public static final int URL_AMUPDATE         =  1;
 public static final int URL_AMDOWNLOAD       =  2;
@@ -36,10 +35,10 @@ public static final int URL_KURSECOMDIRECT   = 40;
 public static final int URL_KURSEDEUBA       = 50;
 public static final int URL_CHARTDEUBA       = 51;
 
-public static final int URL_BBBINDEXD        = 61;
+/*public static final int URL_BBBINDEXD        = 61;
 public static final int URL_BBBINDEXEU       = 62;
 public static final int URL_BBBINDEXUS       = 63;
-public static final int URL_BBBINDEXASIA     = 64;
+public static final int URL_BBBINDEXASIA     = 64;  TODO */
 
 public static final int URL_LSDAX30REALTIME  = 70;
 
@@ -100,9 +99,9 @@ public static final int STR_DEUBA_CHARTS     = 50;
 public static final int STR_DEUBA_CHARTIMAGE = 52;
 public static final int STR_DEUBA_CHARTSRC   = 53;
 
-public static final int STR_BBB_INDEXTITLE   = 60;
+/*public static final int STR_BBB_INDEXTITLE   = 60;
 public static final int STR_BBB_INDEXSET     = 61;
-public static final int STR_BBB_INDEXENDE    = 62;
+public static final int STR_BBB_INDEXENDE    = 62;*/
 
 public static final int STR_LSDAX_KURSANFANG = 70;
 public static final int STR_LSDAX_KURSENDE   = 71;
@@ -111,7 +110,7 @@ public static final int STR_LSDAX_JSKANFANG  = 73;
 public static final int STR_LSDAX_JSKENDE    = 74;
 public static final int STR_LSDAX_JSKVALID   = 75;
 
-public static final int STR_INDEX_DAX30      = 80;
+/*public static final int STR_INDEX_DAX30      = 80;
 public static final int STR_INDEX_NEMAX50    = 81;
 public static final int STR_INDEX_DOWINDUST  = 82;
 public static final int STR_INDEX_SP500      = 83;
@@ -122,7 +121,7 @@ public static final int STR_INDEX_MDAX       = 87;
 public static final int STR_INDEX_SDAX       = 88;
 public static final int STR_INDEX_EURSTOXX50 = 89;
 public static final int STR_INDEX_STOXX50    = 90;
-public static final int STR_INDEX_NYSECOMP   = 91;
+public static final int STR_INDEX_NYSECOMP   = 91; TODO */
 
 public static final int NUM_LSDAX_NAMELEN    = 10;
 
@@ -248,14 +247,14 @@ public String getString(int strNr) {
 	case STR_DEUBA_CHARTSRC:
 		return " src=\'";
 	
-	case STR_BBB_INDEXTITLE:
+/*	case STR_BBB_INDEXTITLE:
 		return "chart.html?symm=";
 
 	case STR_BBB_INDEXSET:
 		return "<b>Name</b>";
 
 	case STR_BBB_INDEXENDE:
-		return "Bitte beachten";
+		return "Bitte beachten"; */
 
 	case STR_LSDAX_KURSANFANG:
 		return "<PRE>";
@@ -275,7 +274,7 @@ public String getString(int strNr) {
 	case STR_LSDAX_JSKVALID:
 		return "new Array(";
 	
-	case STR_INDEX_DAX30:
+/*	case STR_INDEX_DAX30:
 		return "DAX.ETR";
 	
 	case STR_INDEX_NEMAX50:
@@ -309,7 +308,7 @@ public String getString(int strNr) {
 		return "SX5P.DJX";
 		
 	case STR_INDEX_NYSECOMP:
-		return "NYA.X.IND";
+		return "NYA.X.IND"; TODO */
 	}
 	
 	return "";
@@ -441,7 +440,7 @@ public String get(int urlNr) {
 	case URL_CHARTDEUBA:
 		return getBase(BASE_DEUBA) + "/db/";
 
-	case URL_BBBINDEXD:
+/*	case URL_BBBINDEXD:
 		return getBase(BASE_BBBANK) + "kursliste.html?sKl=indizes-germany&sType=index&bNoIdx=0&kunde=99999ext";
 
 	case URL_BBBINDEXEU:
@@ -451,7 +450,7 @@ public String get(int urlNr) {
 		return getBase(BASE_BBBANK) + "kursliste.html?sKl=indizes-us&sType=index&bNoIdx=0&kunde=99999ext";
 
 	case URL_BBBINDEXASIA:
-		return getBase(BASE_BBBANK) + "kursliste.html?sKl=indizes-asia&sType=index&bNoIdx=0&kunde=99999ext";
+		return getBase(BASE_BBBANK) + "kursliste.html?sKl=indizes-asia&sType=index&bNoIdx=0&kunde=99999ext"; TODO */
 
 	case URL_LSDAX30REALTIME:
 		return "http://quotecenter.ls-d.de/lang/nbody_nm.cfm?lus=0.23665493&CFID=929612&CFTOKEN=11833536&papier=DAX";
@@ -488,7 +487,7 @@ public String getDeubaKursURL(String wkn, String boerse) {
 
 
 
-public String getDeubaChartMonths(int type) {
+/* public String getDeubaChartMonths(int type) {
 
 	switch (type)
 	{
@@ -507,10 +506,10 @@ public String getDeubaChartMonths(int type) {
 	
 	return "24";
 }
+*/
 
 
-
-public String getDeubaChartURL(String rel, int type) {
+/*public String getDeubaChartURL(String rel, int type) {
 
 	while ((rel.length() > 0) && ((rel.charAt(0) == '.') || (rel.charAt(0) == '/')))
 	{
@@ -526,23 +525,22 @@ public String getDeubaChartURL(String rel, int type) {
 	}
 
 	return getBase(BASE_DEUBA) + "/" + rel;
-}
+}*/
 
 
 
-public String getComdirectKursURL(String wkn, String boerse) {
+/*public String getComdirectKursURL(String wkn, String boerse) {
 
-/*	String wkneu = checkWKN(wkn);
-	
-	if (!wkneu.equals(wkn))
-	{
-		wkneu += "." + boerse;
-	} */
+//	String wkneu = checkWKN(wkn);
+	//	if (!wkneu.equals(wkn))
+//	{
+//		wkneu += "." + boerse;
+//	}
 
-//	return get(URL_KURSECOMDIRECT) + /*wkneu*/ checkWKN(wkn) + "&searchButton=Exakt&XsearchWPArt=UKN&XsearchBoersen=" + boerse;
+//	return get(URL_KURSECOMDIRECT) + checkWKN(wkn) + "&searchButton=Exakt&XsearchWPArt=UKN&XsearchBoersen=" + boerse;
 
 	return get(URL_KURSECOMDIRECT) + checkWKN(wkn) + "&searchButton_tol=Tolerant&XsearchWPArt=UKN&XsearchBoersen=" + boerse;
-}
+}*/
 
 
 
@@ -565,7 +563,7 @@ public String getComdirectKursURL(String wkn, String boerse) {
 
 
 
-public String getComdirectChartMonths(int type) {
+/* public String getComdirectChartMonths(int type) {
 
 	switch (type)
 	{
@@ -583,11 +581,11 @@ public String getComdirectChartMonths(int type) {
 	}
 	
 	return "1Y";
-}
+} */
 
 
 
-public String getComdirectChartURL(String rel, int type, int charttype) {
+/*public String getComdirectChartURL(String rel, int type, int charttype) {
 
 	int i = rel.indexOf("&");
 	
@@ -597,7 +595,7 @@ public String getComdirectChartURL(String rel, int type, int charttype) {
 	}
 	
 	return getBase(BASE_COMDIRECT) + rel + "&sTimeframe=" + getComdirectChartMonths(type);
-}
+}*/
 
 
 

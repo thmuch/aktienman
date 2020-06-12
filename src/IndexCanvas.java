@@ -1,6 +1,9 @@
 /**
  @author Thomas Much
- @version 2001-10-30
+ @version 2003-02-21
+
+ 2003-02-21
+ 	symbol/hasSymbol entfernt
 */
 
 import java.awt.*;
@@ -18,7 +21,6 @@ private static final long HIGHLOW = 200L;
 
 private FontMetrics metrics = null;
 
-private String symbol = null;
 private String title,datum,nummax;
 private String[] titlemax;
 private long punkte,vortag;
@@ -58,18 +60,6 @@ public IndexCanvas(String title, int symidx, String[] titlemax, String nummax, l
 public int getIndex() {
 
 	return symidx;
-}
-
-
-
-public boolean hasSymbol(String testSymbol) {
-
-	if (symbol == null)
-	{
-		symbol = AktienMan.url.getString(getIndex());
-	}
-	
-	return symbol.equalsIgnoreCase(testSymbol);
 }
 
 

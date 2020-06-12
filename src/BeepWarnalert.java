@@ -52,7 +52,7 @@ public BeepWarnalert(AFrame parent, int type, String name, String kurs) {
 
 	pack();
 	setupSize();
-	show();
+	setVisible(true);
 	
 	hooter = new BeepThread();
 	hooter.start();

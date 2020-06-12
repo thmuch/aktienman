@@ -1,7 +1,13 @@
 /**
  @author Thomas Much
- @version 2002-10-09
+ @version 2003-02-27
 
+ 2003-04-09
+ 	aktienPopup verzögert die Anzeige des Popups wieder etwas, damit die Zeile selektiert dargestellt wird
+ 2003-02-27
+ 	Bearbeiten - Wechselkurse
+ 2002-12-29
+   Im Bearbeiten-Menü gibt es nun den Menüpunkt "Nach Updates suchen..."
  2002-10-09
    Hauptdialog implementiert nun MRJPrefsHandler (für Mac OS X)
  2002-01-14
@@ -27,14 +33,16 @@ public static final int MINHOEHE  = 300;
 
 public Window backWindow;
 
-private static final String CHARTSTR_INTRA	= "Intraday";
+private static final String CHARTSTR_1D		= "1 Tag";
+private static final String CHARTSTR_5D		= "5 Tage";
+private static final String CHARTSTR_10D	= "10 Tage";
 private static final String CHARTSTR_3M		= "3 Monate";
 private static final String CHARTSTR_6M		= "6 Monate";
 private static final String CHARTSTR_1Y		= "1 Jahr";
 private static final String CHARTSTR_2Y		= "2 Jahre";
 private static final String CHARTSTR_3Y		= "3 Jahre";
 private static final String CHARTSTR_5Y		= "5 Jahre";
-private static final String CHARTSTR_10Y	= "10 Jahre";
+private static final String CHARTSTR_MAX	= "max.";
 
 private int locked = 0;
 private boolean abenabled = false;
@@ -261,13 +269,13 @@ public void setupElements() {
 	aktChoice = AktienMan.boersenliste.getChoiceNoFonds();
 	aktChoice.insert("Alle aktualisieren an:",0);
 
-	if (LSRTDAX30Quelle.canUseLSRT())
+/*	if (LSRTDAX30Quelle.canUseLSRT())
 	{
 		if (SysUtil.isAMac()) aktChoice.add("-------");
 
 		aktChoice.add("Lang&Schwarz Realtime-DAX30 (BID)");
 		aktChoice.add("Lang&Schwarz Realtime-DAX30 (ASK)");
-	}
+	} TODO */
 	
 	aktChoice.addItemListener(new ItemListener() {
 		public void itemStateChanged(ItemEvent e) {
@@ -283,14 +291,14 @@ public void setupElements() {
 				}
 				else
 				{
-					idx -= (count+1);
+/*					idx -= (count+1);
 					
 					if (SysUtil.isAMac()) idx--;
 					
 					if ((idx >= 0) && (idx <= 1))
 					{
-						listeAktualisierenAnQuelle((idx == 0) ? KursQuellen.QUELLE_LSRTDAX30BID : KursQuellen.QUELLE_LSRTDAX30ASK);
-					}
+						listeAktualisierenAnQuelle((idx == 0) ? KursQuellen.ID_LSRTDAX30BID : KursQuellen.ID_LSRTDAX30ASK);
+					} TODO */
 				}
 				
 				aktChoice.select(0);
@@ -303,7 +311,7 @@ public void setupElements() {
 	constrain(panelOben,buttonKamera,3,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH,0.7,0.0,0,10,0,0);
 
 	constrain(panelULinks,new Label("W\u00e4hrung:"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,0,0,0);
-	lwaehrung = AktienMan.waehrungen.getChoice(true);
+	lwaehrung = Waehrungen.getChoice();
 	lwaehrung.select(Waehrungen.getListenWaehrung());
 	lwaehrung.addItemListener(new ItemListener() {
 		public void itemStateChanged(ItemEvent e) {
@@ -358,51 +366,49 @@ public void setupElements() {
 			{
 				String selstr = buttonChart.getItem(idx);
 				
-				if (selstr.equals(CHARTSTR_INTRA))
+				if (selstr.equals(CHARTSTR_1D))
 				{
-					listeSelektierteAktieChart(URLs.CHART_INTRA);
+					listeSelektierteAktieChart(ChartQuellen.TIME_1D);
+				}
+				else if (selstr.equals(CHARTSTR_5D))
+				{
+					listeSelektierteAktieChart(ChartQuellen.TIME_5D);
+				}
+				else if (selstr.equals(CHARTSTR_10D))
+				{
+					listeSelektierteAktieChart(ChartQuellen.TIME_10D);
 				}
 				else if (selstr.equals(CHARTSTR_3M))
 				{
-					listeSelektierteAktieChart(URLs.CHART_3);
+					listeSelektierteAktieChart(ChartQuellen.TIME_3M);
 				}
 				else if (selstr.equals(CHARTSTR_6M))
 				{
-					listeSelektierteAktieChart(URLs.CHART_6);
+					listeSelektierteAktieChart(ChartQuellen.TIME_6M);
 				}
 				else if (selstr.equals(CHARTSTR_1Y))
 				{
-					listeSelektierteAktieChart(URLs.CHART_12);
+					listeSelektierteAktieChart(ChartQuellen.TIME_1Y);
 				}
 				else if (selstr.equals(CHARTSTR_2Y))
 				{
-					listeSelektierteAktieChart(URLs.CHART_24);
+					listeSelektierteAktieChart(ChartQuellen.TIME_2Y);
 				}
 				else if (selstr.equals(CHARTSTR_3Y))
 				{
-					listeSelektierteAktieChart(URLs.CHART_36);
+					listeSelektierteAktieChart(ChartQuellen.TIME_3Y);
 				}
 				else if (selstr.equals(CHARTSTR_5Y))
 				{
-					listeSelektierteAktieChart(URLs.CHART_60);
+					listeSelektierteAktieChart(ChartQuellen.TIME_5Y);
 				}
-				else if (selstr.equals(CHARTSTR_10Y))
+				else if (selstr.equals(CHARTSTR_MAX))
 				{
-					listeSelektierteAktieChart(URLs.CHART_120);
+					listeSelektierteAktieChart(ChartQuellen.TIME_MAX);
 				}
-				
+
 				buttonChart.select(0);
 			}
-			
-/*			case 6:
-				listeSelektierteAktieIntradayChart("FRA");
-				break;
-
-			case 7:
-				listeSelektierteAktieIntradayChart("ETR");
-				break;
-
-			if (idx != 0) buttonChart.select(0); */
 		}
 	});
 
@@ -420,7 +426,7 @@ public void setupElements() {
 		}
 	});
 
-	setChartChoice(true);
+	setChartChoice();
 	
 	constrain(panelUMitte,buttonNeu,0,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.EAST,1.0,0.0,0,0,6,0);
 	constrain(panelUMitte,buttonInfo,1,0,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,10,6,0);
@@ -601,6 +607,26 @@ public void setupElements() {
 	});
 	amMenu.add(mi);
 	
+	amMenu.addSeparator();
+
+	mi = new MenuItem("Wechselkurse...");
+	mi.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			callWechselkurse();
+		}
+	});
+	amMenu.add(mi);
+
+	amMenu.addSeparator();
+	
+	mi = new MenuItem("Nach Updates suchen...");
+	mi.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			UpdateManager.checkForUpdates(true);
+		}
+	});
+	amMenu.add(mi);
+	
 	menuAkt = new MenuItem("An der jeweiligen B\u00f6rse",new MenuShortcut(KeyEvent.VK_A));
 	menuAkt.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -755,49 +781,22 @@ public void setupElements() {
 
 
 
-private void setChartChoice(boolean intraday) {
-	
-	ChartQuelle cq = ChartQuellen.getChartQuelle();
+private void setChartChoice() {
 
 	buttonChart.removeAll();
 	
 	buttonChart.add("Chart:");
-	
-	buttonChart.add(CHARTSTR_INTRA);
-	buttonChart.add(CHARTSTR_3M);
 
-	if (cq.hasType6())
-	{
-		buttonChart.add(CHARTSTR_6M);
-	}
-	
-	buttonChart.add(CHARTSTR_1Y);
-	
-	if (cq.hasType24())
-	{
-		buttonChart.add(CHARTSTR_2Y);
-	}
-
-	if (cq.hasType36())
-	{
-		buttonChart.add(CHARTSTR_3Y);
-	}
-
-	if (cq.hasType60())
-	{
-		buttonChart.add(CHARTSTR_5Y);
-	}
-
-	if (cq.hasType120())
-	{
-		buttonChart.add(CHARTSTR_10Y);
-	}
-	
-/*	if (intraday)
-	{
-		buttonChart.add("Intraday FSE");
-		buttonChart.add("Intraday ETR");
-	} */
+	if (ChartQuellen.hasAnyTime(ChartQuellen.TIME_1D)) buttonChart.add(CHARTSTR_1D);
+	if (ChartQuellen.hasAnyTime(ChartQuellen.TIME_5D)) buttonChart.add(CHARTSTR_5D);
+	if (ChartQuellen.hasAnyTime(ChartQuellen.TIME_10D)) buttonChart.add(CHARTSTR_10D);
+	if (ChartQuellen.hasAnyTime(ChartQuellen.TIME_3M)) buttonChart.add(CHARTSTR_3M);
+	if (ChartQuellen.hasAnyTime(ChartQuellen.TIME_6M)) buttonChart.add(CHARTSTR_6M);
+	if (ChartQuellen.hasAnyTime(ChartQuellen.TIME_1Y)) buttonChart.add(CHARTSTR_1Y);
+	if (ChartQuellen.hasAnyTime(ChartQuellen.TIME_2Y)) buttonChart.add(CHARTSTR_2Y);
+	if (ChartQuellen.hasAnyTime(ChartQuellen.TIME_3Y)) buttonChart.add(CHARTSTR_3Y);
+	if (ChartQuellen.hasAnyTime(ChartQuellen.TIME_5Y)) buttonChart.add(CHARTSTR_5Y);
+	if (ChartQuellen.hasAnyTime(ChartQuellen.TIME_MAX)) buttonChart.add(CHARTSTR_MAX);
 }
 
 
@@ -965,6 +964,20 @@ public synchronized void callAbout() {
 
 
 
+public synchronized void callWechselkurse() {
+
+	if (AktienMan.wechselkurse == null)
+	{
+		AktienMan.wechselkurse = new Wechselkurse();
+	}
+	else
+	{
+		AktienMan.wechselkurse.toFront();
+	}
+}
+
+
+
 private synchronized void callKonfiguration() {
 
 	if (AktienMan.konfiguration == null)
@@ -1095,12 +1108,9 @@ private void checkAktienButtons(BenutzerAktie ba) {
 
 		if (ba.getKurs() > 0L)
 		{
-			boolean intraday = AktienMan.listeDAX.isMember(ba.getWKN());
-
-			setChartChoice(intraday);
+			setChartChoice();
 			buttonChart.setEnabled(true);
 			
-			menuChart.setIntraday(intraday);
 			menuChart.checkTypes();
 			menuChart.setEnabled(true);
 		}
@@ -1251,9 +1261,9 @@ public synchronized void callKamera() {
 
 
 
-private synchronized void listeAktualisierenAnQuelle(int qindex) {
+private synchronized void listeAktualisierenAnQuelle(long qid) {
 
-	listeAktualisieren("",KursQuellen.getKursQuelle(qindex));
+	listeAktualisieren("",KursQuellen.getKursQuelle(qid));
 }
 
 
@@ -1343,11 +1353,11 @@ public synchronized void listeAktualisierenAusfuehren(String boerse, KursQuelle 
 			
 			if (ba.isFonds())
 			{
-				fonds.sendRequest(cmp,ba.getWKNString(),ba.getBoerse());
+				fonds.sendRequest(this,cmp,ba.getWKNString(),ba.getBoerse());
 			}
 			else
 			{
-				quelle.sendRequest(cmp,ba.getWKNString(),ba.getBoerse());
+				quelle.sendRequest(this,cmp,ba.getWKNString(),ba.getBoerse());
 			}
 		}
 	}
@@ -1359,6 +1369,8 @@ public synchronized void listeAktualisierenAusfuehren(String boerse, KursQuelle 
 
 	BenutzerAktie.setLastUpdateAndRepaint(benutzerliste.getDateString());
 	
+	// TODO: nicht hier aufrufen, sondern immer, bevor ein Online-Zugriff erfolgt
+	//   -----> das wird später der Ersatz für AktienMan.checkURLs
 	AktienMan.doOnlineChecks();
 }
 
@@ -1378,11 +1390,11 @@ private synchronized void listeSelektierteAktieAktualisieren() {
 
 			if (ba.isFonds())
 			{
-				KursQuellen.getFondsQuelle().sendSingleRequest(ba.getRequest(),ba.getWKNString(),ba.getBoerse());
+				KursQuellen.getFondsQuelle().sendSingleRequest(this,ba.getRequest(),ba.getWKNString(),ba.getBoerse());
 			}
 			else
 			{
-				KursQuellen.getKursQuelle().sendSingleRequest(ba.getRequest(),ba.getWKNString(),ba.getBoerse());
+				KursQuellen.getKursQuelle().sendSingleRequest(this,ba.getRequest(),ba.getWKNString(),ba.getBoerse());
 			}
 			
 			break;
@@ -1392,7 +1404,7 @@ private synchronized void listeSelektierteAktieAktualisieren() {
 
 
 
-public synchronized void listeNeuerAktienkurs(String wkn, String kurz, String platz,
+public synchronized void listeNeuerAktienkurs(String wkn, String isin, String kurz, String platz,
 												String name, long kurs, String kursdatum,
 												long vortageskurs, long eroeffnungskurs,
 												long hoechstkurs, long tiefstkurs,
@@ -1415,7 +1427,9 @@ public synchronized void listeNeuerAktienkurs(String wkn, String kurz, String pl
 		
 		if ((ba.isEqual(wkn,kurz,platz,compPlatz)) && (!ba.doNotUpdate()))
 		{
-			ba.setValues(name,kurs,kursdatum,vortageskurs,eroeffnungskurs,
+			/* TODO: Währung beachten! (wo? in BenutzerAktie?) */
+
+			ba.setValues(name,isin,kurs,kursdatum,vortageskurs,eroeffnungskurs,
 							hoechstkurs,tiefstkurs,handelsvolumen,waehrung);
 			valid = true;
 		}
@@ -1458,42 +1472,16 @@ public synchronized void listeAktienkursNA(String wkn, String kurz, String platz
 
 
 
-/*public synchronized void listeAnfrageFalsch(String wkn, String platz, boolean sofortZeichnen) {
+public synchronized void listeAnfrageFehler(String request, String wkn, String platz, boolean sofortZeichnen, KursQuelle first, KursQuelle current) {
 
-	if (wkn.length() == 0) return;
-	if (platz.length() == 0) return;
-
-	boolean valid = false;
-	boolean compPlatz = (benutzerliste.getFesteBoerse().length() == 0);
-
-	for (int i = 0; i < getAnzahlAktien(); i++)
-	{
-		BenutzerAktie ba = getAktieNr(i);
-		
-		if ((ba.isEqual(wkn,platz,compPlatz)) && (!ba.doNotUpdate()))
-		{
-			ba.setValues(BenutzerAktie.VALUE_ERROR);
-			valid = true;
-		}
-	}
-	
-	if (valid)
-	{
-		listeUpdate(true,false,sofortZeichnen,false);
-		progressCanvas.inc();
-	}
-} */
-
-
-
-public synchronized void listeAnfrageFehler(String request, String wkn, String platz, boolean sofortZeichnen, int nextID) {
+	long nextID = KursQuellen.getNextID(first,current);
 
 	if (AktienMan.DEBUG)
 	{
 		System.out.println("Fehler beim Einlesen der Kursdaten von "+wkn+"."+platz+"  -> "+nextID);
 	}
 
-	if (nextID == KursQuellen.QUELLE_NONE)
+	if (nextID == KursQuellen.ID_NONE)
 	{
 		if (wkn.length() == 0) return;
 		if (platz.length() == 0) return;
@@ -1519,7 +1507,7 @@ public synchronized void listeAnfrageFehler(String request, String wkn, String p
 	}
 	else
 	{
-		KursQuellen.getKursQuelle(nextID).sendSingleRequest(request,wkn,platz,sofortZeichnen,false);
+		KursQuellen.getKursQuelle(nextID).sendSingleRequest(this,request,wkn,platz,sofortZeichnen,first);
 	}
 }
 
@@ -1596,9 +1584,9 @@ public void listeSelect(Component bal, int row, int mX, int mY,
 
 
 
-private void aktienPopup(BenutzerAktie ba, Component bal, int mX, int mY) {
+private void aktienPopup(BenutzerAktie ba, final Component bal, final int mX, final int mY) {
 
-	synchronized (this)
+	synchronized(this)
 	{
 		if ((ba.getStueckzahl() > 0L) && (ba.getKurs() > 0L) && (!ba.nurBeobachten()))
 		{
@@ -1614,15 +1602,6 @@ private void aktienPopup(BenutzerAktie ba, Component bal, int mX, int mY) {
 			popChart.setEnabled(true);
 			
 			popChart.checkTypes();
-			
-			if (AktienMan.listeDAX.isMember(ba.getWKN()))
-			{
-				popChart.enableIntraday();
-			}
-			else
-			{
-				popChart.disableIntraday();
-			}
 		}
 		else
 		{
@@ -1641,15 +1620,21 @@ private void aktienPopup(BenutzerAktie ba, Component bal, int mX, int mY) {
 		}
 		
 		popAktualisieren.setEnabled(!ba.doNotUpdate());
-
-		try
-		{
-			wait(200);
-		}
-		catch (InterruptedException e) {}
 	}
 
-	aktienpopup.show(bal,mX,mY);
+	Thread t = new Thread() {
+		public synchronized void run() {
+			try
+			{
+				wait(200);
+			}
+			catch (InterruptedException e) {}
+			
+			aktienpopup.show(bal,mX,mY);
+		}
+	};
+
+	t.start();
 }
 
 
@@ -1670,9 +1655,9 @@ private synchronized void portfolioNeu() {
 
 
 
-public synchronized void portfolioIntradayCharts(int type) {
+public synchronized void portfolioIntradayCharts(int time) {
 
-	new IntradayChartsPortfolio(type);
+	new MultiChartFrame(time,ChartQuellen.TYPE_LINIEN);
 }
 
 
@@ -1884,33 +1869,19 @@ private synchronized void listeSelektierteAktieMaxkurs() {
 
 
 
-public synchronized void listeSelektierteAktieChart(int type) {
+public synchronized void listeSelektierteAktieChart(int time) {
 
 	for (int i = 0; i < getAnzahlAktien(); i++)
 	{
 		BenutzerAktie ba = getAktieNr(i);
-		
+
 		if (ba.isSelected())
 		{
-			ChartQuellen.getChartQuelle().displayChart(ba.getWKNString(),ba.getBoerse(),type,ba.isFonds(),true);
+			ChartQuellen.displayChart(ba.getWKNString(),ba.getBoerse(),time,ChartQuellen.TYPE_LINIEN);
 			break;
 		}
 	}
 }
-
-
-
-/*public synchronized void listeSelektierteAktieIntradayChart(String boerse) {
-
-	for (int i = 0; i < getAnzahlAktien(); i++)
-	{
-		if (getAktieNr(i).isSelected())
-		{
-			new IntradayChartLeser(boerse,getAktieNr(i)).start();
-			break;
-		}
-	}
-}*/
 
 
 
@@ -2004,8 +1975,6 @@ private synchronized void listeAktieCopyMove(int aktieIndex, int pofoToIndex, bo
 	
 	boolean error = BenutzerListe.store(listeTo);
 
-	listeTo = null;
-
 	if (move && (!error))
 	{
 		listeAktieLoeschen(aktieIndex);
@@ -2058,8 +2027,6 @@ public synchronized void listeAktieVerkaufen(int index, long anzahl, long verkau
 					listeTo.add(to);
 	
 					BenutzerListe.store(listeTo);
-					
-					listeTo = null;
 				}
 			}
 		}
@@ -2174,7 +2141,7 @@ private synchronized void listeSpeichernHTML() {
 	}
 
 	fd.setFile(dateiname+".html");
-	fd.show();
+	fd.setVisible(true);
 	
 	String pfad = fd.getDirectory();
 	String datei = fd.getFile();
@@ -2224,7 +2191,7 @@ private synchronized void listeSpeichernHTML() {
 		
 		try
 		{
-			out = new BufferedWriter(new FileWriter(f));
+			out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f), "ISO-8859-15"));
 
 			String nachname = AktienMan.properties.getString("Key.Nachname");
 			String vorname = AktienMan.properties.getString("Key.Vorname");
@@ -2249,6 +2216,8 @@ private synchronized void listeSpeichernHTML() {
 				out.write("DEMOVERSION");
 			}
 			out.write(")</TITLE>");
+			out.newLine();
+			out.write("<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=ISO-8859-15\">");
 			out.newLine();
 			out.write("</HEAD>");
 			out.newLine();
@@ -2382,7 +2351,7 @@ private synchronized void listeSpeichernCSV() {
 	}
 
 	fd.setFile(dateiname+".csv");
-	fd.show();
+	fd.setVisible(true);
 	
 	String pfad = fd.getDirectory();
 	String datei = fd.getFile();
@@ -2433,7 +2402,7 @@ private synchronized void listeSpeichernCSV() {
 		{
 			out = new BufferedWriter(new FileWriter(f));
 			
-			out.write("\"Aktienname\";\"St\u00fcck\";\"Kaufkurs\";\"akt. Kurs\";;\"akt. Wert\";\"Differenz\";\"%absolut\";\"%Jahr\";\"Kaufdatum\";\"WKN.B\u00f6rse\"");
+			out.write("\"Aktienname\";\"St\u00fcck\";\"Kaufkurs\";\"akt. Kurs\";;\"akt. Wert\";\"Differenz\";\"%absolut\";\"%Jahr\";\"Kaufdatum\";\"ISIN\";\"WKN\";\"B\u00f6rse\"");
 			out.newLine();
 
 			for (int i = 0; i < getAnzahlAktien(); i++)

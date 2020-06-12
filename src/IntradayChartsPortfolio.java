@@ -53,7 +53,7 @@ public IntradayChartsPortfolio(int type) {
 	
 	// RM-Popup: Neu laden (Thread neu starten) etc.
 
-	show();
+	setVisible(true);
 	
 	calculateChartSizes();
 
@@ -167,7 +167,7 @@ private void startThreads() {
 	{
 		BenutzerAktie ba = AktienMan.hauptdialog.getAktieNr(baindex[i]);
 
-		if (chartQuelle == ChartQuellen.CHARTQUELLE_COMDIRECT)
+/*		if (chartQuelle == ChartQuellen.CHARTQUELLE_COMDIRECT)
 		{
 			threads[i] = new ChartPofoComdirectLeser(this,i,ba.getWKNString(),ba.getBoerse(),offset,type);
 		}
@@ -176,7 +176,7 @@ private void startThreads() {
 			threads[i] = new ChartPofoDeubaLeser(this,i,ba.getWKNString(),ba.getBoerse(),offset,type);
 		}
 		
-		threads[i].start();
+		threads[i].start(); TODO */
 		
 		offset += timeOffset;
 	}
@@ -395,7 +395,7 @@ public void setupFrame() {
 	
 	chartQuelle = ChartQuellen.getChartQuelleIndex();
 	
-	if (chartQuelle == ChartQuellen.CHARTQUELLE_COMDIRECT)
+/*	if (chartQuelle == ChartQuellen.CHARTQUELLE_COMDIRECT)
 	{
 		chartPixWidth  = AktienMan.url.getNumber(URLs.NUM_ICCOM_PIXWIDTH);
 		chartPixHeight = AktienMan.url.getNumber(URLs.NUM_ICCOM_PIXHEIGHT);
@@ -416,7 +416,7 @@ public void setupFrame() {
 		
 		chartXOffset   = AktienMan.url.getNumber(URLs.NUM_ICDB_XOFFSET);
 		chartXEnd      = AktienMan.url.getNumber(URLs.NUM_ICDB_XEND);
-	}
+	} TODO */
 	
 	chartDisplayWidth  = chartXEnd + 1 - chartXOffset;
 	chartDisplayHeight = chartYEnd + 1 - chartYOffset;

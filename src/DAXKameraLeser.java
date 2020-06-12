@@ -1,6 +1,9 @@
 /**
  @author Thomas Much
- @version 2000-11-10
+ @version 2003-02-28
+ 
+ 2003-02-28
+ 	das Einlesen erfolgt nun gepuffert
 */
 
 import java.net.*;
@@ -54,12 +57,14 @@ public void run() {
 			Connections.getConnection();
 
 			URL url = new URL(AktienMan.url.get(URLs.URL_KAMERA));
+
 			URLConnection curl = url.openConnection();
+
 			curl.setUseCaches(false);
 			
 			byte[] daten = new byte[curl.getContentLength()];
 			
-			in = new DataInputStream(curl.getInputStream());
+			in = new DataInputStream(new BufferedInputStream(curl.getInputStream()));
 			
 			in.readFully(daten);
 
@@ -77,18 +82,13 @@ public void run() {
 				kamera.neuZeichnen();
 			}
 		}
-		catch (MalformedURLException e)
-		{
-			System.out.println("URL der DAX-Kamera fehlerhaft.");
-			kamera.setStatus(DAXKamera.S_ERROR);
-		}
-		catch (IOException e)
-		{
-			kamera.setStatus(DAXKamera.S_ERROR);
-		}
 		catch (NegativeArraySizeException e)
 		{
 			kamera.setStatus(DAXKamera.S_OFFLINE);
+		}
+		catch (Exception e)
+		{
+			kamera.setStatus(DAXKamera.S_ERROR);
 		}
 		finally
 		{

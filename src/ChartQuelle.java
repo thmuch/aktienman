@@ -1,10 +1,16 @@
 /**
  @author Thomas Much
- @version 2002-01-13
+ @version 2003-02-25
  
+ 2003-02-25
+ 	getChartSize, getChartClipping
+ 	displayChart entfernt, dafür gibt's loadChart
+ 	priority, getPriority
  2002-01-13
    hasType6, hasType60, hasType120
 */
+
+import java.awt.*;
 
 
 
@@ -12,16 +18,17 @@
 public abstract class ChartQuelle {
 
 private String name;
-private int id, nextID;
+private long id;
+private int priority;
 
 
 
 
-public ChartQuelle(String name, int id, int nextID) {
+public ChartQuelle(String name, long id, int priority) {
 
-	this.name = name;
-	this.id = id;
-	this.nextID = nextID;
+	this.name     = name;
+	this.id       = id;
+	this.priority = priority;
 }
 
 
@@ -33,55 +40,28 @@ public String getName() {
 
 
 
-public int getID() {
+public int getPriority() {
+
+	return priority;
+}
+
+
+
+public long getID() {
 
 	return id;
 }
 
 
 
-public int getNextID(boolean firstCall) {
+public abstract boolean hasType(int type);
+public abstract boolean hasTime(int time);
 
-	return (firstCall ? nextID : ChartQuellen.CHARTQUELLE_NONE);
-}
+public abstract Dimension getChartSize();
 
+public abstract Insets getChartClipping();
 
+public abstract void loadChart(ChartReceiver receiver, String wkn, String boerse, int time, int type, ChartQuelle first);
 
-public boolean hasType6() {
-
-	return false;
-}
-
-
-
-public boolean hasType24() {
-
-	return false;
-}
-
-
-
-public boolean hasType36() {
-
-	return false;
-}
-
-
-
-public boolean hasType60() {
-
-	return false;
-}
-
-
-
-public boolean hasType120() {
-
-	return false;
-}
-
-
-
-public abstract void displayChart(String wkn, String boerse, int type, boolean isFonds, boolean firstCall);
 
 }

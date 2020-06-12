@@ -79,7 +79,7 @@ public ChartViewer(Image chartImage, String titel, String wknboerse, int type, S
 
 	setupSize();
 
-	show();
+	setVisible(true);
 
 	AktienMan.hauptdialog.windowToFront(this);
 }
@@ -149,7 +149,7 @@ protected synchronized void setStatusFinished() {
 
 	setStatus(STATUS_FINISHED);
 
-	nextID = ChartQuellen.CHARTQUELLE_NONE;
+//	nextID = ChartQuellen.CHARTQUELLE_NONE; TODO
 }
 
 
@@ -175,7 +175,7 @@ public void setStatusError() {
 		}
 	}
 	
-	if (nextID != ChartQuellen.CHARTQUELLE_NONE)
+/*	if (nextID != ChartQuellen.CHARTQUELLE_NONE)
 	{
 		int i = wknboerse.indexOf(".");
 		
@@ -189,7 +189,7 @@ public void setStatusError() {
 			setVisible(false);
 			dispose();
 		}
-	}
+	} TODO */
 }
 
 

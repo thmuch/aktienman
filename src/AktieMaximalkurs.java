@@ -1,6 +1,11 @@
 /**
  @author Thomas Much
- @version 2000-08-09
+ @version 2003-01-28
+
+ 2003-01-28
+ 	es werden keine speziellen Maxkurs-Routinen der Quellen mehr verwendet, sondern die normalen (gecachten!) Routinen
+ 	Aktualisieren-Button
+ 	statt "offline" wird "nicht verfügbar" angezeigt
 */
 
 import java.awt.*;
@@ -16,6 +21,7 @@ private int[] kwaehrung;
 private String[] kdatum;
 private Panel panelKurse;
 private BenutzerAktie ba;
+private Button buttonAktualisieren;
 
 
 
@@ -30,7 +36,7 @@ public AktieMaximalkurs(BenutzerAktie ba) {
 	
 	pack();
 	setupSize();
-	show();
+	setVisible(true);
 	
 	startThreads();
 
@@ -59,6 +65,38 @@ public synchronized void setupElements2() {
 	kwaehrung = new int[AktienMan.boersenliste.size()];
 	kdatum = new String[AktienMan.boersenliste.size()];
 	
+	initWerte(false);
+	
+	buttonAktualisieren = new Button("Aktualisieren");
+	buttonAktualisieren.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			werteAktualisieren();
+		}
+	});
+
+	Button buttonOK = new Button(Lang.OK);
+	buttonOK.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			doCancel();
+		}
+	});
+	
+	Panel panelButtons = new Panel();
+	
+	panelButtons.add(buttonAktualisieren);
+	panelButtons.add(buttonOK);
+	
+	constrain(this,new Label("Aktie \""+ba.getName(BenutzerListe.useShortNames())+"\":"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,10,10,3,10);
+	constrain(this,panelKurse,0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,0,10,0,10);
+	constrain(this,panelButtons,0,2,1,1,GridBagConstraints.NONE,GridBagConstraints.SOUTHEAST,0.0,0.0,15,10,10,10);
+
+	buttonAktualisieren.setEnabled(false);
+}
+
+
+
+private void initWerte(boolean draw) {
+	
 	for (int i = 0; i < AktienMan.boersenliste.size(); i++)
 	{
 		kurse[i] = BenutzerAktie.VALUE_MISSING;
@@ -67,23 +105,23 @@ public synchronized void setupElements2() {
 		kdatum[i] = "";
 	}
 	
-	fillKursPanel(false);
-	
-	Button buttonOK = new Button(Lang.OK);
-	buttonOK.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			doCancel();
-		}
-	});
-	
-	constrain(this,new Label("Aktie \""+ba.getName(BenutzerListe.useShortNames())+"\":"),0,0,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,10,10,3,10);
-	constrain(this,panelKurse,0,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,0.0,0.0,0,10,0,10);
-	constrain(this,buttonOK,0,2,1,1,GridBagConstraints.NONE,GridBagConstraints.SOUTHEAST,0.0,0.0,15,10,10,10);
+	fillKursPanel(draw);
 }
 
 
 
-private void startThreads() {
+private void werteAktualisieren() {
+
+	buttonAktualisieren.setEnabled(false);
+
+	initWerte(true);
+
+	startThreads();
+}
+
+
+
+private synchronized void startThreads() {
 
 	KursQuelle quelle = KursQuellen.getKursQuelle();
 
@@ -94,9 +132,13 @@ private void startThreads() {
 			String wkn   = ba.getWKNString();
 			String platz = AktienMan.boersenliste.getAt(i).getKurz();
 
-			quelle.sendSingleMaxkursRequest(this,ba.getRequestWKN()+platz,wkn,platz);
+			quelle.sendRequest(this,ba.getRequestWKN()+platz,wkn,platz,true);
 		}
 	}
+	
+	quelle.flush();
+
+	buttonAktualisieren.setEnabled(true);
 }
 
 
@@ -132,10 +174,15 @@ private synchronized void fillKursPanel(boolean draw) {
 			
 			String s,svol = "";
 			long k = kurse[i];
+
+			int gridlen = 1;
+			int hAlign = GridBagConstraints.EAST;
 			
 			if (k == BenutzerAktie.VALUE_MISSING)
 			{
 				s = "<Anfrage l\u00e4uft>";
+				gridlen = 2;
+				hAlign = GridBagConstraints.WEST;
 			}
 			else if (k == BenutzerAktie.VALUE_NA)
 			{
@@ -143,7 +190,9 @@ private synchronized void fillKursPanel(boolean draw) {
 			}
 			else if (k < 0L)
 			{
-				s = "<offline>";
+				s = "<nicht verf\u00fcgbar>";
+				gridlen = 3;
+				hAlign = GridBagConstraints.CENTER;
 			}
 			else
 			{
@@ -160,11 +209,13 @@ private synchronized void fillKursPanel(boolean draw) {
 			{
 				l.setForeground(Color.red);
 			}
-			constrain(panelKurse,l,2,ypos,1,1,GridBagConstraints.NONE,GridBagConstraints.EAST,0.0,0.0,0,10,0,0);
+			constrain(panelKurse,l,2,ypos,gridlen,1,GridBagConstraints.NONE,hAlign,0.0,0.0,0,10,0,0);
 
-			constrain(panelKurse,new Label(kdatum[i]),3,ypos,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,0,0);
-
-			constrain(panelKurse,new Label(svol,Label.RIGHT),4,ypos,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.EAST,1.0,0.0,0,10,0,0);
+			if (gridlen == 1)
+			{
+				constrain(panelKurse,new Label(kdatum[i]),3,ypos,1,1,GridBagConstraints.NONE,GridBagConstraints.WEST,0.0,0.0,0,10,0,0);
+				constrain(panelKurse,new Label(svol,Label.RIGHT),4,ypos,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.EAST,1.0,0.0,0,10,0,0);
+			}
 			
 			ypos++;
 		}
@@ -180,14 +231,16 @@ private synchronized void fillKursPanel(boolean draw) {
 
 
 
-private synchronized void setKurs(int index, long kurs, int nextID) {
+private synchronized void setKurs(int index, long kurs, KursQuelle first, KursQuelle current) {
+	
+	long nextID = KursQuellen.getNextID(first,current);
 
 	if (AktienMan.DEBUG)
 	{
 		System.out.println("Fehler beim Einlesen der Maximalkurse  -> "+nextID);
 	}
 
-	if ((nextID == KursQuellen.QUELLE_NONE) || (index < 0))
+	if ((nextID == KursQuellen.ID_NONE) || (index < 0))
 	{
 		setKurs(index,kurs);
 	}
@@ -196,7 +249,7 @@ private synchronized void setKurs(int index, long kurs, int nextID) {
 		String wkn   = ba.getWKNString();
 		String platz = AktienMan.boersenliste.getAt(index).getKurz();
 
-		KursQuellen.getKursQuelle(nextID).sendSingleMaxkursRequest(this,ba.getRequestWKN()+platz,wkn,platz,false);
+		KursQuellen.getKursQuelle(nextID).sendSingleRequest(this,ba.getRequestWKN()+platz,wkn,platz,true,first);
 	}
 }
 
@@ -236,13 +289,15 @@ private int getIndex(String wkn, String platz) {
 
 
 
-public synchronized void listeNeuerAktienkurs(String wkn, String kurz, String platz,
+public synchronized void listeNeuerAktienkurs(String wkn, String isin, String kurz, String platz,
 												String name, long kurs, String kursdatum,
 												long vortageskurs, long eroeffnungskurs,
 												long hoechstkurs, long tiefstkurs,
 												long handelsvolumen, int waehrung,
 												boolean sofortZeichnen) {
 
+	/* TODO: Währung beachten (?) */
+	/* TODO: ISIN beachten */
 	setKurs(getIndex(wkn,platz),kurs,kursdatum,waehrung,handelsvolumen);
 }
 
@@ -256,17 +311,10 @@ public synchronized void listeAktienkursNA(String wkn, String kurz, String platz
 
 
 
-/*public synchronized void listeAnfrageFalsch(String wkn, String platz, boolean sofortZeichnen) {
-
-	setKurs(getIndex(platz),BenutzerAktie.VALUE_ERROR);
-}*/
-
-
-
 public synchronized void listeAnfrageFehler(String request, String wkn, String platz,
-												boolean sofortZeichnen, int nextID) {
+												boolean sofortZeichnen, KursQuelle first, KursQuelle current) {
 
-	setKurs(getIndex(wkn,platz),BenutzerAktie.VALUE_ERROR,nextID);
+	setKurs(getIndex(wkn,platz),BenutzerAktie.VALUE_ERROR,first,current);
 }
 
 }

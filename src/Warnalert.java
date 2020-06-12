@@ -50,7 +50,7 @@ public Warnalert(AFrame parent, String text, boolean quit, boolean doshow) {
 	
 	if (doshow)
 	{
-		show();
+		setVisible(true);
 	}
 }
 

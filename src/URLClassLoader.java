@@ -64,8 +64,8 @@ private byte[] loadClassData(String name) {
 	{
 		return null;
 	}
-	
-	return NetUtil.loadRawURL(host + name + ".class");
+
+	return NetUtil.loadRawURL(host + name + ".class",true,-1);
 }
 
 }

@@ -1,7 +1,9 @@
 /**
  @author Thomas Much
- @version 2002-01-14
- 
+ @version 2003-02-25
+
+ 2003-02-25
+ 	Anpassung an neue ChartQuellen-Zeitkonstanten 
  2002-01-14
    3-Jahres-Charts entfernt
    setupMenu und checkTypes kennen nun auch 5- und 10-Jahres-Charts
@@ -15,8 +17,7 @@ import java.awt.event.*;
 
 public class ChartMenu extends Menu {
 
-private MenuItem item6,item24,/*item36,*/item60,item120;
-//private Menu popIntraday;
+private MenuItem item1d, item5d, item10d, item3m, item6m, item1y, item2y, item3y, item5y, itemmax;
 
 
 
@@ -39,131 +40,109 @@ protected ChartMenu(String title) {
 
 private void setupMenu() {
 
-	MenuItem mi = new MenuItem("Intraday");
-	mi.addActionListener(new ActionListener() {
+	item1d = new MenuItem("1 Tag");
+	item1d.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			action(URLs.CHART_INTRA);
+			action(ChartQuellen.TIME_1D);
 		}
 	});
-	add(mi);
+	add(item1d);
 
-	mi = new MenuItem("3 Monate");
-	mi.addActionListener(new ActionListener() {
+	item5d = new MenuItem("5 Tage");
+	item5d.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			action(URLs.CHART_3);
+			action(ChartQuellen.TIME_5D);
 		}
 	});
-	add(mi);
+	add(item5d);
 
-	item6 = new MenuItem("6 Monate");
-	item6.addActionListener(new ActionListener() {
+	item10d = new MenuItem("10 Tage");
+	item10d.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			action(URLs.CHART_6);
+			action(ChartQuellen.TIME_10D);
 		}
 	});
-	add(item6);
+	add(item10d);
 
-	mi = new MenuItem("1 Jahr");
-	mi.addActionListener(new ActionListener() {
+	item3m = new MenuItem("3 Monate");
+	item3m.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			action(URLs.CHART_12);
+			action(ChartQuellen.TIME_3M);
 		}
 	});
-	add(mi);
-
-	item24 = new MenuItem("2 Jahre");
-	item24.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			action(URLs.CHART_24);
-		}
-	});
-	add(item24);
-
-/*	item36 = new MenuItem("3 Jahre");
-	item36.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			action(URLs.CHART_36);
-		}
-	});
-	add(item36); */
+	add(item3m);
 	
-	item60 = new MenuItem("5 Jahre");
-	item60.addActionListener(new ActionListener() {
+	item6m = new MenuItem("6 Monate");
+	item6m.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			action(URLs.CHART_60);
+			action(ChartQuellen.TIME_6M);
 		}
 	});
-	add(item60);
+	add(item6m);
 
-	item120 = new MenuItem("10 Jahre");
-	item120.addActionListener(new ActionListener() {
+	item1y = new MenuItem("1 Jahr");
+	item1y.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			action(URLs.CHART_120);
+			action(ChartQuellen.TIME_1Y);
 		}
 	});
-	add(item120);
-	
-/*	addSeparator();
+	add(item1y);
 
-	popIntraday = new Menu("Intraday");
-	add(popIntraday);
-
-	mi = new MenuItem("Frankfurt");
-	mi.addActionListener(new ActionListener() {
+	item2y = new MenuItem("2 Jahre");
+	item2y.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			AktienMan.hauptdialog.listeSelektierteAktieIntradayChart("FRA");
+			action(ChartQuellen.TIME_2Y);
 		}
 	});
-	popIntraday.add(mi);
+	add(item2y);
 
-	mi = new MenuItem("Xetra");
-	mi.addActionListener(new ActionListener() {
+	item3y = new MenuItem("3 Jahre");
+	item3y.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			AktienMan.hauptdialog.listeSelektierteAktieIntradayChart("ETR");
+			action(ChartQuellen.TIME_3Y);
 		}
 	});
-	popIntraday.add(mi); */
+	add(item3y);
+
+	item5y = new MenuItem("5 Jahre");
+	item5y.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			action(ChartQuellen.TIME_5Y);
+		}
+	});
+	add(item5y);
+
+	itemmax = new MenuItem("max.");
+	itemmax.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			action(ChartQuellen.TIME_MAX);
+		}
+	});
+	add(itemmax);
 }
 
 
 
-protected void action(int type) {
+protected void action(int time) {
 
-	AktienMan.hauptdialog.listeSelektierteAktieChart(type);
+	AktienMan.hauptdialog.listeSelektierteAktieChart(time);
 }
 
 
 
 public synchronized void checkTypes() {
 
-	ChartQuelle cq = ChartQuellen.getChartQuelle();
-	
-	item6.setEnabled(   cq.hasType6()   );
-	item24.setEnabled(  cq.hasType24()  );
-//	item36.setEnabled(  cq.hasType36()  );
-	item60.setEnabled(  cq.hasType60()  );
-	item120.setEnabled( cq.hasType120() );	
+	item1d.setEnabled( ChartQuellen.hasAnyTime(ChartQuellen.TIME_1D) );
+	item5d.setEnabled( ChartQuellen.hasAnyTime(ChartQuellen.TIME_5D) );
+	item10d.setEnabled( ChartQuellen.hasAnyTime(ChartQuellen.TIME_10D) );
+	item3m.setEnabled( ChartQuellen.hasAnyTime(ChartQuellen.TIME_3M) );
+	item6m.setEnabled( ChartQuellen.hasAnyTime(ChartQuellen.TIME_6M) );
+	item1y.setEnabled( ChartQuellen.hasAnyTime(ChartQuellen.TIME_1Y) );
+	item2y.setEnabled( ChartQuellen.hasAnyTime(ChartQuellen.TIME_2Y) );
+	item3y.setEnabled( ChartQuellen.hasAnyTime(ChartQuellen.TIME_3Y) );
+	item5y.setEnabled( ChartQuellen.hasAnyTime(ChartQuellen.TIME_5Y) );
+	itemmax.setEnabled( ChartQuellen.hasAnyTime(ChartQuellen.TIME_MAX) );
 }
 
-
-
-public synchronized void setIntraday(boolean state) {
-
-//	popIntraday.setEnabled(state);
-}
-
-
-
-public synchronized void enableIntraday() {
-
-	setIntraday(true);
-}
-
-
-
-public synchronized void disableIntraday() {
-
-	setIntraday(false);
-}
 
 }

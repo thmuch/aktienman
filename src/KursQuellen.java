@@ -1,6 +1,13 @@
 /**
  @author Thomas Much
- @version 2000-08-07
+ @version 2003-02-25
+
+ 2003-02-25
+ 	register
+ 	index2Id, id2Index
+ 	getKursQuelleID, setKursQuelleID
+ 	PRIORITY_*, ID_*
+ 	getNextID
 */
 
 import java.util.*;
@@ -9,69 +16,103 @@ import java.awt.*;
 
 
 
-public final class KursQuellen extends Vector {
+public final class KursQuellen implements Runnable {
 
-public static final int QUELLE_NONE         = -1;
-public static final int QUELLE_COMDIRECT    =  0;
-public static final int QUELLE_DEUTSCHEBANK =  1;
-public static final int QUELLE_LSRTDAX30BID =  2;
-public static final int QUELLE_LSRTDAX30ASK =  3;
-public static final int QUELLE_YAHOO_DE     =  4; /* noch nicht vorhanden */
+public static final long ID_NONE         = -1;
+public static final long ID_YAHOO_DE     =  0;
+public static final long ID_COMDIRECT    =  1;
+//public static final long ID_DEUTSCHEBANK =  1;
+//public static final long ID_LSRTDAX30BID =  2;
+//public static final long ID_LSRTDAX30ASK =  3;
 
-private static final int STANDARDQUELLE = QUELLE_COMDIRECT;
+protected static final int PRIORITY_YAHOO_DE     = 100000;
+protected static final int PRIORITY_COMDIRECT    =  50000;
+//protected static final int PRIORITY_DEUTSCHEBANK =  40000;
+protected static final int PRIORITY_MAX          = Integer.MAX_VALUE-1;
+protected static final int PRIORITY_MIN          = Integer.MIN_VALUE+1;
+protected static final int PRIORITY_NEVER        = Integer.MIN_VALUE;
 
-private static KursQuellen quellen = new KursQuellen();
 
-private static int kursquelle = QUELLE_NONE;
+private static final long STANDARDQUELLE = ID_YAHOO_DE;
+
+private static Vector quellen = new Vector(10);
+
+private static long kursquelle = ID_NONE;
 
 
 
-
-public KursQuellen() {
-
-	super(5);
-	setupList();
+static
+{
+	// Workaround für JDK 1.1, sonst wird die Klasse entladen...
+	new Thread(new KursQuellen()).start();
 }
 
 
 
-public synchronized void setupList() {
 
-	add(new ComdirectQuelle());
-	add(new DeutscheBankQuelle());
+private KursQuellen() {}
 
-	if (LSRTDAX30Quelle.canUseLSRT())
+
+
+public void run() {
+
+	while(true)
 	{
-		add(new LSRTDAX30Quelle(LSRTDAX30Quelle.TYPE_BID));
-		add(new LSRTDAX30Quelle(LSRTDAX30Quelle.TYPE_ASK));
+		try
+		{
+			Thread.sleep(1000000L);
+		}
+		catch (InterruptedException e) {}	
+	}
+}
+
+
+
+public static void register(KursQuelle source) {
+
+	if (source == null) return;
+
+	if (AktienMan.DEBUG)
+	{
+		System.out.println("    Kurs-Plugin " + source.getName() + " wird registriert...");
 	}
 	
-	//add(new YahooDeQuelle());
+	synchronized(quellen)
+	{
+		for (int i = 0; i < quellen.size(); i++)
+		{
+			if (((KursQuelle)quellen.elementAt(i)).getID() == source.getID())
+			{
+				if (AktienMan.DEBUG)
+				{
+					System.out.println("    abgelehnt!");
+				}
+
+				return;
+			}
+		}
+
+		quellen.addElement(source);
+
+		if (AktienMan.DEBUG)
+		{
+			System.out.println("    fertig (" + quellen.size() + ").");
+		}
+	}
 }
 
 
 
-public synchronized void add(KursQuelle eintrag) {
-
-	addElement(eintrag);
-}
-
-
-
-public synchronized KursQuelle getAt(int index) {
-
-	return (KursQuelle)elementAt(index);
-}
-
-
-
-public synchronized static Choice getChoice() {
+public static Choice getChoice() {
 
 	Choice choice = new Choice();
 	
-	for (int i=0; i < quellen.size(); i++)
+	synchronized(quellen)
 	{
-		choice.addItem(quellen.getAt(i).getName());
+		for (int i = 0; i < quellen.size(); i++)
+		{
+			choice.addItem(((KursQuelle)quellen.elementAt(i)).getName());
+		}
 	}
 	
 	return choice;
@@ -79,51 +120,159 @@ public synchronized static Choice getChoice() {
 
 
 
-public synchronized static KursQuelle getKursQuelle(int index) {
+public static KursQuelle getKursQuelle(long id) {
 
-	return quellen.getAt(index);
-}
-
-
-
-public synchronized static KursQuelle getKursQuelle() {
-
-	return getKursQuelle(getKursQuelleIndex());
-}
-
-
-
-public synchronized static KursQuelle getPlatzKursQuelle() {
-
-	int idx = getKursQuelleIndex();
-	
-	if ((idx == QUELLE_LSRTDAX30BID) || (idx == QUELLE_LSRTDAX30ASK))
+	synchronized(quellen)
 	{
-		idx = STANDARDQUELLE;
+		return (KursQuelle)quellen.elementAt(getKursQuelleIndex(id));
 	}
-
-	return getKursQuelle(idx);
 }
 
 
 
-public synchronized static KursQuelle getFondsQuelle() {
+public static KursQuelle getKursQuelle() {
+
+	return getKursQuelle(getKursQuelleID());
+}
+
+
+
+public static KursQuelle getPlatzKursQuelle() {
+
+	long id = getKursQuelleID();
+	
+	/* TODO: überhaupt noch nötig??? */
+	
+/*	if ((id == ID_LSRTDAX30BID) || (id == ID_LSRTDAX30ASK))
+	{
+		id = STANDARDQUELLE;
+	} TODO */
+
+	return getKursQuelle(id);
+}
+
+
+
+public static KursQuelle getFondsQuelle() {
 
 	return getPlatzKursQuelle();
 }
 
 
 
-public synchronized static int getKursQuelleIndex() {
+public static long getNextID(KursQuelle first, KursQuelle current) {
 
-	if (kursquelle <= QUELLE_NONE)
+	int maxPriority;
+	
+	if (first.getID() == current.getID())
 	{
-		kursquelle = AktienMan.properties.getInt("Konfig.Kursquelle",STANDARDQUELLE);
+		maxPriority = Integer.MAX_VALUE;
+	}
+	else
+	{
+		maxPriority = current.getPriority();
 	}
 	
-	if ((kursquelle < 0) || (kursquelle >= quellen.size()))
+	int  bestPriority = PRIORITY_NEVER;
+	long bestID       = ID_NONE;
+
+	synchronized(quellen)
 	{
-		kursquelle = STANDARDQUELLE;
+		for (int i = 0; i < quellen.size(); i++)
+		{
+			KursQuelle kq = (KursQuelle)quellen.elementAt(i);
+			
+			if ((kq.getPriority() > bestPriority) && (kq.getPriority() < maxPriority) && (kq.getID() != first.getID()))
+			{
+				bestPriority = kq.getPriority();
+				bestID       = kq.getID();
+			}
+		}
+	}
+	
+	return bestID;
+}
+
+
+
+public static int getKursQuelleIndex() {
+
+	return getKursQuelleIndex(getKursQuelleID());
+}
+
+
+
+private static int getKursQuelleIndex(long id) {
+
+	int index = id2Index(id);
+	
+	if (index < 0)
+	{
+		return id2Index(STANDARDQUELLE);
+	}
+	else
+	{
+		return index;
+	}
+}
+
+
+
+public static void setKursQuelleIndex(int index) {
+
+	setKursQuelleID(index2Id(index));
+}
+
+
+
+private static int id2Index(long id)
+{
+	if (id > ID_NONE)
+	{
+		synchronized(quellen)
+		{
+			for (int i = 0; i < quellen.size(); i++)
+			{
+				if (((KursQuelle)quellen.elementAt(i)).getID() == id)
+				{
+					return i;
+				}
+			}
+		}
+	}
+	
+	return -1;
+}
+
+
+
+private static long index2Id(int index) {
+
+	synchronized(quellen)
+	{
+		if ((index >= 0) && (index < quellen.size()))
+		{
+			return ((KursQuelle)quellen.elementAt(index)).getID();
+		}
+		else
+		{
+			return ID_NONE;
+		}
+	}
+}
+
+
+
+private synchronized static long getKursQuelleID() {
+
+	if (kursquelle <= ID_NONE)
+	{
+		kursquelle = AktienMan.properties.getLong("Konfig.Kursquelle",STANDARDQUELLE);
+		
+		if (id2Index(kursquelle) < 0)
+		{
+			kursquelle = STANDARDQUELLE;
+		}
 	}
 
 	return kursquelle;
@@ -131,9 +280,9 @@ public synchronized static int getKursQuelleIndex() {
 
 
 
-public synchronized static void setKursQuelleIndex(int neu) {
+private synchronized static void setKursQuelleID(long neu) {
 
-	AktienMan.properties.setInt("Konfig.Kursquelle",neu);
+	AktienMan.properties.setLong("Konfig.Kursquelle",neu);
 	kursquelle = neu;
 }
 

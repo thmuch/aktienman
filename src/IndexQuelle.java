@@ -1,6 +1,11 @@
 /**
  @author Thomas Much
- @version 2000-11-09
+ @version 2003-03-27
+
+ 2003-03-27
+    TecDAX und NIKKEI225
+ 2003-02-21
+ 	loadValues/saveValues serialisieren nun sicherer
 */
 
 import java.util.*;
@@ -13,6 +18,24 @@ import java.io.*;
 
 public final class IndexQuelle {
 
+public static final int ID_NONE        = -1;
+public static final int ID_DAX30       =  0;
+public static final int ID_DAX100      =  1;
+public static final int ID_TECDAX      =  2;
+public static final int ID_NEMAX50     =  3;
+public static final int ID_MDAX        =  4;
+public static final int ID_SDAX        =  5;
+public static final int ID_EUROSTOXX50 =  6;
+public static final int ID_STOXX50     =  7;
+public static final int ID_DOWJONES    =  8;
+public static final int ID_SP500       =  9;
+public static final int ID_NASDAQ100   = 10;
+public static final int ID_NASDAQ      = 11;
+public static final int ID_NIKKEI      = 12;
+public static final int ID_NIKKEI225   = 13;
+public static final int COUNT          = ID_NIKKEI225 + 1;
+
+
 private static final int COLUMNS = 3;
 
 private static Panel indexPanel = null;
@@ -20,56 +43,41 @@ private static Panel indexPanel = null;
 private static Vector canvasliste = new Vector();
 private static Vector usedindices = null;
 
-private static final int[] threadURLs = { URLs.URL_BBBINDEXD,
-										  URLs.URL_BBBINDEXEU,
-										  URLs.URL_BBBINDEXUS,
-										  URLs.URL_BBBINDEXASIA };
-
 private static long currentThreadID = 0L;
 private static long nextThreadID    = currentThreadID + 1L;
-private static Thread[] leser       = new Thread[threadURLs.length];
+private static Thread leser         = null;
 
+private static final String[] iNames = { "DAX 30",
+										 "DAX 100",
+										 "TecDAX",
+										 "NEMAX 50",
+										 "MDAX",
+										 "SDAX",
+										 "EuroSTOXX 50",
+										 "STOXX 50",
+										 "Dow Jones",
+										 "S&P 500",
+										 "NASDAQ 100",
+										 "NASDAQ",
+										 "NIKKEI",
+										 "NIKKEI 225" };
 
-private static final String[] iNames = {"DAX 30",
-										"DAX 100",
-										"NEMAX 50",
-										"MDAX",
-										"SDAX",
-										"EuroSTOXX50",
-										"STOXX 50",
-										"Dow Indust.",
-										"S&P 500",
-										"NASDAQ 100",
-										"NYSE Comp.",
-										"NIKKEI 225"};
-
-public static final String[] iDescr = {	"DAX 30 Performanceindex",
-										"DAX 100 Performanceindex",
-										"NEMAX 50 Performanceindex",
-										"MDAX Performanceindex",
-										"SDAX Performanceindex",
-										"Dow Jones EuroSTOXX 50 Return Index",
-										"Dow Jones STOXX 50 Price Index",
+public static final String[] iDescr = {	"DAX/DAX 30 Index",
+										"HDAX/DAX 100 Index",
+										"TecDAX Index",
+										"NEMAX 50 Index",
+										"MDAX Index",
+										"SDAX Index",
+										"Dow Jones Euro STOXX 50 Index",
+										"Dow Jones STOXX 50 Index",
 										"Dow Jones Industrials Index",
 										"S&P 500 Index",
 										"NASDAQ 100 Index",
-										"NYSE Composite Index",
-										"NIKKEI 225 Index"};
+										"NASDAQ/NMS Composite Index",
+										"NIKKEI/ISE 50 Index",
+										"NIKKEI 225 Index" };
 
-public static final int[] iIndex = {	URLs.STR_INDEX_DAX30,
-										URLs.STR_INDEX_DAX100,
-										URLs.STR_INDEX_NEMAX50,
-										URLs.STR_INDEX_MDAX,
-										URLs.STR_INDEX_SDAX,
-										URLs.STR_INDEX_EURSTOXX50,
-										URLs.STR_INDEX_STOXX50,
-										URLs.STR_INDEX_DOWINDUST,
-										URLs.STR_INDEX_SP500,
-										URLs.STR_INDEX_NASDAQ100,
-										URLs.STR_INDEX_NYSECOMP,
-										URLs.STR_INDEX_NIKKEI225};
-
-private static final int[] defaultIndices = {0, 2, 7, 8, 9, 11};
+private static final int[] defaultIndices = { ID_DAX30, ID_TECDAX, ID_DOWJONES, ID_SP500, ID_NASDAQ, ID_NIKKEI225 };
 
 
 
@@ -78,21 +86,17 @@ public synchronized static void call() {
 
 	if (currentThreadID == nextThreadID)
 	{
-		for (int i = 0; i < leser.length; i++)
-		{
-			leser[i].interrupt();
-		}
+		leser.interrupt();
 	}
 	else
 	{
 		currentThreadID = nextThreadID;
 		
-		for (int i = 0; i < leser.length; i++)
-		{
-			leser[i] = new BBBankIndexLeser(currentThreadID,threadURLs[i]);
-
-			leser[i].start();
-		}
+		Runnable r = new IndexLeser(currentThreadID);
+		
+		leser = new Thread(r);
+		
+		leser.start();
 	}
 }
 
@@ -102,10 +106,7 @@ public synchronized static void clearThread(long tID) {
 
 	if (tID == nextThreadID)
 	{
-		for (int i = 0; i < leser.length; i++)
-		{
-			leser[i] = null;
-		}
+		leser = null;
 		
 		nextThreadID++;
 	}
@@ -127,13 +128,13 @@ private synchronized static void setPanel(Panel panel) {
 
 
 
-public static synchronized void checkIndex(String symbol, long punkte, long vortag, String datum) {
+public static synchronized void checkIndex(int index, long punkte, long vortag, String datum) {
 
 	for (int i = 0; i < canvasliste.size(); i++)
 	{
 		IndexCanvas ic = (IndexCanvas)canvasliste.elementAt(i);
 		
-		if (ic.hasSymbol(symbol))
+		if (ic.getIndex() == index)
 		{
 			ic.setValues(punkte,vortag,datum);
 			ic.repaint();
@@ -213,21 +214,6 @@ private synchronized static int index2Used(int index) {
 
 
 
-private synchronized static int index2Array(int index) {
-
-	for (int i = 0; i < iIndex.length; i++)
-	{
-		if (iIndex[i] == index)
-		{
-			return i;
-		}
-	}
-
-	return -1;
-}
-
-
-
 public synchronized static void addIndices(Panel panel) {
 	
 	setPanel(panel);
@@ -240,7 +226,7 @@ public synchronized static void addIndices(Panel panel) {
 	{
 		UsedIndex uidx = (UsedIndex)(usedindices.elementAt(i));
 		
-		int aidx = index2Array(uidx.getIndex());
+		int aidx = uidx.getIndex();
 		
 		String[] titles = new String[rows];
 		
@@ -252,7 +238,7 @@ public synchronized static void addIndices(Panel panel) {
 		{
 			if (curridx < usedindices.size())
 			{
-				int tidx = index2Array(((UsedIndex)(usedindices.elementAt(curridx))).getIndex());
+				int tidx = ((UsedIndex)(usedindices.elementAt(curridx))).getIndex();
 			
 				titles[j] = iNames[tidx];
 			}
@@ -260,7 +246,7 @@ public synchronized static void addIndices(Panel panel) {
 			curridx += COLUMNS;
 		}
 		
-		IndexCanvas ic = new IndexCanvas(iNames[aidx],iIndex[aidx],titles,"99999,99",uidx.getPunkte(),uidx.getVortag(),uidx.getDatum());
+		IndexCanvas ic = new IndexCanvas(iNames[aidx],aidx,titles,"99999,99",uidx.getPunkte(),uidx.getVortag(),uidx.getDatum());
 
 		AFrame.constrain(panel,ic,col,i / COLUMNS,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.WEST,1.0,0.0,0,0,0,0);
 		
@@ -297,13 +283,21 @@ public synchronized static void loadValues() {
 	try
 	{
 		FileInputStream fis = new FileInputStream(FileUtil.getIndexFile());
-		GZIPInputStream gzis = new GZIPInputStream(fis);
-		in = new ObjectInputStream(fis);
+		in = new ObjectInputStream(new BufferedInputStream(fis));
 		usedindices = (Vector)in.readObject();
-	}
-	catch (ClassNotFoundException e)
-	{
-		System.out.println("Gespeicherte Indizes fehlerhaft.");
+		
+		// Workaround, damit sichergestellt ist, dass alte Indexdateien ignoriert werden...
+		// TODO: wird ŸberflŸssig, sobald die Indizes optimiert und als XML gespeichert werden!
+		for (int i = 0; i < usedindices.size(); i++)
+		{
+			int aidx = ((UsedIndex)(usedindices.elementAt(i))).getIndex();
+			
+			if ((aidx < 0) || (aidx >= COUNT))
+			{
+				usedindices = null;
+				break;
+			}
+		}
 	}
 	catch (Exception e) {}
 	finally
@@ -315,8 +309,6 @@ public synchronized static void loadValues() {
 				in.close();
 			}
 			catch (Exception e) {}
-		
-			in = null;
 		}
 		
 		if (usedindices == null)
@@ -325,7 +317,7 @@ public synchronized static void loadValues() {
 
 			for (int i = 0; i < defaultIndices.length; i++)
 			{
-				addIndex(iIndex[defaultIndices[i]]);
+				addIndex(defaultIndices[i]);
 			}
 		}
 	}
@@ -342,15 +334,11 @@ public synchronized static void saveValues() {
 	try
 	{
 		FileOutputStream fos = new FileOutputStream(FileUtil.getIndexFile());
-		GZIPOutputStream gzos = new GZIPOutputStream(fos);
-		out = new ObjectOutputStream(fos);
+		out = new ObjectOutputStream(new BufferedOutputStream(fos));
 		out.writeObject(usedindices);
 		out.flush();
 	}
-	catch (Exception e)
-	{
-		System.out.println("Fehler beim Speichern der Indizes.");
-	}
+	catch (Exception e) {}
 	finally
 	{
 		if (out != null)
@@ -360,8 +348,6 @@ public synchronized static void saveValues() {
 				out.close();
 			}
 			catch (Exception e) {}
-		
-			out = null;
 		}
 	}
 }

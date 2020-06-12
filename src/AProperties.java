@@ -1,6 +1,9 @@
 /**
  @author Thomas Much
- @version 1999-01-15
+ @version 2003-01-22
+
+ 2003-01-22
+ 	setLong, getLong
 */
 
 import java.util.*;
@@ -83,6 +86,43 @@ public int getInt(String key, int defval) {
 public void setInt(String key, int value) {
 
 	put(key,new Integer(value).toString());
+}
+
+
+
+public long getLong(String key) {
+
+	return getLong(key,-1);
+}
+
+
+
+public long getLong(String key, long defval) {
+
+	String s = getProperty(key,"");
+
+	if (s == null)
+	{
+		return defval;
+	}
+	else
+	{
+		try
+		{
+			return Long.parseLong(s);
+		}
+		catch (NumberFormatException e)
+		{
+			return defval;
+		}
+	}
+}
+
+
+
+public void setLong(String key, long value) {
+
+	put(key,new Long(value).toString());
 }
 
 

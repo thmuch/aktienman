@@ -1,6 +1,9 @@
 /**
  @author Thomas Much
- @version 2000-07-25
+ @version 2003-03-02
+ 
+ 2003-03-02
+ 	processMouseEvent wird nicht mehr Ÿberschrieben
 */
 
 import java.awt.*;
@@ -42,7 +45,7 @@ public Dimension getMinimumSize() {
 
 
 
-public void processMouseEvent(MouseEvent e) {
+/*public void processMouseEvent(MouseEvent e) {
 
 	if (!e.isConsumed())
 	{
@@ -54,7 +57,7 @@ public void processMouseEvent(MouseEvent e) {
 	}
 
 	super.processMouseEvent(e);
-}
+} TODO */
 
 
 
